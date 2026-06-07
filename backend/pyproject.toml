@@ -1,0 +1,23 @@
+[project]
+name = "multimodal-ai-course-platform-backend"
+version = "0.1.0"
+description = "FastAPI backend for the multimodal AI course platform"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.116.0",
+  "httpx>=0.28.0",
+  "numpy>=2.0.0",
+  "pillow>=11.0.0",
+  "pydantic>=2.11.0",
+  "scikit-learn>=1.7.0",
+  "uvicorn>=0.35.0",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.4.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

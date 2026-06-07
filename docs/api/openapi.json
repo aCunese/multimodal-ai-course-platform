@@ -1,0 +1,3281 @@
+{
+  "components": {
+    "schemas": {
+      "ApiErrorResponse": {
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          }
+        },
+        "required": [
+          "detail"
+        ],
+        "title": "ApiErrorResponse",
+        "type": "object"
+      },
+      "AppShellMetadataResponse": {
+        "properties": {
+          "accountDisplayName": {
+            "title": "Accountdisplayname",
+            "type": "string"
+          },
+          "accountRoleLabel": {
+            "title": "Accountrolelabel",
+            "type": "string"
+          },
+          "projectDeliverablesButtonLabel": {
+            "title": "Projectdeliverablesbuttonlabel",
+            "type": "string"
+          },
+          "projectOverviewButtonLabel": {
+            "title": "Projectoverviewbuttonlabel",
+            "type": "string"
+          },
+          "projectReportButtonLabel": {
+            "title": "Projectreportbuttonlabel",
+            "type": "string"
+          },
+          "projectReportFallbackFilename": {
+            "title": "Projectreportfallbackfilename",
+            "type": "string"
+          },
+          "projectReportFallbackTitle": {
+            "title": "Projectreportfallbacktitle",
+            "type": "string"
+          },
+          "searchEmptyMessage": {
+            "title": "Searchemptymessage",
+            "type": "string"
+          },
+          "searchFieldAriaLabel": {
+            "title": "Searchfieldarialabel",
+            "type": "string"
+          },
+          "searchLoadingMessage": {
+            "title": "Searchloadingmessage",
+            "type": "string"
+          },
+          "searchPlaceholder": {
+            "title": "Searchplaceholder",
+            "type": "string"
+          },
+          "searchResultsAriaLabel": {
+            "title": "Searchresultsarialabel",
+            "type": "string"
+          },
+          "searchUnavailableMessage": {
+            "title": "Searchunavailablemessage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "searchFieldAriaLabel",
+          "searchPlaceholder",
+          "searchResultsAriaLabel",
+          "searchLoadingMessage",
+          "searchEmptyMessage",
+          "searchUnavailableMessage",
+          "projectReportButtonLabel",
+          "projectReportFallbackTitle",
+          "projectReportFallbackFilename",
+          "projectDeliverablesButtonLabel",
+          "projectOverviewButtonLabel",
+          "accountDisplayName",
+          "accountRoleLabel"
+        ],
+        "title": "AppShellMetadataResponse",
+        "type": "object"
+      },
+      "DashboardAction": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "route": {
+            "title": "Route",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "route"
+        ],
+        "title": "DashboardAction",
+        "type": "object"
+      },
+      "DashboardMetadataResponse": {
+        "properties": {
+          "heroDescription": {
+            "title": "Herodescription",
+            "type": "string"
+          },
+          "heroTitle": {
+            "title": "Herotitle",
+            "type": "string"
+          },
+          "historyPanelActionLabel": {
+            "title": "Historypanelactionlabel",
+            "type": "string"
+          },
+          "historyPanelTitle": {
+            "title": "Historypaneltitle",
+            "type": "string"
+          },
+          "historyTableHeaders": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Historytableheaders",
+            "type": "array"
+          },
+          "moduleActionLabel": {
+            "title": "Moduleactionlabel",
+            "type": "string"
+          },
+          "pageDescription": {
+            "title": "Pagedescription",
+            "type": "string"
+          },
+          "pageTitle": {
+            "title": "Pagetitle",
+            "type": "string"
+          },
+          "primaryAction": {
+            "$ref": "#/components/schemas/DashboardAction"
+          },
+          "runtimeAssetCacheFileLabel": {
+            "title": "Runtimeassetcachefilelabel",
+            "type": "string"
+          },
+          "runtimeAssetCacheMissingLabel": {
+            "title": "Runtimeassetcachemissinglabel",
+            "type": "string"
+          },
+          "runtimeAssetCacheReadyLabel": {
+            "title": "Runtimeassetcachereadylabel",
+            "type": "string"
+          },
+          "runtimeAssetCacheSizeLabel": {
+            "title": "Runtimeassetcachesizelabel",
+            "type": "string"
+          },
+          "runtimeAssetMissingUpdatedAtLabel": {
+            "title": "Runtimeassetmissingupdatedatlabel",
+            "type": "string"
+          },
+          "runtimeAssetUpdatedAtLabel": {
+            "title": "Runtimeassetupdatedatlabel",
+            "type": "string"
+          },
+          "runtimePanelErrorMessage": {
+            "title": "Runtimepanelerrormessage",
+            "type": "string"
+          },
+          "runtimePanelLoadingMessage": {
+            "title": "Runtimepanelloadingmessage",
+            "type": "string"
+          },
+          "runtimePanelTitle": {
+            "title": "Runtimepaneltitle",
+            "type": "string"
+          },
+          "runtimeWarmActionBusyLabel": {
+            "title": "Runtimewarmactionbusylabel",
+            "type": "string"
+          },
+          "runtimeWarmActionColdLabel": {
+            "title": "Runtimewarmactioncoldlabel",
+            "type": "string"
+          },
+          "runtimeWarmActionReadyLabel": {
+            "title": "Runtimewarmactionreadylabel",
+            "type": "string"
+          },
+          "secondaryAction": {
+            "$ref": "#/components/schemas/DashboardAction"
+          },
+          "syncFallbackMessage": {
+            "title": "Syncfallbackmessage",
+            "type": "string"
+          },
+          "syncLoadingMessage": {
+            "title": "Syncloadingmessage",
+            "type": "string"
+          },
+          "syncReadyMessage": {
+            "title": "Syncreadymessage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pageTitle",
+          "pageDescription",
+          "syncLoadingMessage",
+          "syncReadyMessage",
+          "syncFallbackMessage",
+          "heroTitle",
+          "heroDescription",
+          "primaryAction",
+          "secondaryAction",
+          "moduleActionLabel",
+          "runtimePanelTitle",
+          "runtimePanelLoadingMessage",
+          "runtimePanelErrorMessage",
+          "runtimeWarmActionColdLabel",
+          "runtimeWarmActionReadyLabel",
+          "runtimeWarmActionBusyLabel",
+          "runtimeAssetCacheFileLabel",
+          "runtimeAssetCacheReadyLabel",
+          "runtimeAssetCacheMissingLabel",
+          "runtimeAssetCacheSizeLabel",
+          "runtimeAssetUpdatedAtLabel",
+          "runtimeAssetMissingUpdatedAtLabel",
+          "historyPanelTitle",
+          "historyPanelActionLabel",
+          "historyTableHeaders"
+        ],
+        "title": "DashboardMetadataResponse",
+        "type": "object"
+      },
+      "DashboardSummaryResponse": {
+        "properties": {
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/MetricCard"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "modules": {
+            "items": {
+              "$ref": "#/components/schemas/ModuleCard"
+            },
+            "title": "Modules",
+            "type": "array"
+          },
+          "recentHistory": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryRecord"
+            },
+            "title": "Recenthistory",
+            "type": "array"
+          }
+        },
+        "required": [
+          "modules",
+          "metrics",
+          "recentHistory"
+        ],
+        "title": "DashboardSummaryResponse",
+        "type": "object"
+      },
+      "GenerationHistoryItem": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "已生成",
+              "草稿"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "theme": {
+            "title": "Theme",
+            "type": "string"
+          },
+          "time": {
+            "title": "Time",
+            "type": "string"
+          },
+          "tone": {
+            "enum": [
+              "正式",
+              "活泼",
+              "科技感",
+              "文艺"
+            ],
+            "title": "Tone",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "标题",
+              "宣传语",
+              "短文案",
+              "诗意表达"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "theme",
+          "type",
+          "tone",
+          "count",
+          "time",
+          "status"
+        ],
+        "title": "GenerationHistoryItem",
+        "type": "object"
+      },
+      "GenerationHistoryResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/GenerationHistoryItem"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "GenerationHistoryResponse",
+        "type": "object"
+      },
+      "GenerationOutput": {
+        "properties": {
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "标题",
+              "宣传语",
+              "短文案",
+              "诗意表达"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title",
+          "body"
+        ],
+        "title": "GenerationOutput",
+        "type": "object"
+      },
+      "GenerationQualityMetric": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "GenerationQualityMetric",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "const": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "HistoryExportFilters": {
+        "properties": {
+          "keyword": {
+            "title": "Keyword",
+            "type": "string"
+          },
+          "module": {
+            "title": "Module",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "keyword",
+          "module",
+          "status"
+        ],
+        "title": "HistoryExportFilters",
+        "type": "object"
+      },
+      "HistoryExportFormatOption": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "enum": [
+              "json",
+              "csv"
+            ],
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "HistoryExportFormatOption",
+        "type": "object"
+      },
+      "HistoryExportResponse": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "exportedAt": {
+            "title": "Exportedat",
+            "type": "string"
+          },
+          "filters": {
+            "$ref": "#/components/schemas/HistoryExportFilters"
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryRecord"
+            },
+            "title": "Records",
+            "type": "array"
+          }
+        },
+        "required": [
+          "exportedAt",
+          "filters",
+          "count",
+          "records"
+        ],
+        "title": "HistoryExportResponse",
+        "type": "object"
+      },
+      "HistoryListResponse": {
+        "properties": {
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryRecord"
+            },
+            "title": "Records",
+            "type": "array"
+          }
+        },
+        "required": [
+          "records"
+        ],
+        "title": "HistoryListResponse",
+        "type": "object"
+      },
+      "HistoryMetadataResponse": {
+        "properties": {
+          "clearFiltersLabel": {
+            "title": "Clearfilterslabel",
+            "type": "string"
+          },
+          "exportButtonBusyLabel": {
+            "title": "Exportbuttonbusylabel",
+            "type": "string"
+          },
+          "exportButtonLabel": {
+            "title": "Exportbuttonlabel",
+            "type": "string"
+          },
+          "exportFallbackMessage": {
+            "title": "Exportfallbackmessage",
+            "type": "string"
+          },
+          "exportFormatLabel": {
+            "title": "Exportformatlabel",
+            "type": "string"
+          },
+          "exportFormats": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryExportFormatOption"
+            },
+            "title": "Exportformats",
+            "type": "array"
+          },
+          "exportSuccessMessageTemplate": {
+            "title": "Exportsuccessmessagetemplate",
+            "type": "string"
+          },
+          "filterPanelTitle": {
+            "title": "Filterpaneltitle",
+            "type": "string"
+          },
+          "moduleFilterLabel": {
+            "title": "Modulefilterlabel",
+            "type": "string"
+          },
+          "moduleFilters": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Modulefilters",
+            "type": "array"
+          },
+          "moduleSpotlightActionLabel": {
+            "title": "Modulespotlightactionlabel",
+            "type": "string"
+          },
+          "moduleSpotlights": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectModuleSpotlight"
+            },
+            "title": "Modulespotlights",
+            "type": "array"
+          },
+          "overviewSections": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectOverviewSection"
+            },
+            "title": "Overviewsections",
+            "type": "array"
+          },
+          "pageDescription": {
+            "title": "Pagedescription",
+            "type": "string"
+          },
+          "pageTitle": {
+            "title": "Pagetitle",
+            "type": "string"
+          },
+          "projectOverviewTitle": {
+            "title": "Projectoverviewtitle",
+            "type": "string"
+          },
+          "rowActionLabel": {
+            "title": "Rowactionlabel",
+            "type": "string"
+          },
+          "searchFieldLabel": {
+            "title": "Searchfieldlabel",
+            "type": "string"
+          },
+          "searchPlaceholder": {
+            "title": "Searchplaceholder",
+            "type": "string"
+          },
+          "statusFilterLabel": {
+            "title": "Statusfilterlabel",
+            "type": "string"
+          },
+          "statusFilters": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Statusfilters",
+            "type": "array"
+          },
+          "syncConnectedMessage": {
+            "title": "Syncconnectedmessage",
+            "type": "string"
+          },
+          "syncFallbackMessage": {
+            "title": "Syncfallbackmessage",
+            "type": "string"
+          },
+          "syncLoadingMessage": {
+            "title": "Syncloadingmessage",
+            "type": "string"
+          },
+          "syncReadyMessage": {
+            "title": "Syncreadymessage",
+            "type": "string"
+          },
+          "tableCountTemplate": {
+            "title": "Tablecounttemplate",
+            "type": "string"
+          },
+          "tableHeaders": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tableheaders",
+            "type": "array"
+          },
+          "tableLoadingMessage": {
+            "title": "Tableloadingmessage",
+            "type": "string"
+          },
+          "tableTitle": {
+            "title": "Tabletitle",
+            "type": "string"
+          },
+          "valuePoints": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Valuepoints",
+            "type": "array"
+          }
+        },
+        "required": [
+          "pageTitle",
+          "pageDescription",
+          "syncConnectedMessage",
+          "syncLoadingMessage",
+          "syncReadyMessage",
+          "syncFallbackMessage",
+          "filterPanelTitle",
+          "searchFieldLabel",
+          "searchPlaceholder",
+          "moduleFilterLabel",
+          "statusFilterLabel",
+          "exportFormatLabel",
+          "clearFiltersLabel",
+          "exportButtonLabel",
+          "exportButtonBusyLabel",
+          "exportSuccessMessageTemplate",
+          "exportFallbackMessage",
+          "tableTitle",
+          "tableLoadingMessage",
+          "tableCountTemplate",
+          "tableHeaders",
+          "rowActionLabel",
+          "projectOverviewTitle",
+          "moduleSpotlightActionLabel",
+          "moduleFilters",
+          "statusFilters",
+          "exportFormats",
+          "overviewSections",
+          "valuePoints",
+          "moduleSpotlights"
+        ],
+        "title": "HistoryMetadataResponse",
+        "type": "object"
+      },
+      "HistoryRecord": {
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "string"
+          },
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "inputContent": {
+            "title": "Inputcontent",
+            "type": "string"
+          },
+          "inputType": {
+            "title": "Inputtype",
+            "type": "string"
+          },
+          "module": {
+            "title": "Module",
+            "type": "string"
+          },
+          "output": {
+            "title": "Output",
+            "type": "string"
+          },
+          "route": {
+            "title": "Route",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "成功",
+              "警告",
+              "失败"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "time": {
+            "title": "Time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "date",
+          "time",
+          "module",
+          "inputType",
+          "inputContent",
+          "output",
+          "confidence",
+          "status",
+          "route"
+        ],
+        "title": "HistoryRecord",
+        "type": "object"
+      },
+      "ImageRecognitionMetadataResponse": {
+        "properties": {
+          "confidenceLabel": {
+            "title": "Confidencelabel",
+            "type": "string"
+          },
+          "exampleButtonLabel": {
+            "title": "Examplebuttonlabel",
+            "type": "string"
+          },
+          "initialResult": {
+            "$ref": "#/components/schemas/ImageRecognitionResponse"
+          },
+          "modelInfo": {
+            "items": {
+              "$ref": "#/components/schemas/ImageRecognitionModelInfoItem"
+            },
+            "title": "Modelinfo",
+            "type": "array"
+          },
+          "modelInfoPanelTitle": {
+            "title": "Modelinfopaneltitle",
+            "type": "string"
+          },
+          "pageDescription": {
+            "title": "Pagedescription",
+            "type": "string"
+          },
+          "pageTitle": {
+            "title": "Pagetitle",
+            "type": "string"
+          },
+          "predictedCategoryLabel": {
+            "title": "Predictedcategorylabel",
+            "type": "string"
+          },
+          "previewAnalyzingStatusLabel": {
+            "title": "Previewanalyzingstatuslabel",
+            "type": "string"
+          },
+          "previewLoadedStatusLabel": {
+            "title": "Previewloadedstatuslabel",
+            "type": "string"
+          },
+          "probabilityPanelTitle": {
+            "title": "Probabilitypaneltitle",
+            "type": "string"
+          },
+          "resultAnalyzingStatusLabel": {
+            "title": "Resultanalyzingstatuslabel",
+            "type": "string"
+          },
+          "resultExplanationTitle": {
+            "title": "Resultexplanationtitle",
+            "type": "string"
+          },
+          "resultPanelTitle": {
+            "title": "Resultpaneltitle",
+            "type": "string"
+          },
+          "resultReadyStatusLabel": {
+            "title": "Resultreadystatuslabel",
+            "type": "string"
+          },
+          "reuploadButtonLabel": {
+            "title": "Reuploadbuttonlabel",
+            "type": "string"
+          },
+          "sampleAsset": {
+            "$ref": "#/components/schemas/ImageRecognitionSampleAsset"
+          },
+          "syncAnalyzingMessage": {
+            "title": "Syncanalyzingmessage",
+            "type": "string"
+          },
+          "syncFallbackMessage": {
+            "title": "Syncfallbackmessage",
+            "type": "string"
+          },
+          "syncLoadingMessage": {
+            "title": "Syncloadingmessage",
+            "type": "string"
+          },
+          "syncReadyMessage": {
+            "title": "Syncreadymessage",
+            "type": "string"
+          },
+          "uploadButtonLabel": {
+            "title": "Uploadbuttonlabel",
+            "type": "string"
+          },
+          "uploadDropzoneTitle": {
+            "title": "Uploaddropzonetitle",
+            "type": "string"
+          },
+          "uploadHint": {
+            "title": "Uploadhint",
+            "type": "string"
+          },
+          "uploadPanelTitle": {
+            "title": "Uploadpaneltitle",
+            "type": "string"
+          },
+          "uploadedPreviewTitle": {
+            "title": "Uploadedpreviewtitle",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pageTitle",
+          "pageDescription",
+          "syncLoadingMessage",
+          "syncAnalyzingMessage",
+          "syncReadyMessage",
+          "syncFallbackMessage",
+          "uploadPanelTitle",
+          "uploadDropzoneTitle",
+          "uploadHint",
+          "uploadButtonLabel",
+          "exampleButtonLabel",
+          "uploadedPreviewTitle",
+          "reuploadButtonLabel",
+          "previewLoadedStatusLabel",
+          "previewAnalyzingStatusLabel",
+          "resultPanelTitle",
+          "resultReadyStatusLabel",
+          "resultAnalyzingStatusLabel",
+          "predictedCategoryLabel",
+          "confidenceLabel",
+          "resultExplanationTitle",
+          "probabilityPanelTitle",
+          "modelInfoPanelTitle",
+          "sampleAsset",
+          "initialResult",
+          "modelInfo"
+        ],
+        "title": "ImageRecognitionMetadataResponse",
+        "type": "object"
+      },
+      "ImageRecognitionModelInfoItem": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "ImageRecognitionModelInfoItem",
+        "type": "object"
+      },
+      "ImageRecognitionRequest": {
+        "properties": {
+          "fileName": {
+            "minLength": 1,
+            "title": "Filename",
+            "type": "string"
+          },
+          "height": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Height"
+          },
+          "imageDataUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imagedataurl"
+          },
+          "sizeLabel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sizelabel"
+          },
+          "width": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Width"
+          }
+        },
+        "required": [
+          "fileName"
+        ],
+        "title": "ImageRecognitionRequest",
+        "type": "object"
+      },
+      "ImageRecognitionResponse": {
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "historyRecord": {
+            "$ref": "#/components/schemas/HistoryRecord"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "probabilities": {
+            "items": {
+              "$ref": "#/components/schemas/ProbabilityItem"
+            },
+            "title": "Probabilities",
+            "type": "array"
+          }
+        },
+        "required": [
+          "label",
+          "confidence",
+          "explanation",
+          "probabilities",
+          "historyRecord"
+        ],
+        "title": "ImageRecognitionResponse",
+        "type": "object"
+      },
+      "ImageRecognitionSampleAsset": {
+        "properties": {
+          "dimensionsLabel": {
+            "title": "Dimensionslabel",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "sampleId": {
+            "title": "Sampleid",
+            "type": "string"
+          },
+          "sizeLabel": {
+            "title": "Sizelabel",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sampleId",
+          "name",
+          "sizeLabel",
+          "dimensionsLabel"
+        ],
+        "title": "ImageRecognitionSampleAsset",
+        "type": "object"
+      },
+      "KeywordMatch": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "label",
+          "score"
+        ],
+        "title": "KeywordMatch",
+        "type": "object"
+      },
+      "MetricCard": {
+        "properties": {
+          "caption": {
+            "title": "Caption",
+            "type": "string"
+          },
+          "icon": {
+            "enum": [
+              "home",
+              "image",
+              "heart",
+              "pen",
+              "museum",
+              "history",
+              "search",
+              "download",
+              "file",
+              "user",
+              "arrow-right",
+              "check",
+              "spark",
+              "chart",
+              "layers",
+              "shield",
+              "cube",
+              "upload",
+              "refresh",
+              "light",
+              "filter",
+              "clock",
+              "database",
+              "copy",
+              "tag"
+            ],
+            "title": "Icon",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "value",
+          "caption",
+          "icon"
+        ],
+        "title": "MetricCard",
+        "type": "object"
+      },
+      "ModelProviderStatus": {
+        "properties": {
+          "activeProvider": {
+            "enum": [
+              "local",
+              "deepseek"
+            ],
+            "title": "Activeprovider",
+            "type": "string"
+          },
+          "configuredProvider": {
+            "enum": [
+              "local",
+              "deepseek"
+            ],
+            "title": "Configuredprovider",
+            "type": "string"
+          },
+          "detailMessage": {
+            "title": "Detailmessage",
+            "type": "string"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "statusLabel": {
+            "title": "Statuslabel",
+            "type": "string"
+          }
+        },
+        "required": [
+          "configuredProvider",
+          "activeProvider",
+          "enabled",
+          "statusLabel",
+          "detailMessage"
+        ],
+        "title": "ModelProviderStatus",
+        "type": "object"
+      },
+      "ModuleCard": {
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "icon": {
+            "enum": [
+              "home",
+              "image",
+              "heart",
+              "pen",
+              "museum",
+              "history",
+              "search",
+              "download",
+              "file",
+              "user",
+              "arrow-right",
+              "check",
+              "spark",
+              "chart",
+              "layers",
+              "shield",
+              "cube",
+              "upload",
+              "refresh",
+              "light",
+              "filter",
+              "clock",
+              "database",
+              "copy",
+              "tag"
+            ],
+            "title": "Icon",
+            "type": "string"
+          },
+          "route": {
+            "title": "Route",
+            "type": "string"
+          },
+          "statusLabel": {
+            "title": "Statuslabel",
+            "type": "string"
+          },
+          "statusTone": {
+            "enum": [
+              "success",
+              "accent",
+              "warning",
+              "neutral"
+            ],
+            "title": "Statustone",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "route",
+          "statusLabel",
+          "statusTone",
+          "icon"
+        ],
+        "title": "ModuleCard",
+        "type": "object"
+      },
+      "MuseumMatch": {
+        "properties": {
+          "institution": {
+            "title": "Institution",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          }
+        },
+        "required": [
+          "institution",
+          "score"
+        ],
+        "title": "MuseumMatch",
+        "type": "object"
+      },
+      "MuseumVisionDataSourceItem": {
+        "properties": {
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "body"
+        ],
+        "title": "MuseumVisionDataSourceItem",
+        "type": "object"
+      },
+      "MuseumVisionMetadataResponse": {
+        "properties": {
+          "copyActionLabel": {
+            "title": "Copyactionlabel",
+            "type": "string"
+          },
+          "copyFailureMessage": {
+            "title": "Copyfailuremessage",
+            "type": "string"
+          },
+          "copySuccessLabel": {
+            "title": "Copysuccesslabel",
+            "type": "string"
+          },
+          "dataSourceItems": {
+            "items": {
+              "$ref": "#/components/schemas/MuseumVisionDataSourceItem"
+            },
+            "title": "Datasourceitems",
+            "type": "array"
+          },
+          "downloadPreviewAriaLabel": {
+            "title": "Downloadpreviewarialabel",
+            "type": "string"
+          },
+          "exportTagsActionLabel": {
+            "title": "Exporttagsactionlabel",
+            "type": "string"
+          },
+          "exportTagsFallbackMessage": {
+            "title": "Exporttagsfallbackmessage",
+            "type": "string"
+          },
+          "exportTagsSuccessLabel": {
+            "title": "Exporttagssuccesslabel",
+            "type": "string"
+          },
+          "exportTagsSuccessMessage": {
+            "title": "Exporttagssuccessmessage",
+            "type": "string"
+          },
+          "initialAnalysis": {
+            "$ref": "#/components/schemas/MuseumVisionResponse"
+          },
+          "initialAssetId": {
+            "title": "Initialassetid",
+            "type": "string"
+          },
+          "openPreviewAriaLabel": {
+            "title": "Openpreviewarialabel",
+            "type": "string"
+          },
+          "pageDescription": {
+            "title": "Pagedescription",
+            "type": "string"
+          },
+          "pageTitle": {
+            "title": "Pagetitle",
+            "type": "string"
+          },
+          "sampleAssets": {
+            "items": {
+              "$ref": "#/components/schemas/MuseumVisionSampleAsset"
+            },
+            "title": "Sampleassets",
+            "type": "array"
+          },
+          "sampleDescriptionNote": {
+            "title": "Sampledescriptionnote",
+            "type": "string"
+          },
+          "sampleLoadedStatusLabel": {
+            "title": "Sampleloadedstatuslabel",
+            "type": "string"
+          },
+          "sampleSourceBadgeLabel": {
+            "title": "Samplesourcebadgelabel",
+            "type": "string"
+          },
+          "switchPreviewAriaLabel": {
+            "title": "Switchpreviewarialabel",
+            "type": "string"
+          },
+          "switchSampleButtonLabel": {
+            "title": "Switchsamplebuttonlabel",
+            "type": "string"
+          },
+          "syncAnalyzingMessage": {
+            "title": "Syncanalyzingmessage",
+            "type": "string"
+          },
+          "syncConnectingMessage": {
+            "title": "Syncconnectingmessage",
+            "type": "string"
+          },
+          "syncFallbackMessage": {
+            "title": "Syncfallbackmessage",
+            "type": "string"
+          },
+          "syncReadyMessage": {
+            "title": "Syncreadymessage",
+            "type": "string"
+          },
+          "syncUpdateMessage": {
+            "title": "Syncupdatemessage",
+            "type": "string"
+          },
+          "uploadButtonLabel": {
+            "title": "Uploadbuttonlabel",
+            "type": "string"
+          },
+          "uploadDescriptionNote": {
+            "title": "Uploaddescriptionnote",
+            "type": "string"
+          },
+          "uploadSourceBadgeLabel": {
+            "title": "Uploadsourcebadgelabel",
+            "type": "string"
+          },
+          "uploadSuccessStatusLabel": {
+            "title": "Uploadsuccessstatuslabel",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pageTitle",
+          "pageDescription",
+          "syncConnectingMessage",
+          "syncAnalyzingMessage",
+          "syncReadyMessage",
+          "syncUpdateMessage",
+          "syncFallbackMessage",
+          "copyActionLabel",
+          "copySuccessLabel",
+          "copyFailureMessage",
+          "exportTagsActionLabel",
+          "exportTagsSuccessLabel",
+          "exportTagsSuccessMessage",
+          "exportTagsFallbackMessage",
+          "uploadButtonLabel",
+          "switchSampleButtonLabel",
+          "sampleLoadedStatusLabel",
+          "uploadSuccessStatusLabel",
+          "sampleSourceBadgeLabel",
+          "uploadSourceBadgeLabel",
+          "openPreviewAriaLabel",
+          "downloadPreviewAriaLabel",
+          "switchPreviewAriaLabel",
+          "sampleAssets",
+          "initialAssetId",
+          "initialAnalysis",
+          "sampleDescriptionNote",
+          "uploadDescriptionNote",
+          "dataSourceItems"
+        ],
+        "title": "MuseumVisionMetadataResponse",
+        "type": "object"
+      },
+      "MuseumVisionRequest": {
+        "properties": {
+          "dimensions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dimensions"
+          },
+          "fileName": {
+            "minLength": 1,
+            "title": "Filename",
+            "type": "string"
+          },
+          "format": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Format"
+          },
+          "imageDataUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Imagedataurl"
+          },
+          "sizeLabel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sizelabel"
+          },
+          "sourceMode": {
+            "default": "sample",
+            "enum": [
+              "sample",
+              "upload"
+            ],
+            "title": "Sourcemode",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fileName"
+        ],
+        "title": "MuseumVisionRequest",
+        "type": "object"
+      },
+      "MuseumVisionResponse": {
+        "properties": {
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "dimensions": {
+            "title": "Dimensions",
+            "type": "string"
+          },
+          "format": {
+            "title": "Format",
+            "type": "string"
+          },
+          "historyRecord": {
+            "$ref": "#/components/schemas/HistoryRecord"
+          },
+          "institution": {
+            "title": "Institution",
+            "type": "string"
+          },
+          "matches": {
+            "items": {
+              "$ref": "#/components/schemas/MuseumMatch"
+            },
+            "title": "Matches",
+            "type": "array"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "sizeLabel": {
+            "title": "Sizelabel",
+            "type": "string"
+          },
+          "sourceNote": {
+            "title": "Sourcenote",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "uploadedAt": {
+            "title": "Uploadedat",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "format",
+          "dimensions",
+          "sizeLabel",
+          "sourceNote",
+          "uploadedAt",
+          "institution",
+          "confidence",
+          "description",
+          "tags",
+          "matches",
+          "historyRecord"
+        ],
+        "title": "MuseumVisionResponse",
+        "type": "object"
+      },
+      "MuseumVisionSampleAsset": {
+        "properties": {
+          "dimensions": {
+            "title": "Dimensions",
+            "type": "string"
+          },
+          "format": {
+            "title": "Format",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "sizeLabel": {
+            "title": "Sizelabel",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "format",
+          "dimensions",
+          "sizeLabel"
+        ],
+        "title": "MuseumVisionSampleAsset",
+        "type": "object"
+      },
+      "MuseumVisionTagExportRequest": {
+        "properties": {
+          "fileName": {
+            "minLength": 1,
+            "title": "Filename",
+            "type": "string"
+          },
+          "institution": {
+            "minLength": 1,
+            "title": "Institution",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Tags",
+            "type": "array"
+          }
+        },
+        "required": [
+          "fileName",
+          "institution",
+          "tags"
+        ],
+        "title": "MuseumVisionTagExportRequest",
+        "type": "object"
+      },
+      "ProbabilityItem": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "label",
+          "value"
+        ],
+        "title": "ProbabilityItem",
+        "type": "object"
+      },
+      "ProjectModuleSpotlight": {
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "route": {
+            "title": "Route",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "route"
+        ],
+        "title": "ProjectModuleSpotlight",
+        "type": "object"
+      },
+      "ProjectOverviewSection": {
+        "properties": {
+          "body": {
+            "title": "Body",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "body"
+        ],
+        "title": "ProjectOverviewSection",
+        "type": "object"
+      },
+      "ProjectReportExportResponse": {
+        "properties": {
+          "dashboard": {
+            "$ref": "#/components/schemas/DashboardSummaryResponse"
+          },
+          "generatedAt": {
+            "title": "Generatedat",
+            "type": "string"
+          },
+          "historyMetadata": {
+            "$ref": "#/components/schemas/HistoryMetadataResponse"
+          },
+          "pages": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectReportPage"
+            },
+            "title": "Pages",
+            "type": "array"
+          },
+          "reportVersion": {
+            "title": "Reportversion",
+            "type": "string"
+          },
+          "runtimeAssets": {
+            "$ref": "#/components/schemas/RuntimeAssetsResponse"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "generatedAt",
+          "title",
+          "reportVersion",
+          "pages",
+          "dashboard",
+          "runtimeAssets",
+          "historyMetadata"
+        ],
+        "title": "ProjectReportExportResponse",
+        "type": "object"
+      },
+      "ProjectReportPage": {
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "path",
+          "summary"
+        ],
+        "title": "ProjectReportPage",
+        "type": "object"
+      },
+      "RuntimeAssetStatus": {
+        "properties": {
+          "cacheExists": {
+            "title": "Cacheexists",
+            "type": "boolean"
+          },
+          "cachePath": {
+            "title": "Cachepath",
+            "type": "string"
+          },
+          "cacheReady": {
+            "title": "Cacheready",
+            "type": "boolean"
+          },
+          "cacheSizeBytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cachesizebytes"
+          },
+          "cacheUpdatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cacheupdatedat"
+          },
+          "datasetStatus": {
+            "enum": [
+              "ready",
+              "missing"
+            ],
+            "title": "Datasetstatus",
+            "type": "string"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "key": {
+            "enum": [
+              "herbal-classifier",
+              "museum-feature-index"
+            ],
+            "title": "Key",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "statusLabel": {
+            "enum": [
+              "就绪",
+              "待预热",
+              "缺少数据"
+            ],
+            "title": "Statuslabel",
+            "type": "string"
+          },
+          "statusTone": {
+            "enum": [
+              "success",
+              "warning",
+              "neutral"
+            ],
+            "title": "Statustone",
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "label",
+          "description",
+          "cachePath",
+          "cacheExists",
+          "cacheReady",
+          "datasetStatus",
+          "statusLabel",
+          "statusTone",
+          "note"
+        ],
+        "title": "RuntimeAssetStatus",
+        "type": "object"
+      },
+      "RuntimeAssetsResponse": {
+        "properties": {
+          "assets": {
+            "items": {
+              "$ref": "#/components/schemas/RuntimeAssetStatus"
+            },
+            "title": "Assets",
+            "type": "array"
+          },
+          "summaryMessage": {
+            "title": "Summarymessage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "assets",
+          "summaryMessage"
+        ],
+        "title": "RuntimeAssetsResponse",
+        "type": "object"
+      },
+      "RuntimeAssetsWarmupResponse": {
+        "properties": {
+          "assets": {
+            "items": {
+              "$ref": "#/components/schemas/RuntimeAssetStatus"
+            },
+            "title": "Assets",
+            "type": "array"
+          },
+          "summaryMessage": {
+            "title": "Summarymessage",
+            "type": "string"
+          },
+          "totalDurationMs": {
+            "title": "Totaldurationms",
+            "type": "integer"
+          },
+          "warmedAt": {
+            "title": "Warmedat",
+            "type": "string"
+          },
+          "warmedKeys": {
+            "items": {
+              "enum": [
+                "herbal-classifier",
+                "museum-feature-index"
+              ],
+              "type": "string"
+            },
+            "title": "Warmedkeys",
+            "type": "array"
+          }
+        },
+        "required": [
+          "assets",
+          "warmedKeys",
+          "totalDurationMs",
+          "warmedAt",
+          "summaryMessage"
+        ],
+        "title": "RuntimeAssetsWarmupResponse",
+        "type": "object"
+      },
+      "SearchResponse": {
+        "properties": {
+          "keyword": {
+            "title": "Keyword",
+            "type": "string"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/SearchSuggestion"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "keyword",
+          "total",
+          "results"
+        ],
+        "title": "SearchResponse",
+        "type": "object"
+      },
+      "SearchSuggestion": {
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "icon": {
+            "enum": [
+              "home",
+              "image",
+              "heart",
+              "pen",
+              "museum",
+              "history",
+              "search",
+              "download",
+              "file",
+              "user",
+              "arrow-right",
+              "check",
+              "spark",
+              "chart",
+              "layers",
+              "shield",
+              "cube",
+              "upload",
+              "refresh",
+              "light",
+              "filter",
+              "clock",
+              "database",
+              "copy",
+              "tag"
+            ],
+            "title": "Icon",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "route": {
+            "title": "Route",
+            "type": "string"
+          },
+          "scope": {
+            "enum": [
+              "page",
+              "history"
+            ],
+            "title": "Scope",
+            "type": "string"
+          },
+          "subtitle": {
+            "title": "Subtitle",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "subtitle",
+          "description",
+          "route",
+          "icon",
+          "scope"
+        ],
+        "title": "SearchSuggestion",
+        "type": "object"
+      },
+      "SentimentAnalysisMetadataResponse": {
+        "properties": {
+          "analysisNote": {
+            "title": "Analysisnote",
+            "type": "string"
+          },
+          "analyzeButtonBusyLabel": {
+            "title": "Analyzebuttonbusylabel",
+            "type": "string"
+          },
+          "analyzeButtonLabel": {
+            "title": "Analyzebuttonlabel",
+            "type": "string"
+          },
+          "clearButtonLabel": {
+            "title": "Clearbuttonlabel",
+            "type": "string"
+          },
+          "emptyInputMessage": {
+            "title": "Emptyinputmessage",
+            "type": "string"
+          },
+          "modelLabel": {
+            "title": "Modellabel",
+            "type": "string"
+          },
+          "pageDescription": {
+            "title": "Pagedescription",
+            "type": "string"
+          },
+          "pageTitle": {
+            "title": "Pagetitle",
+            "type": "string"
+          },
+          "pendingResult": {
+            "$ref": "#/components/schemas/SentimentAnalysisResponse"
+          },
+          "positiveOnlyButtonLabel": {
+            "title": "Positiveonlybuttonlabel",
+            "type": "string"
+          },
+          "providerStatus": {
+            "$ref": "#/components/schemas/ModelProviderStatus"
+          },
+          "sampleButtonLabel": {
+            "title": "Samplebuttonlabel",
+            "type": "string"
+          },
+          "sampleText": {
+            "title": "Sampletext",
+            "type": "string"
+          },
+          "showAllButtonLabel": {
+            "title": "Showallbuttonlabel",
+            "type": "string"
+          },
+          "syncAnalyzingMessage": {
+            "title": "Syncanalyzingmessage",
+            "type": "string"
+          },
+          "syncFallbackMessage": {
+            "title": "Syncfallbackmessage",
+            "type": "string"
+          },
+          "syncLoadingMessage": {
+            "title": "Syncloadingmessage",
+            "type": "string"
+          },
+          "syncReadyMessage": {
+            "title": "Syncreadymessage",
+            "type": "string"
+          },
+          "textInputLabel": {
+            "title": "Textinputlabel",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pageTitle",
+          "pageDescription",
+          "syncLoadingMessage",
+          "syncAnalyzingMessage",
+          "syncReadyMessage",
+          "syncFallbackMessage",
+          "emptyInputMessage",
+          "textInputLabel",
+          "clearButtonLabel",
+          "sampleButtonLabel",
+          "analyzeButtonLabel",
+          "analyzeButtonBusyLabel",
+          "positiveOnlyButtonLabel",
+          "showAllButtonLabel",
+          "sampleText",
+          "pendingResult",
+          "providerStatus",
+          "modelLabel",
+          "analysisNote"
+        ],
+        "title": "SentimentAnalysisMetadataResponse",
+        "type": "object"
+      },
+      "SentimentAnalysisRequest": {
+        "properties": {
+          "text": {
+            "maxLength": 5000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "SentimentAnalysisRequest",
+        "type": "object"
+      },
+      "SentimentAnalysisResponse": {
+        "properties": {
+          "completedAt": {
+            "title": "Completedat",
+            "type": "string"
+          },
+          "confidence": {
+            "title": "Confidence",
+            "type": "number"
+          },
+          "englishLabel": {
+            "enum": [
+              "Positive",
+              "Neutral",
+              "Negative"
+            ],
+            "title": "Englishlabel",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "historyRecord": {
+            "$ref": "#/components/schemas/HistoryRecord"
+          },
+          "label": {
+            "enum": [
+              "正面",
+              "中性",
+              "负面"
+            ],
+            "title": "Label",
+            "type": "string"
+          },
+          "negativeMatches": {
+            "items": {
+              "$ref": "#/components/schemas/KeywordMatch"
+            },
+            "title": "Negativematches",
+            "type": "array"
+          },
+          "positiveMatches": {
+            "items": {
+              "$ref": "#/components/schemas/KeywordMatch"
+            },
+            "title": "Positivematches",
+            "type": "array"
+          },
+          "processingTime": {
+            "title": "Processingtime",
+            "type": "string"
+          },
+          "providerStatusMessage": {
+            "title": "Providerstatusmessage",
+            "type": "string"
+          },
+          "providerUsed": {
+            "enum": [
+              "local",
+              "deepseek"
+            ],
+            "title": "Providerused",
+            "type": "string"
+          },
+          "score": {
+            "title": "Score",
+            "type": "number"
+          },
+          "status": {
+            "enum": [
+              "已完成",
+              "待分析"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tags",
+            "type": "array"
+          },
+          "taskId": {
+            "title": "Taskid",
+            "type": "string"
+          },
+          "usedFallback": {
+            "title": "Usedfallback",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "label",
+          "englishLabel",
+          "confidence",
+          "score",
+          "tags",
+          "positiveMatches",
+          "negativeMatches",
+          "explanation",
+          "status",
+          "processingTime",
+          "taskId",
+          "completedAt",
+          "providerUsed",
+          "usedFallback",
+          "providerStatusMessage",
+          "historyRecord"
+        ],
+        "title": "SentimentAnalysisResponse",
+        "type": "object"
+      },
+      "TextGenerationDefaultConfig": {
+        "properties": {
+          "quantity": {
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "theme": {
+            "title": "Theme",
+            "type": "string"
+          },
+          "tone": {
+            "enum": [
+              "正式",
+              "活泼",
+              "科技感",
+              "文艺"
+            ],
+            "title": "Tone",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "标题",
+              "宣传语",
+              "短文案",
+              "诗意表达"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "theme",
+          "tone",
+          "type",
+          "quantity"
+        ],
+        "title": "TextGenerationDefaultConfig",
+        "type": "object"
+      },
+      "TextGenerationMetadataResponse": {
+        "properties": {
+          "copyActionLabel": {
+            "title": "Copyactionlabel",
+            "type": "string"
+          },
+          "copyFailureMessage": {
+            "title": "Copyfailuremessage",
+            "type": "string"
+          },
+          "copySuccessLabel": {
+            "title": "Copysuccesslabel",
+            "type": "string"
+          },
+          "defaultConfig": {
+            "$ref": "#/components/schemas/TextGenerationDefaultConfig"
+          },
+          "defaultQualityMetrics": {
+            "items": {
+              "$ref": "#/components/schemas/GenerationQualityMetric"
+            },
+            "title": "Defaultqualitymetrics",
+            "type": "array"
+          },
+          "defaultQualityTip": {
+            "title": "Defaultqualitytip",
+            "type": "string"
+          },
+          "defaultToneKeywords": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Defaulttonekeywords",
+            "type": "array"
+          },
+          "generateButtonBusyLabel": {
+            "title": "Generatebuttonbusylabel",
+            "type": "string"
+          },
+          "generateButtonLabel": {
+            "title": "Generatebuttonlabel",
+            "type": "string"
+          },
+          "generateFallbackMessage": {
+            "title": "Generatefallbackmessage",
+            "type": "string"
+          },
+          "generateLoadingMessage": {
+            "title": "Generateloadingmessage",
+            "type": "string"
+          },
+          "generateSuccessMessage": {
+            "title": "Generatesuccessmessage",
+            "type": "string"
+          },
+          "generationTypes": {
+            "items": {
+              "enum": [
+                "标题",
+                "宣传语",
+                "短文案",
+                "诗意表达"
+              ],
+              "type": "string"
+            },
+            "title": "Generationtypes",
+            "type": "array"
+          },
+          "pageDescription": {
+            "title": "Pagedescription",
+            "type": "string"
+          },
+          "pageTitle": {
+            "title": "Pagetitle",
+            "type": "string"
+          },
+          "providerStatus": {
+            "$ref": "#/components/schemas/ModelProviderStatus"
+          },
+          "regenerateButtonLabel": {
+            "title": "Regeneratebuttonlabel",
+            "type": "string"
+          },
+          "restoreExampleButtonLabel": {
+            "title": "Restoreexamplebuttonlabel",
+            "type": "string"
+          },
+          "restoreExampleMessage": {
+            "title": "Restoreexamplemessage",
+            "type": "string"
+          },
+          "sampleOutputs": {
+            "items": {
+              "$ref": "#/components/schemas/GenerationOutput"
+            },
+            "title": "Sampleoutputs",
+            "type": "array"
+          },
+          "syncConnectingMessage": {
+            "title": "Syncconnectingmessage",
+            "type": "string"
+          },
+          "syncFallbackMessage": {
+            "title": "Syncfallbackmessage",
+            "type": "string"
+          },
+          "syncHistoryReadyMessage": {
+            "title": "Synchistoryreadymessage",
+            "type": "string"
+          },
+          "toneOptions": {
+            "items": {
+              "enum": [
+                "正式",
+                "活泼",
+                "科技感",
+                "文艺"
+              ],
+              "type": "string"
+            },
+            "title": "Toneoptions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "pageTitle",
+          "pageDescription",
+          "syncConnectingMessage",
+          "syncHistoryReadyMessage",
+          "syncFallbackMessage",
+          "generateLoadingMessage",
+          "generateSuccessMessage",
+          "generateFallbackMessage",
+          "restoreExampleMessage",
+          "copyActionLabel",
+          "copySuccessLabel",
+          "copyFailureMessage",
+          "restoreExampleButtonLabel",
+          "generateButtonLabel",
+          "generateButtonBusyLabel",
+          "regenerateButtonLabel",
+          "toneOptions",
+          "generationTypes",
+          "defaultConfig",
+          "providerStatus",
+          "sampleOutputs",
+          "defaultQualityMetrics",
+          "defaultQualityTip",
+          "defaultToneKeywords"
+        ],
+        "title": "TextGenerationMetadataResponse",
+        "type": "object"
+      },
+      "TextGenerationRequest": {
+        "properties": {
+          "quantity": {
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Quantity",
+            "type": "integer"
+          },
+          "theme": {
+            "maxLength": 80,
+            "title": "Theme",
+            "type": "string"
+          },
+          "tone": {
+            "enum": [
+              "正式",
+              "活泼",
+              "科技感",
+              "文艺"
+            ],
+            "title": "Tone",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "标题",
+              "宣传语",
+              "短文案",
+              "诗意表达"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "theme",
+          "tone",
+          "type",
+          "quantity"
+        ],
+        "title": "TextGenerationRequest",
+        "type": "object"
+      },
+      "TextGenerationResponse": {
+        "properties": {
+          "generatedAt": {
+            "title": "Generatedat",
+            "type": "string"
+          },
+          "history": {
+            "items": {
+              "$ref": "#/components/schemas/GenerationHistoryItem"
+            },
+            "title": "History",
+            "type": "array"
+          },
+          "historyEntry": {
+            "$ref": "#/components/schemas/GenerationHistoryItem"
+          },
+          "historyRecord": {
+            "$ref": "#/components/schemas/HistoryRecord"
+          },
+          "outputs": {
+            "items": {
+              "$ref": "#/components/schemas/GenerationOutput"
+            },
+            "title": "Outputs",
+            "type": "array"
+          },
+          "providerStatusMessage": {
+            "title": "Providerstatusmessage",
+            "type": "string"
+          },
+          "providerUsed": {
+            "enum": [
+              "local",
+              "deepseek"
+            ],
+            "title": "Providerused",
+            "type": "string"
+          },
+          "qualityMetrics": {
+            "items": {
+              "$ref": "#/components/schemas/GenerationQualityMetric"
+            },
+            "title": "Qualitymetrics",
+            "type": "array"
+          },
+          "qualityTip": {
+            "title": "Qualitytip",
+            "type": "string"
+          },
+          "toneKeywords": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tonekeywords",
+            "type": "array"
+          },
+          "usedFallback": {
+            "title": "Usedfallback",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "outputs",
+          "historyEntry",
+          "history",
+          "qualityMetrics",
+          "qualityTip",
+          "toneKeywords",
+          "generatedAt",
+          "providerUsed",
+          "usedFallback",
+          "providerStatusMessage",
+          "historyRecord"
+        ],
+        "title": "TextGenerationResponse",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "多模态 AI 课程成果平台 Backend",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/app-shell/metadata": {
+      "get": {
+        "operationId": "app_shell_metadata_api_v1_app_shell_metadata_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppShellMetadataResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "App Shell Metadata"
+      }
+    },
+    "/api/v1/dashboard": {
+      "get": {
+        "operationId": "dashboard_api_v1_dashboard_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardSummaryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Dashboard"
+      }
+    },
+    "/api/v1/dashboard/metadata": {
+      "get": {
+        "operationId": "dashboard_metadata_api_v1_dashboard_metadata_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardMetadataResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Dashboard Metadata"
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "operationId": "healthcheck_api_v1_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Healthcheck"
+      }
+    },
+    "/api/v1/history": {
+      "get": {
+        "operationId": "history_api_v1_history_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "keyword",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Keyword",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "module",
+            "required": false,
+            "schema": {
+              "default": "全部",
+              "title": "Module",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "default": "全部",
+              "title": "Status",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "History"
+      }
+    },
+    "/api/v1/history/export": {
+      "get": {
+        "operationId": "export_history_api_v1_history_export_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "keyword",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Keyword",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "module",
+            "required": false,
+            "schema": {
+              "default": "全部",
+              "title": "Module",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "default": "全部",
+              "title": "Status",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "default": "json",
+              "enum": [
+                "json",
+                "csv"
+              ],
+              "title": "Format",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryExportResponse"
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Exported history records as a downloadable JSON or CSV attachment.",
+            "headers": {
+              "Content-Disposition": {
+                "description": "Suggested attachment filename for the exported history file.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export History"
+      }
+    },
+    "/api/v1/history/metadata": {
+      "get": {
+        "operationId": "history_metadata_api_v1_history_metadata_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryMetadataResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "History Metadata"
+      }
+    },
+    "/api/v1/image-recognition/metadata": {
+      "get": {
+        "operationId": "image_recognition_metadata_api_v1_image_recognition_metadata_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageRecognitionMetadataResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Image Recognition Metadata"
+      }
+    },
+    "/api/v1/image-recognition/predict": {
+      "post": {
+        "operationId": "image_recognition_api_v1_image_recognition_predict_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageRecognitionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageRecognitionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Image Recognition"
+      }
+    },
+    "/api/v1/museum-vision/analyze": {
+      "post": {
+        "operationId": "museum_vision_api_v1_museum_vision_analyze_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MuseumVisionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MuseumVisionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Museum Vision"
+      }
+    },
+    "/api/v1/museum-vision/export-tags": {
+      "post": {
+        "operationId": "museum_vision_export_tags_api_v1_museum_vision_export_tags_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MuseumVisionTagExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "text/plain": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Exported the current museum analysis tags as a downloadable text attachment.",
+            "headers": {
+              "Content-Disposition": {
+                "description": "Suggested attachment filename for the exported museum tag file.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Museum Vision Export Tags"
+      }
+    },
+    "/api/v1/museum-vision/metadata": {
+      "get": {
+        "operationId": "museum_vision_metadata_api_v1_museum_vision_metadata_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MuseumVisionMetadataResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Museum Vision Metadata"
+      }
+    },
+    "/api/v1/project-deliverables/export": {
+      "get": {
+        "operationId": "project_delivery_bundle_export_api_v1_project_deliverables_export_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "application/zip": {
+                "schema": {
+                  "format": "binary",
+                  "type": "string"
+                }
+              }
+            },
+            "description": "Exported the current project deliverables as a downloadable ZIP bundle.",
+            "headers": {
+              "Content-Disposition": {
+                "description": "Suggested attachment filename for the exported delivery bundle.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Project Delivery Bundle Export"
+      }
+    },
+    "/api/v1/project-report/export": {
+      "get": {
+        "operationId": "project_report_export_api_v1_project_report_export_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectReportExportResponse"
+                }
+              }
+            },
+            "description": "Exported the current project demo report as a downloadable JSON attachment.",
+            "headers": {
+              "Content-Disposition": {
+                "description": "Suggested attachment filename for the exported project report.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Project Report Export"
+      }
+    },
+    "/api/v1/runtime-assets": {
+      "get": {
+        "operationId": "runtime_assets_api_v1_runtime_assets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuntimeAssetsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Runtime Assets"
+      }
+    },
+    "/api/v1/runtime-assets/warmup": {
+      "post": {
+        "operationId": "runtime_assets_warmup_api_v1_runtime_assets_warmup_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuntimeAssetsWarmupResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Runtime Assets Warmup"
+      }
+    },
+    "/api/v1/search": {
+      "get": {
+        "operationId": "search_api_v1_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "keyword",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Keyword",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search"
+      }
+    },
+    "/api/v1/sentiment-analysis/analyze": {
+      "post": {
+        "operationId": "sentiment_analysis_api_v1_sentiment_analysis_analyze_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SentimentAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentimentAnalysisResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sentiment Analysis"
+      }
+    },
+    "/api/v1/sentiment-analysis/metadata": {
+      "get": {
+        "operationId": "sentiment_analysis_metadata_api_v1_sentiment_analysis_metadata_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentimentAnalysisMetadataResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Sentiment Analysis Metadata"
+      }
+    },
+    "/api/v1/text-generation/generate": {
+      "post": {
+        "operationId": "text_generation_api_v1_text_generation_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextGenerationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextGenerationResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Text Generation"
+      }
+    },
+    "/api/v1/text-generation/history": {
+      "get": {
+        "operationId": "text_generation_history_api_v1_text_generation_history_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerationHistoryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Text Generation History"
+      }
+    },
+    "/api/v1/text-generation/metadata": {
+      "get": {
+        "operationId": "text_generation_metadata_api_v1_text_generation_metadata_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextGenerationMetadataResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Text Generation Metadata"
+      }
+    }
+  }
+}
