@@ -227,81 +227,79 @@ export function AppShell({ children }: PropsWithChildren) {
           </div>
 
           <div className="topbar__controls" data-testid="topbar-controls">
-            <form className="search-box" onSubmit={handleSearchSubmit}>
-              <div className="search-box__field">
-                <Icon name="search" size={18} />
-                <input
-                  aria-label={metadata.searchFieldAriaLabel}
-                  type="search"
-                  value={searchValue}
-                  onChange={(event) => {
-                    void handleSearchChange(event.target.value);
-                  }}
-                  placeholder={metadata.searchPlaceholder}
-                />
-              </div>
-              {showSearchPanel ? (
-                <div className="search-box__results" role="listbox" aria-label={metadata.searchResultsAriaLabel}>
-                  {isSearching ? (
-                    <p className="search-box__status">{metadata.searchLoadingMessage}</p>
-                  ) : null}
-                  {!isSearching
-                    ? searchResults.map((result) => (
-                        <button
-                          key={result.id}
-                          type="button"
-                          className="search-box__result"
-                          onClick={() => navigateToSearchRoute(result.route)}
-                        >
-                          <span className="search-box__result-icon">
-                            <Icon name={result.icon} size={16} />
-                          </span>
-                          <span className="search-box__result-copy">
-                            <strong>{result.title}</strong>
-                            <small>{result.subtitle}</small>
-                            <span>{result.description}</span>
-                          </span>
-                        </button>
-                      ))
-                    : null}
-                  {!isSearching && searchMessage ? (
-                    <p className="search-box__status">{searchMessage}</p>
-                  ) : null}
-                </div>
-              ) : null}
-            </form>
-
-            <div className="topbar__utility">
-              <div className="topbar__toolbar" data-testid="topbar-toolbar">
-                <button type="button" className="toolbar-button" onClick={handleExportReport}>
-                  <Icon name="download" size={18} />
-                  <span>{metadata.projectReportButtonLabel}</span>
-                </button>
-                <button type="button" className="toolbar-button" onClick={() => void handleExportDeliveryBundle()}>
-                  <Icon name="download" size={18} />
-                  <span>{metadata.projectDeliverablesButtonLabel}</span>
-                </button>
-                <button
-                  type="button"
-                  className="toolbar-button"
-                  onClick={() => navigate("/history#project-overview")}
-                >
-                  <Icon name="file" size={18} />
-                  <span>{metadata.projectOverviewButtonLabel}</span>
-                </button>
-              </div>
-
-              <button type="button" className="account-pill" data-testid="topbar-account" onClick={() => navigate("/")}>
-                <span className="account-pill__avatar">
-                  <Icon name="user" size={18} />
-                </span>
-                <span>
-                  <strong>{metadata.accountDisplayName}</strong>
-                  <small>{formatAccountRoleLabel(metadata.accountRoleLabel)}</small>
-                </span>
+            <div className="topbar__toolbar" data-testid="topbar-toolbar">
+              <button type="button" className="toolbar-button" onClick={handleExportReport}>
+                <Icon name="download" size={18} />
+                <span>{metadata.projectReportButtonLabel}</span>
+              </button>
+              <button type="button" className="toolbar-button" onClick={() => void handleExportDeliveryBundle()}>
+                <Icon name="download" size={18} />
+                <span>{metadata.projectDeliverablesButtonLabel}</span>
+              </button>
+              <button
+                type="button"
+                className="toolbar-button"
+                onClick={() => navigate("/history#project-overview")}
+              >
+                <Icon name="file" size={18} />
+                <span>{metadata.projectOverviewButtonLabel}</span>
               </button>
             </div>
+
+            <button type="button" className="account-pill" data-testid="topbar-account" onClick={() => navigate("/")}>
+              <span className="account-pill__avatar">
+                <Icon name="user" size={18} />
+              </span>
+              <span>
+                <strong>{metadata.accountDisplayName}</strong>
+                <small>{formatAccountRoleLabel(metadata.accountRoleLabel)}</small>
+              </span>
+            </button>
           </div>
+
+          <form className="search-box" onSubmit={handleSearchSubmit}>
+            <div className="search-box__field">
+              <Icon name="search" size={18} />
+              <input
+                aria-label={metadata.searchFieldAriaLabel}
+                type="search"
+                value={searchValue}
+                onChange={(event) => {
+                  void handleSearchChange(event.target.value);
+                }}
+                placeholder={metadata.searchPlaceholder}
+              />
+            </div>
+            {showSearchPanel ? (
+              <div className="search-box__results" role="listbox" aria-label={metadata.searchResultsAriaLabel}>
+                {isSearching ? (
+                  <p className="search-box__status">{metadata.searchLoadingMessage}</p>
+                ) : null}
+                {!isSearching
+                  ? searchResults.map((result) => (
+                      <button
+                        key={result.id}
+                        type="button"
+                        className="search-box__result"
+                        onClick={() => navigateToSearchRoute(result.route)}
+                      >
+                        <span className="search-box__result-icon">
+                          <Icon name={result.icon} size={16} />
+                        </span>
+                        <span className="search-box__result-copy">
+                          <strong>{result.title}</strong>
+                          <small>{result.subtitle}</small>
+                          <span>{result.description}</span>
+                        </span>
+                      </button>
+                    ))
+                  : null}
+                {!isSearching && searchMessage ? (
+                  <p className="search-box__status">{searchMessage}</p>
+                ) : null}
+              </div>
+            ) : null}
+          </form>
         </header>
 
         <main className="page-shell">{children}</main>

@@ -1221,6 +1221,39 @@
         "title": "ModuleCard",
         "type": "object"
       },
+      "MuseumArtworkClue": {
+        "properties": {
+          "basis": {
+            "title": "Basis",
+            "type": "string"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "era": {
+            "title": "Era",
+            "type": "string"
+          },
+          "museumHint": {
+            "title": "Museumhint",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "era",
+          "category",
+          "museumHint",
+          "basis"
+        ],
+        "title": "MuseumArtworkClue",
+        "type": "object"
+      },
       "MuseumMatch": {
         "properties": {
           "institution": {
@@ -1484,6 +1517,9 @@
       },
       "MuseumVisionResponse": {
         "properties": {
+          "artworkClue": {
+            "$ref": "#/components/schemas/MuseumArtworkClue"
+          },
           "confidence": {
             "title": "Confidence",
             "type": "number"
@@ -1548,6 +1584,7 @@
           "institution",
           "confidence",
           "description",
+          "artworkClue",
           "tags",
           "matches",
           "historyRecord"

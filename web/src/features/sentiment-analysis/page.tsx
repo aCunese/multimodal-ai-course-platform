@@ -76,6 +76,28 @@ const initialMetadata: SentimentAnalysisMetadataResponse = {
 const localSentimentFallbackMessage = "情感分析接口暂时不可用，当前已根据输入内容执行本地兜底分析。";
 const localSentimentFallbackDetail = "当前未连接后端分析服务，系统已根据当前输入内容执行本地规则兜底。";
 
+function resolveSentimentStrengthCopy(result: SentimentAnalysisResponse) {
+  const intensity = Math.abs(result.score);
+
+  if (result.status === "待分析") {
+    return "等待分析";
+  }
+
+  if (result.label === "中性") {
+    return intensity >= 0.18 ? "轻微摇摆" : "接近中性";
+  }
+
+  if (intensity >= 0.75) {
+    return `强烈${result.label}`;
+  }
+
+  if (intensity >= 0.45) {
+    return `明显${result.label}`;
+  }
+
+  return `轻微${result.label}`;
+}
+
 function renderSentimentKeywordLabel(label: string, usedFallback: boolean) {
   const translatedLabel = formatSentimentKeyword(label);
 
@@ -121,6 +143,23 @@ export function SentimentAnalysisPage() {
   const confidenceTone =
     result.status === "待分析" ? "neutral" : result.label === "负面" ? "warning" : "success";
   const scoreMarkerPosition = `${((result.score + 1) / 2) * 100}%`;
+  const scoreStrengthCopy = resolveSentimentStrengthCopy(result);
+  const scoreFillStyle =
+    result.score >= 0
+      ? { left: "50%", width: `${Math.abs(result.score) * 50}%` }
+      : { left: `${50 - Math.abs(result.score) * 50}%`, width: `${Math.abs(result.score) * 50}%` };
+  const scoreToneClass =
+    result.label === "负面"
+      ? "sentiment-scale__fill sentiment-scale__fill--negative"
+      : result.label === "正面"
+        ? "sentiment-scale__fill sentiment-scale__fill--positive"
+        : "sentiment-scale__fill sentiment-scale__fill--neutral";
+  const scorePointToneClass =
+    result.label === "负面"
+      ? "sentiment-scale__point sentiment-scale__point--negative"
+      : result.label === "正面"
+        ? "sentiment-scale__point sentiment-scale__point--positive"
+        : "sentiment-scale__point sentiment-scale__point--neutral";
   const visibleSyncMessage =
     isAnalyzing
       ? metadata.syncAnalyzingMessage
@@ -343,19 +382,17 @@ export function SentimentAnalysisPage() {
               <span>正面</span>
             </div>
             <div className="sentiment-scale__bar">
-              <span className="sentiment-scale__point" style={{ left: scoreMarkerPosition }}>
-                {result.score.toFixed(2)}
+              <span className={scoreToneClass} style={scoreFillStyle} />
+              <span className={scorePointToneClass} style={{ left: scoreMarkerPosition }}>
+                {scoreStrengthCopy}
               </span>
             </div>
             <div className="score-card">
               <strong>{result.score.toFixed(2)} / 1.00</strong>
-              <p>
-                {result.label === "正面"
-                  ? "偏正面"
-                  : result.label === "负面"
-                    ? "偏负面"
-                    : "接近中性"}
-              </p>
+              <p>{scoreStrengthCopy}</p>
+              <span className="field-caption">
+                积极线索 {result.positiveMatches.length} 条 · 消极线索 {result.negativeMatches.length} 条
+              </span>
             </div>
           </div>
         </Panel>

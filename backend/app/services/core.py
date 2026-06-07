@@ -70,6 +70,7 @@ from ..schemas import (
     MetricCard,
     ModelProviderStatus,
     ModuleCard,
+    MuseumArtworkClue,
     MuseumMatch,
     MuseumVisionDataSourceItem,
     MuseumVisionMetadataResponse,
@@ -694,6 +695,13 @@ MUSEUM_VISION_INITIAL_ANALYSIS = MuseumVisionResponse(
     institution="大都会艺术博物馆",
     confidence=89.6,
     description="这是一幅具有古典风格的人物绘画作品，画面主体位于中央，背景色调柔和，整体呈现典型的博物馆藏品图像特征。",
+    artworkClue=MuseumArtworkClue(
+        title="古典人物肖像",
+        era="古典风格",
+        category="人物肖像",
+        museumHint="大都会艺术博物馆",
+        basis="该线索根据课程样例名称与画面中的人物构图特征生成，用于帮助说明作品题材。",
+    ),
     tags=["人物肖像", "古典绘画", "博物馆藏品", "暖色调", "历史艺术", "服饰细节", "构图分析"],
     matches=[
         MuseumMatch(institution="大都会艺术博物馆", score=89.6),
@@ -716,7 +724,7 @@ MUSEUM_VISION_INITIAL_ANALYSIS = MuseumVisionResponse(
 )
 MUSEUM_VISION_SAMPLE_DESCRIPTION_NOTE = "当前描述结合样例图像的主体内容、构图风格与课程实验设定生成。"
 MUSEUM_VISION_UPLOAD_DESCRIPTION_NOTE = (
-    "当前描述基于上传图像的颜色、纹理与构图特征，并结合课程数据集中的相似样本生成。"
+    "当前描述会同时参考上传文件名中的作品线索，以及图像颜色、纹理与构图特征，再结合课程数据集中的相似样本生成。"
 )
 MUSEUM_VISION_DATA_SOURCE_ITEMS = [
     MuseumVisionDataSourceItem(
@@ -848,6 +856,57 @@ SENTIMENT_KEYWORD_TRANSLATIONS = {
     "copied": "缺乏新意",
 }
 
+CURATED_SENTIMENT_PHRASES = {
+    "喜欢": 0.78,
+    "开心": 0.84,
+    "高兴": 0.8,
+    "满意": 0.71,
+    "感动": 0.79,
+    "惊喜": 0.76,
+    "安心": 0.66,
+    "治愈": 0.74,
+    "推荐": 0.68,
+    "太棒了": 0.95,
+    "讨厌": -0.94,
+    "崩溃": -0.98,
+    "难过": -0.84,
+    "伤心": -0.86,
+    "失望": -0.78,
+    "生气": -0.85,
+    "愤怒": -0.9,
+    "焦虑": -0.82,
+    "压抑": -0.8,
+    "难受": -0.79,
+    "痛苦": -0.88,
+    "糟糕": -0.76,
+    "恶心": -0.88,
+    "害怕": -0.74,
+    "恐惧": -0.8,
+    "后悔": -0.7,
+    "受不了": -0.9,
+    "不能接受": -0.92,
+}
+
+SENTIMENT_INTENSIFIER_WEIGHTS = (
+    ("超级", 1.42),
+    ("极其", 1.38),
+    ("特别", 1.3),
+    ("非常", 1.28),
+    ("太", 1.22),
+    ("真的", 1.18),
+    ("很", 1.12),
+)
+
+SENTIMENT_SOFTENER_WEIGHTS = (
+    ("有一点", 0.78),
+    ("有点", 0.8),
+    ("稍微", 0.82),
+    ("有些", 0.86),
+    ("一点点", 0.72),
+)
+
+SENTIMENT_NEGATIONS = ("并不", "不是", "没有", "没", "不", "无")
+
 SENTIMENT_STOP_WORDS = {
     "this",
     "that",
@@ -947,6 +1006,9 @@ HERBAL_DESCRIPTIONS = {
 }
 HERBAL_PROBABILITY_ORDER = ["dangshen", "gouqi", "huaihua", "jinyinhua", "baihe"]
 HERBAL_MODEL_CACHE_VERSION = "herbal-classifier-v1"
+HERBAL_GOUQI_REFINEMENT_MIN_BRIGHT_RED_COVERAGE = 0.18
+HERBAL_GOUQI_REFINEMENT_MAX_MARGIN = 0.13
+HERBAL_GOUQI_REFINEMENT_MIN_CROP_CONFIDENCE = 0.65
 MUSEUM_INDEX_CACHE_VERSION = "museum-feature-index-v1"
 MUSEUM_IMAGE_DATASET_ROOT = (
     Path(__file__).resolve().parents[3]
@@ -968,6 +1030,13 @@ MUSEUM_PRESETS = {
         "institution": "大都会艺术博物馆",
         "confidence": 89.6,
         "description": "这是一幅具有古典风格的人物绘画作品，画面主体位于中央，背景色调柔和，整体呈现典型的博物馆藏品图像特征。",
+        "artworkClue": MuseumArtworkClue(
+            title="古典人物肖像",
+            era="古典风格",
+            category="人物肖像",
+            museumHint="大都会艺术博物馆",
+            basis="该线索根据课程样例名称与人物构图特征生成，用于说明画面题材。",
+        ),
         "tags": ["人物肖像", "古典绘画", "博物馆藏品", "暖色调", "历史艺术", "服饰细节", "构图分析"],
         "matches": [
             MuseumMatch(institution="大都会艺术博物馆", score=89.6),
@@ -981,6 +1050,13 @@ MUSEUM_PRESETS = {
         "institution": "大都会艺术博物馆",
         "confidence": 91.2,
         "description": "图像呈现典型山水留白结构，近景与远景层次清晰，整体风格偏向东方传统绘画，具有较强的馆藏检索特征。",
+        "artworkClue": MuseumArtworkClue(
+            title="东方山水画",
+            era="传统绘画风格",
+            category="山水画",
+            museumHint="大都会艺术博物馆",
+            basis="该线索根据课程样例名称与山水留白构图特征生成，用于说明画面题材。",
+        ),
         "tags": ["山水", "纸本", "墨色层次", "馆藏溯源", "东方绘画", "留白构图", "题跋分析"],
         "matches": [
             MuseumMatch(institution="大都会艺术博物馆", score=91.2),
@@ -1111,11 +1187,60 @@ def _display_sentiment_keyword(word: str) -> str:
     return SENTIMENT_KEYWORD_TRANSLATIONS.get(word, word)
 
 
+def _upsert_sentiment_match(
+    bucket: dict[str, KeywordMatch],
+    *,
+    label: str,
+    score: float,
+) -> None:
+    importance = _keyword_importance(score)
+    existing = bucket.get(label)
+    if existing is None or importance > existing.score:
+        bucket[label] = KeywordMatch(label=label, score=importance)
+
+
+def _iter_phrase_occurrences(text: str, phrase: str) -> list[int]:
+    positions: list[int] = []
+    start = 0
+    while True:
+        index = text.find(phrase, start)
+        if index == -1:
+            return positions
+        positions.append(index)
+        start = index + len(phrase)
+
+
+def _apply_phrase_sentiment_context(*, text: str, phrase: str, start: int, base_score: float) -> float:
+    leading_context = text[max(0, start - 4) : start]
+    trailing_context = text[start + len(phrase) : start + len(phrase) + 2]
+    multiplier = 1.0
+
+    for token, factor in SENTIMENT_SOFTENER_WEIGHTS:
+        if token in leading_context:
+            multiplier = min(multiplier, factor)
+
+    for token, factor in SENTIMENT_INTENSIFIER_WEIGHTS:
+        if token in leading_context:
+            multiplier = max(multiplier, factor)
+
+    if any(leading_context.endswith(token) for token in SENTIMENT_NEGATIONS):
+        multiplier *= -0.72
+
+    punctuation_window = text[max(0, start - 1) : start + len(phrase) + 2]
+    if any(mark in punctuation_window for mark in ("!", "！")):
+        multiplier *= 1.06
+
+    if any(token in trailing_context for token in ("死了", "爆了")):
+        multiplier *= 1.08
+
+    return round(base_score * multiplier, 4)
+
+
 def _extract_sentiment_matches(text: str) -> tuple[list[KeywordMatch], list[KeywordMatch], float]:
     words = list(dict.fromkeys(re.findall(r"[a-z']+", text.lower())))
     lexicon = _combined_sentiment_lexicon()
-    positive_matches: list[KeywordMatch] = []
-    negative_matches: list[KeywordMatch] = []
+    positive_matches: dict[str, KeywordMatch] = {}
+    negative_matches: dict[str, KeywordMatch] = {}
     raw_score = 0.0
 
     for word in words:
@@ -1123,13 +1248,24 @@ def _extract_sentiment_matches(text: str) -> tuple[list[KeywordMatch], list[Keyw
         if score is None:
             continue
         raw_score += score
-        item = KeywordMatch(label=_display_sentiment_keyword(word), score=_keyword_importance(score))
+        label = _display_sentiment_keyword(word)
         if score > 0:
-            positive_matches.append(item)
+            _upsert_sentiment_match(positive_matches, label=label, score=score)
         else:
-            negative_matches.append(item)
+            _upsert_sentiment_match(negative_matches, label=label, score=score)
 
-    return positive_matches, negative_matches, raw_score
+    for phrase, base_score in CURATED_SENTIMENT_PHRASES.items():
+        for start in _iter_phrase_occurrences(text, phrase):
+            adjusted_score = _apply_phrase_sentiment_context(text=text, phrase=phrase, start=start, base_score=base_score)
+            if adjusted_score == 0:
+                continue
+            raw_score += adjusted_score
+            if adjusted_score > 0:
+                _upsert_sentiment_match(positive_matches, label=phrase, score=adjusted_score)
+            else:
+                _upsert_sentiment_match(negative_matches, label=phrase, score=adjusted_score)
+
+    return list(positive_matches.values()), list(negative_matches.values()), raw_score
 
 
 def _decode_data_url(data_url: str | None) -> tuple[bytes, str] | None:
@@ -1271,6 +1407,92 @@ def _extract_herbal_feature_from_bytes(image_bytes: bytes) -> np.ndarray | None:
         features.append(hist.astype(np.float32))
 
     return np.concatenate(features).astype(np.float32)
+
+
+def _predict_herbal_probability_map(model: object, image_bytes: bytes) -> dict[str, float] | None:
+    if model is None or np is None:
+        return None
+
+    feature = _extract_herbal_feature_from_bytes(image_bytes)
+    if feature is None:
+        return None
+
+    probabilities = model.predict_proba([feature])[0]
+    classes = list(model.classes_)
+    return {label: float(score) for label, score in zip(classes, probabilities)}
+
+
+def _measure_herbal_bright_red_coverage(image_bytes: bytes) -> float:
+    if np is None or Image is None:
+        return 0.0
+
+    try:
+        with Image.open(BytesIO(image_bytes)) as image:
+            hsv_array = np.asarray(image.convert("HSV").resize((256, 256)), dtype=np.float32) / 255.0
+    except OSError:
+        return 0.0
+
+    hue = hsv_array[:, :, 0]
+    saturation = hsv_array[:, :, 1]
+    value = hsv_array[:, :, 2]
+    mask = (((hue <= 0.06) | (hue >= 0.97)) & (saturation >= 0.5) & (value >= 0.35))
+    return float(mask.mean())
+
+
+def _extract_herbal_lower_focus_crop_bytes(image_bytes: bytes) -> bytes | None:
+    if Image is None:
+        return None
+
+    try:
+        with Image.open(BytesIO(image_bytes)) as image:
+            rgb = image.convert("RGB")
+            width, height = rgb.size
+            crop_top = min(height - 1, max(0, int(height * 0.35)))
+            cropped = rgb.crop((0, crop_top, width, height))
+            buffer = BytesIO()
+            cropped.save(buffer, format="JPEG", quality=95)
+    except OSError:
+        return None
+
+    return buffer.getvalue()
+
+
+def _refine_herbal_probability_map_for_gouqi(
+    model: object,
+    image_bytes: bytes,
+    probability_map: dict[str, float],
+) -> dict[str, float]:
+    ranked = sorted(probability_map.items(), key=lambda item: item[1], reverse=True)
+    if len(ranked) < 2:
+        return probability_map
+
+    top_key, top_score = ranked[0]
+    second_key, second_score = ranked[1]
+    if top_key == "gouqi" or second_key != "gouqi":
+        return probability_map
+
+    bright_red_coverage = _measure_herbal_bright_red_coverage(image_bytes)
+    if bright_red_coverage < HERBAL_GOUQI_REFINEMENT_MIN_BRIGHT_RED_COVERAGE:
+        return probability_map
+
+    if (top_score - second_score) > HERBAL_GOUQI_REFINEMENT_MAX_MARGIN:
+        return probability_map
+
+    focus_crop_bytes = _extract_herbal_lower_focus_crop_bytes(image_bytes)
+    if focus_crop_bytes is None:
+        return probability_map
+
+    focus_probability_map = _predict_herbal_probability_map(model, focus_crop_bytes)
+    if focus_probability_map is None:
+        return probability_map
+
+    if focus_probability_map.get("gouqi", 0.0) < HERBAL_GOUQI_REFINEMENT_MIN_CROP_CONFIDENCE:
+        return probability_map
+
+    if max(focus_probability_map, key=focus_probability_map.get) != "gouqi":
+        return probability_map
+
+    return focus_probability_map
 
 
 def _get_herbal_classifier_cache_path() -> Path:
@@ -1725,10 +1947,175 @@ def _edge_tag(edge_density: float) -> str:
     return "纹理均衡"
 
 
+MUSEUM_FILENAME_NOISE_PATTERNS = [
+    r"来自.*$",
+    r"小红书.*$",
+    r"微信图片.*$",
+    r"截图.*$",
+]
+
+MUSEUM_ERA_PATTERNS = [
+    "新石器",
+    "商周",
+    "春秋",
+    "战国",
+    "秦汉",
+    "魏晋",
+    "南北朝",
+    "隋唐",
+    "唐代",
+    "宋代",
+    "元代",
+    "明代",
+    "清代",
+    "近现代",
+    "民国",
+    "当代",
+    "明清",
+    "唐",
+    "宋",
+    "元",
+    "明",
+    "清",
+]
+
+MUSEUM_CATEGORY_PATTERNS = [
+    "缂丝挂画",
+    "缂丝",
+    "挂画",
+    "山水画",
+    "人物画",
+    "人物肖像",
+    "肖像画",
+    "花鸟画",
+    "书法",
+    "青铜器",
+    "瓷器",
+    "玉器",
+    "手卷",
+    "册页",
+    "卷轴",
+]
+
+MUSEUM_TAG_CATEGORY_MAP = {
+    "人物肖像": "人物肖像",
+    "山水": "山水画",
+    "古典绘画": "古典绘画",
+    "东方绘画": "东方绘画",
+}
+
+
+def _clean_museum_filename_segments(file_name: str) -> list[str]:
+    stem = Path(file_name).stem
+    cleaned = stem
+    for pattern in MUSEUM_FILENAME_NOISE_PATTERNS:
+        cleaned = re.sub(pattern, " ", cleaned, flags=re.IGNORECASE)
+
+    raw_segments = re.split(r"[_|｜\-—]+", cleaned)
+    segments: list[str] = []
+    for segment in raw_segments:
+        normalized = re.sub(r"\s+", " ", segment).strip(" ·.()[]【】（）")
+        if not normalized:
+            continue
+        if not re.search(r"[\u4e00-\u9fffA-Za-z]", normalized):
+            continue
+        segments.append(normalized)
+    return segments
+
+
+def _extract_museum_hint(segments: list[str]) -> str:
+    for segment in segments:
+        if any(keyword in segment for keyword in ("博物馆", "美术馆", "艺术馆", "museum", "Museum")):
+            return re.sub(r"(馆藏|藏品|收藏)$", "", segment).strip()
+    return ""
+
+
+def _extract_artwork_title(segments: list[str], museum_hint: str) -> str:
+    best_title = ""
+    best_score = -10
+    for segment in segments:
+        score = 0
+        if museum_hint and museum_hint in segment:
+            score -= 4
+        if re.fullmatch(r"[A-Za-z0-9 ]+", segment):
+            score -= 3
+        if re.search(r"\d", segment):
+            score -= 1
+        chinese_length = len(re.findall(r"[\u4e00-\u9fff]", segment))
+        score += chinese_length
+        if any(keyword in segment for keyword in ("画", "缂丝", "卷", "册页", "器", "像", "图")):
+            score += 3
+        if any(keyword in segment for keyword in ("馆藏", "博物馆", "美术馆")):
+            score -= 2
+        if score > best_score:
+            best_score = score
+            best_title = segment
+    return best_title
+
+
+def _extract_era_from_text(text: str) -> str:
+    for era in MUSEUM_ERA_PATTERNS:
+        if era in text:
+            return era
+    return ""
+
+
+def _extract_category_from_text(text: str, tags: list[str]) -> str:
+    for category in MUSEUM_CATEGORY_PATTERNS:
+        if category in text:
+            return category
+
+    for tag in tags:
+        mapped = MUSEUM_TAG_CATEGORY_MAP.get(tag)
+        if mapped:
+            return mapped
+    return ""
+
+
+def _build_museum_artwork_clue(
+    *,
+    file_name: str,
+    tags: list[str],
+    fallback_institution: str,
+    default_title: str = "",
+) -> MuseumArtworkClue:
+    segments = _clean_museum_filename_segments(file_name)
+    museum_hint = _extract_museum_hint(segments)
+    joined_text = " ".join(segments)
+    title = _extract_artwork_title(segments, museum_hint)
+    if not title:
+        title = default_title
+
+    era = _extract_era_from_text(joined_text or title)
+    category = _extract_category_from_text(joined_text or title, tags)
+
+    if not title:
+        if category:
+            title = f"未命名{category}"
+        else:
+            title = "未识别到明确作品名"
+
+    if not museum_hint:
+        museum_hint = fallback_institution
+
+    if segments:
+        basis = "该线索优先来自上传文件名中的中文文本，再结合画面题材标签做了归纳。"
+    else:
+        basis = "未识别到明确文件名线索，当前作品信息主要依据画面题材标签与机构相似度生成。"
+
+    return MuseumArtworkClue(
+        title=title,
+        era=era,
+        category=category,
+        museumHint=museum_hint,
+        basis=basis,
+    )
+
+
 def _build_museum_upload_analysis(
     payload: MuseumVisionRequest,
     image_bytes: bytes,
-) -> tuple[str, float, str, str, list[str], list[MuseumMatch]]:
+) -> tuple[str, float, str, str, MuseumArtworkClue, list[str], list[MuseumMatch]]:
     extracted = _extract_visual_feature_from_bytes(image_bytes)
     museum_index = _load_museum_feature_index()
     features = museum_index["features"]
@@ -1771,11 +2158,20 @@ def _build_museum_upload_analysis(
     texture = _edge_tag(float(profile["edge_density"]))
 
     source_note = f"上传图像已与课程数据集比对，最相近的 {top_match.institution} 样本包括 {example_text}。"
+    artwork_clue = _build_museum_artwork_clue(
+        file_name=payload.fileName,
+        tags=[orientation, tone, contrast, texture],
+        fallback_institution=top_match.institution,
+    )
     description = (
         f"系统先对上传图像的颜色分布、灰度纹理和构图比例做特征提取，再与课程博物馆图像数据集进行相似度检索。"
         f"当前图像呈现 {orientation}、{tone} 和 {contrast} 的视觉特征，整体细节表现为 {texture}，"
         f"因此结果更接近 {top_match.institution} 的馆藏图像风格。"
     )
+    if artwork_clue.title != "未识别到明确作品名":
+        description += (
+            f" 结合上传文件名中的线索，系统还推测这件作品可概括为“{artwork_clue.title}”。"
+        )
     tags = [
         "课程数据集比对",
         top_match.institution,
@@ -1785,9 +2181,13 @@ def _build_museum_upload_analysis(
         texture,
         "上传图像",
     ]
+    if artwork_clue.category:
+        tags.insert(2, artwork_clue.category)
+    if artwork_clue.era:
+        tags.insert(2, artwork_clue.era)
 
     confidence = round(min(98.6, max(62.0, top_match.score + 18.0)), 1)
-    return top_match.institution, confidence, source_note, description, tags, matches[:4]
+    return top_match.institution, confidence, source_note, description, artwork_clue, tags, matches[:4]
 
 
 def _confidence_value(text: str) -> float | None:
@@ -2605,15 +3005,15 @@ def classify_image(payload: ImageRecognitionRequest) -> ImageRecognitionResponse
         classifier_bundle = _load_herbal_classifier()
         model = classifier_bundle["model"]
         try:
-            feature = _extract_herbal_feature_from_bytes(image_bytes)
+            probability_map = _predict_herbal_probability_map(model, image_bytes)
         except OSError:
             raise UploadValidationError("上传的图片内容无法解析，请重新选择清晰的 JPG、PNG 或 WEBP 图片。") from None
 
-        if model is not None and feature is not None:
-            probabilities = model.predict_proba([feature])[0]
-            classes = list(model.classes_)
-            probability_map = {label: float(score) for label, score in zip(classes, probabilities)}
-            predicted_key = classes[int(np.argmax(probabilities))]
+        if model is not None and probability_map is not None:
+            # When the full-frame scene is ambiguous, re-check a lower subject crop
+            # so bright-red gouqi berries are less likely to be diluted by props/background.
+            probability_map = _refine_herbal_probability_map_for_gouqi(model, image_bytes, probability_map)
+            predicted_key = max(probability_map, key=probability_map.get)
             predicted_score = probability_map[predicted_key]
 
             sorted_keys = sorted(
@@ -2712,7 +3112,7 @@ def _build_sentiment_explanation(label: str, positives: list[str], negatives: li
     if label == "负面" and negatives:
         return f"文本中出现 {'、'.join(negatives)} 等负面表达，因此模型判断当前文本更偏向负面情绪。"
     if not positives and not negatives:
-        return "当前文本没有命中足够明显的 IMDb 情感关键词，系统暂时将其判断为中性表达。"
+        return "当前文本没有命中足够明显的中英文情绪线索，系统暂时将其判断为中性表达。"
     return "文本中的正负面信号接近，整体表达更平稳，因此模型判断为中性情绪。"
 
 
@@ -2745,8 +3145,19 @@ def _build_local_sentiment_response(payload: SentimentAnalysisRequest, *, used_f
     positive_pool = matched_positive
     negative_pool = matched_negative
 
-    normalized_score = round(max(-1.0, min(1.0, math.tanh(raw_score / 2.4))), 2)
-    confidence = round((0.58 + min(0.37, abs(normalized_score) * 0.36)) * 1000) / 10
+    positive_signal = sum(item.score for item in positive_pool)
+    negative_signal = sum(item.score for item in negative_pool)
+    total_signal = positive_signal + negative_signal
+
+    if total_signal > 0:
+        normalized_score = round(max(-0.98, min(0.98, (positive_signal - negative_signal) / total_signal)), 2)
+    else:
+        normalized_score = round(max(-0.98, min(0.98, math.tanh(raw_score / 2.4))), 2)
+
+    confidence = round(
+        min(96.0, max(58.0, 58.0 + total_signal * 12.5 + abs(normalized_score) * 18.0)),
+        1,
+    )
 
     if normalized_score > 0.12:
         label = "正面"
@@ -3063,7 +3474,7 @@ def analyze_museum_vision(payload: MuseumVisionRequest) -> MuseumVisionResponse:
     if decoded_upload is not None:
         try:
             image_bytes, _mime_type = decoded_upload
-            institution, confidence, source_note, description, tags, matches = _build_museum_upload_analysis(
+            institution, confidence, source_note, description, artwork_clue, tags, matches = _build_museum_upload_analysis(
                 payload,
                 image_bytes,
             )
@@ -3080,6 +3491,7 @@ def analyze_museum_vision(payload: MuseumVisionRequest) -> MuseumVisionResponse:
         confidence = preset["confidence"]
         source_note = preset["sourceNote"]
         description = preset["description"]
+        artwork_clue = preset["artworkClue"]
         tags = preset["tags"]
         matches = preset["matches"]
         dimensions = payload.dimensions or ("768 × 768" if preset_key == "landscape" else "960 × 1280")
@@ -3105,6 +3517,7 @@ def analyze_museum_vision(payload: MuseumVisionRequest) -> MuseumVisionResponse:
         institution=institution,
         confidence=confidence,
         description=description,
+        artworkClue=artwork_clue,
         tags=tags,
         matches=matches,
         historyRecord=history_record,

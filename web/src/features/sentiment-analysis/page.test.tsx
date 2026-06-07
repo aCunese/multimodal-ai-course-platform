@@ -207,4 +207,20 @@ describe("SentimentAnalysisPage", () => {
     expect(screen.getByText("失败")).toBeInTheDocument();
     expect(screen.getByText("缺乏新意")).toBeInTheDocument();
   });
+
+  it("keeps the sentiment scale responsive for strong Chinese negative input during local fallback", async () => {
+    getSentimentAnalysisMetadataMock.mockRejectedValue(new Error("metadata offline"));
+    analyzeSentimentMock.mockRejectedValue(new Error("analyze offline"));
+
+    render(<SentimentAnalysisPage />);
+
+    const textbox = screen.getByRole("textbox");
+    await userEvent.clear(textbox);
+    await userEvent.type(textbox, "我真的很讨厌你，这句话让我特别崩溃。");
+    await userEvent.click(screen.getByRole("button", { name: "开始分析" }));
+
+    expect(await screen.findByText("负面判断")).toBeInTheDocument();
+    expect(screen.getByText("讨厌")).toBeInTheDocument();
+    expect(screen.getByText(/-\d\.\d{2} \/ 1\.00/)).toBeInTheDocument();
+  });
 });

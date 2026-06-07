@@ -30,6 +30,15 @@ const positiveLexicon: SentimentLexiconEntry[] = [
   { token: "出色", label: "出色", score: 0.82 },
   { token: "感人", label: "感人", score: 0.8 },
   { token: "推荐", label: "推荐", score: 0.76 },
+  { token: "喜欢", label: "喜欢", score: 0.78 },
+  { token: "开心", label: "开心", score: 0.84 },
+  { token: "高兴", label: "高兴", score: 0.8 },
+  { token: "满意", label: "满意", score: 0.72 },
+  { token: "感动", label: "感动", score: 0.78 },
+  { token: "惊喜", label: "惊喜", score: 0.75 },
+  { token: "安心", label: "安心", score: 0.66 },
+  { token: "治愈", label: "治愈", score: 0.74 },
+  { token: "太棒了", label: "太棒了", score: 0.95 },
 ];
 
 const negativeLexicon: SentimentLexiconEntry[] = [
@@ -45,7 +54,44 @@ const negativeLexicon: SentimentLexiconEntry[] = [
   { token: "拖沓", label: "拖沓", score: 0.68 },
   { token: "失望", label: "失望", score: 0.72 },
   { token: "节奏慢", label: "节奏慢", score: 0.61 },
+  { token: "讨厌", label: "讨厌", score: 0.94 },
+  { token: "崩溃", label: "崩溃", score: 0.98 },
+  { token: "难过", label: "难过", score: 0.84 },
+  { token: "伤心", label: "伤心", score: 0.86 },
+  { token: "生气", label: "生气", score: 0.84 },
+  { token: "愤怒", label: "愤怒", score: 0.9 },
+  { token: "焦虑", label: "焦虑", score: 0.82 },
+  { token: "压抑", label: "压抑", score: 0.8 },
+  { token: "难受", label: "难受", score: 0.79 },
+  { token: "痛苦", label: "痛苦", score: 0.88 },
+  { token: "糟糕", label: "糟糕", score: 0.76 },
+  { token: "恶心", label: "恶心", score: 0.88 },
+  { token: "害怕", label: "害怕", score: 0.74 },
+  { token: "恐惧", label: "恐惧", score: 0.8 },
+  { token: "后悔", label: "后悔", score: 0.7 },
+  { token: "受不了", label: "受不了", score: 0.9 },
+  { token: "不能接受", label: "不能接受", score: 0.92 },
 ];
+
+const sentimentIntensifiers: Array<[string, number]> = [
+  ["超级", 1.42],
+  ["极其", 1.38],
+  ["特别", 1.3],
+  ["非常", 1.28],
+  ["太", 1.22],
+  ["真的", 1.18],
+  ["很", 1.12],
+];
+
+const sentimentSofteners: Array<[string, number]> = [
+  ["有一点", 0.78],
+  ["有点", 0.8],
+  ["稍微", 0.82],
+  ["有些", 0.86],
+  ["一点点", 0.72],
+];
+
+const sentimentNegations = ["并不", "不是", "没有", "没", "不", "无"];
 
 const toneKeywordMap: Record<GenerationTone, string[]> = {
   正式: ["结构清晰", "适合正式展示"],
@@ -77,12 +123,71 @@ function formatDateParts(date: Date) {
   return { fullDate, time, fullDateTime };
 }
 
+function collectTokenPositions(source: string, token: string) {
+  const positions: number[] = [];
+  let start = 0;
+
+  while (start < source.length) {
+    const found = source.indexOf(token, start);
+    if (found === -1) {
+      return positions;
+    }
+    positions.push(found);
+    start = found + token.length;
+  }
+
+  return positions;
+}
+
+function resolveSentimentScore(source: string, entry: SentimentLexiconEntry, start: number) {
+  const leadingContext = source.slice(Math.max(0, start - 4), start);
+  const trailingContext = source.slice(start + entry.token.length, start + entry.token.length + 2);
+  let multiplier = 1;
+
+  for (const [token, factor] of sentimentSofteners) {
+    if (leadingContext.includes(token)) {
+      multiplier = Math.min(multiplier, factor);
+    }
+  }
+
+  for (const [token, factor] of sentimentIntensifiers) {
+    if (leadingContext.includes(token)) {
+      multiplier = Math.max(multiplier, factor);
+    }
+  }
+
+  if (sentimentNegations.some((token) => leadingContext.endsWith(token))) {
+    multiplier *= -0.72;
+  }
+
+  if (/[!！]/.test(source.slice(Math.max(0, start - 1), start + entry.token.length + 2))) {
+    multiplier *= 1.06;
+  }
+
+  if (trailingContext.includes("死了") || trailingContext.includes("爆了")) {
+    multiplier *= 1.08;
+  }
+
+  return Number((entry.score * multiplier).toFixed(2));
+}
+
 function collectKeywordMatches(source: string, lexicon: SentimentLexiconEntry[], limit: number) {
-  return lexicon
-    .filter((entry) => source.includes(entry.token))
+  const matches = new Map<string, number>();
+
+  for (const entry of lexicon) {
+    for (const position of collectTokenPositions(source, entry.token)) {
+      const adjustedScore = Math.abs(resolveSentimentScore(source, entry, position));
+      const previous = matches.get(entry.label) ?? 0;
+      if (adjustedScore > previous) {
+        matches.set(entry.label, adjustedScore);
+      }
+    }
+  }
+
+  return Array.from(matches.entries())
+    .map(([label, score]) => ({ label, score: Number(score.toFixed(2)) }))
     .sort((left, right) => right.score - left.score)
-    .slice(0, limit)
-    .map((entry) => ({ label: entry.label, score: Number(entry.score.toFixed(2)) }));
+    .slice(0, limit);
 }
 
 export function buildLocalSentimentAnalysis(text: string, now = new Date()): SentimentAnalysisResponse {
@@ -91,15 +196,16 @@ export function buildLocalSentimentAnalysis(text: string, now = new Date()): Sen
   const negativeMatches = collectKeywordMatches(normalizedText, negativeLexicon, 3);
   const positiveScore = positiveMatches.reduce((sum, item) => sum + item.score, 0);
   const negativeScore = negativeMatches.reduce((sum, item) => sum + item.score, 0);
+  const totalScore = positiveScore + negativeScore;
   const rawScore = positiveScore - negativeScore;
-  const normalizedScore = clamp(rawScore / Math.max(positiveScore + negativeScore, 1), -1, 1);
+  const normalizedScore = clamp(rawScore / Math.max(totalScore, 1), -0.98, 0.98);
 
   const label =
     normalizedScore > 0.18 ? "正面" : normalizedScore < -0.18 ? "负面" : "中性";
   const englishLabel = label === "正面" ? "Positive" : label === "负面" ? "Negative" : "Neutral";
   const confidence = clamp(
-    58 + Math.round(Math.abs(normalizedScore) * 26) + (positiveMatches.length + negativeMatches.length) * 4,
-    60,
+    Math.round(58 + totalScore * 12.5 + Math.abs(normalizedScore) * 18),
+    58,
     96,
   );
   const tags =
@@ -110,10 +216,10 @@ export function buildLocalSentimentAnalysis(text: string, now = new Date()): Sen
         : ["中性", "本地兜底"];
   const explanation =
     label === "正面"
-      ? "检测到明显的正向词汇，当前在后端不可用时已基于输入内容完成本地正向判断。"
+      ? `检测到${positiveMatches.slice(0, 2).map((item) => item.label).join("、") || "明显的正向"}线索，当前在后端不可用时已基于输入内容完成本地正向判断。`
       : label === "负面"
-        ? "检测到明显的负向词汇，当前在后端不可用时已基于输入内容完成本地负向判断。"
-        : "当前未识别到足够强的正负向信号，系统在本地兜底模式下给出中性判断。";
+        ? `检测到${negativeMatches.slice(0, 2).map((item) => item.label).join("、") || "明显的负向"}线索，当前在后端不可用时已基于输入内容完成本地负向判断。`
+        : "当前未识别到足够强的中英文情绪线索，系统在本地兜底模式下给出中性判断。";
   const { fullDate, time, fullDateTime } = formatDateParts(now);
 
   return {

@@ -95,6 +95,22 @@ async def test_sentiment_analysis_creates_negative_result(tmp_path: Path, monkey
     assert payload["historyRecord"]["route"] == "/sentiment-analysis"
 
 
+async def test_sentiment_analysis_understands_strong_chinese_negative_emotion(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("MULTIMODAL_APP_DB_PATH", str(tmp_path / "sentiment-chinese-negative.db"))
+    async with create_client() as client:
+        response = await client.post(
+            "/api/v1/sentiment-analysis/analyze",
+            json={"text": "我真的很讨厌你，这句话让我特别崩溃。"},
+        )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["label"] == "负面"
+    assert payload["score"] < -0.6
+    assert payload["confidence"] >= 80
+    assert any(item["label"] == "讨厌" for item in payload["negativeMatches"])
+    assert "讨厌" in payload["explanation"]
+
+
 async def test_sentiment_analysis_keeps_frontend_sample_positive(tmp_path: Path, monkeypatch):
     monkeypatch.setenv("MULTIMODAL_APP_DB_PATH", str(tmp_path / "sentiment-positive.db"))
     async with create_client() as client:
@@ -858,8 +874,12 @@ async def test_museum_vision_metadata_returns_backend_defaults(tmp_path: Path, m
         "sizeLabel": "1.82 MB",
     }
     assert payload["initialAnalysis"]["institution"] == "大都会艺术博物馆"
+    assert payload["initialAnalysis"]["artworkClue"]["title"] == "古典人物肖像"
     assert payload["sampleDescriptionNote"] == "当前描述结合样例图像的主体内容、构图风格与课程实验设定生成。"
-    assert payload["uploadDescriptionNote"] == "当前描述基于上传图像的颜色、纹理与构图特征，并结合课程数据集中的相似样本生成。"
+    assert (
+        payload["uploadDescriptionNote"]
+        == "当前描述会同时参考上传文件名中的作品线索，以及图像颜色、纹理与构图特征，再结合课程数据集中的相似样本生成。"
+    )
     assert payload["dataSourceItems"][0]["title"] == "数据来源"
 
 
@@ -924,6 +944,29 @@ async def test_image_recognition_upload_uses_real_herbal_dataset(tmp_path: Path,
     assert payload["label"] == "党参"
     assert payload["probabilities"][0]["label"] == "党参"
     assert payload["historyRecord"]["output"] == "党参"
+
+
+async def test_image_recognition_prefers_gouqi_for_realistic_red_fruit_scene(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("MULTIMODAL_APP_DB_PATH", str(tmp_path / "herbal-gouqi-scene.db"))
+    monkeypatch.setenv("MULTIMODAL_HERBAL_MODEL_CACHE_PATH", str(tmp_path / "herbal-gouqi-scene.pkl"))
+    core._load_herbal_classifier_cached.cache_clear()
+    sample_path = Path(__file__).resolve().parent / "fixtures" / "gouqi-realistic-scene.jpg"
+    async with create_client() as client:
+        response = await client.post(
+            "/api/v1/image-recognition/predict",
+            json={
+                "fileName": sample_path.name,
+                "width": 1080,
+                "height": 1837,
+                "sizeLabel": "381 KB",
+                "imageDataUrl": as_data_url(sample_path),
+            },
+        )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["label"] == "枸杞"
+    assert payload["probabilities"][0]["label"] == "枸杞"
+    assert payload["historyRecord"]["output"] == "枸杞"
 
 
 async def test_image_recognition_reuses_cached_herbal_classifier(tmp_path: Path, monkeypatch):
@@ -1015,6 +1058,43 @@ async def test_museum_vision_upload_uses_real_dataset_match(tmp_path: Path, monk
     assert payload["institution"] == "史密森学会"
     assert payload["matches"][0]["institution"] == "史密森学会"
     assert "课程数据集" in payload["sourceNote"]
+    assert payload["artworkClue"]["title"] == "smithsonian"
+    assert payload["artworkClue"]["museumHint"] == "史密森学会"
+
+
+async def test_museum_vision_extracts_artwork_clue_from_filename(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("MULTIMODAL_APP_DB_PATH", str(tmp_path / "museum-clue.db"))
+    monkeypatch.setenv("MULTIMODAL_MUSEUM_INDEX_CACHE_PATH", str(tmp_path / "museum-clue-index.pkl"))
+    core._load_museum_feature_index_cached.cache_clear()
+    sample_path = (
+        Path(__file__).resolve().parents[2]
+        / "data"
+        / "experiments"
+        / "experiment-03-museum-multimodal"
+        / "images"
+        / "smithsonian"
+        / "smithsonian_786.jpg"
+    )
+    async with create_client() as client:
+        response = await client.post(
+            "/api/v1/museum-vision/analyze",
+            json={
+                "fileName": "明清缂丝挂画_苏州博物馆馆藏_1_123梦游123_来自小红书网页版.jpg",
+                "format": "JPG",
+                "dimensions": "1080 × 1440",
+                "sizeLabel": "496 KB",
+                "sourceMode": "upload",
+                "imageDataUrl": as_data_url(sample_path),
+            },
+        )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["artworkClue"]["title"] == "明清缂丝挂画"
+    assert payload["artworkClue"]["era"] == "明清"
+    assert payload["artworkClue"]["category"] == "缂丝挂画"
+    assert payload["artworkClue"]["museumHint"] == "苏州博物馆"
+    assert "上传文件名" in payload["artworkClue"]["basis"]
+    assert "明清缂丝挂画" in payload["description"]
 
 
 async def test_museum_vision_rejects_invalid_upload_payload(tmp_path: Path, monkeypatch):

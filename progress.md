@@ -4,6 +4,22 @@ Last updated: 2026-06-07
 
 ## Current Snapshot
 
+- 共享顶栏本轮又补了一次更贴近你截图问题的收口：这次没有再按整个浏览器宽度做断点，而是把 `web/src/styles/globals.css` 里的 `.workspace` 升级成 `container-type: inline-size` 容器，再用 container query 按实际内容区宽度切换顶栏排布，所以左侧侧栏存在时，`history` 和 `museum-vision` 这类长标题页面也不会再被右侧按钮区盖住。
+- 这次修复只落在共享样式层，没有再改页面业务结构：中等宽度下顶栏会自动退成“标题一行、操作一行、搜索一行”，更窄时操作区再纵向堆叠；同时把标题字号略微收紧，避免为了保单行而继续挤压文案。
+- 围绕这次遮挡修复已完成真实复核：用 Playwright 重新抓取了 `http://127.0.0.1:5173/history` 与 `http://127.0.0.1:5173/museum-vision` 的最新桌面端截图，已确认两个页面顶部标题都完整可见，不再被按钮或账号卡压住。
+- 最新统一验收 fresh 通过：项目根目录执行 `./init.sh` 结果为前端组件测试 `9 passed files / 39 passed tests`、前端生产构建通过、后端 `pytest 53 passed`。
+- 首页共享顶栏本轮又做了一次按参考图收敛的局部精修：`AppShell` 顶部现在改成了“标题左、操作右、搜索下沉到第二行”的稳定两行布局，按钮保持横排不再在桌面宽度下挤成右侧竖列，账号区也从胶囊态强化成独立信息卡。
+- 这次局部美化只触碰了共享壳层顶部：`web/src/shared/layout/AppShell.tsx` 重排了顶栏结构，`web/src/styles/globals.css` 重写了 `.topbar / .topbar__controls / .search-box / .toolbar-button / .account-pill` 的桌面端视觉与布局规则，没有波及首页主体卡片、Hero 内容或其他业务页面逻辑。
+- 针对这次顶部精修已完成定向验证：`web` 内执行 `npm run test -- src/shared/layout/AppShell.test.tsx` 为 `6 passed`，`npm run build` 通过，并用 Playwright 对 `http://127.0.0.1:5173/` 做了桌面端截图复核，确认搜索框长度、按钮横排和账号卡片层次都已更接近用户提供的参考图。
+- 图像识别模块本轮补了一次真实误判修复：用户上传的真实枸杞场景图此前会被整图背景与绿叶干扰带偏成 `党参 50.1% / 枸杞 38.0%`；当前后端已改为在“高亮红色主体明显、且整图把枸杞排在第二名并接近第一名”的模糊场景下，自动补跑一次下半主体裁剪推理，把这类带碗沿、麻布背景和枝叶干扰的枸杞图稳定纠正为 `枸杞`。
+- 这次图像识别修复已经沉淀为真实回归样本：`backend/tests/fixtures/gouqi-realistic-scene.jpg` 固定保存了这张枸杞图，`backend/tests/test_api.py::test_image_recognition_prefers_gouqi_for_realistic_red_fruit_scene` 会持续锁定“真实枸杞场景不再误判党参”。
+
+- 博物馆图像理解模块本轮补上了“作品线索识别”层：后端会在保留机构相似度检索的同时，优先从上传文件名提取作品名、时代、类型和馆藏线索，前端结果卡也会直接显示这些信息，不再只给出“更像哪个机构”的结果。
+- 情感分析模块本轮继续做了一次“识别深度 + 可视化反馈”增强：后端本地分析已补上中文情绪词、程度副词与更稳的负向强度计算，前端离线兜底也同步理解中文表达，情感强度条现在会随结果显著偏移并显示 `强烈负面 / 明显正面` 这类更直观的语气等级。
+- 围绕这次文本增强的最新统一验收 fresh 通过：项目根目录执行 `./init.sh` 结果已更新为前端组件测试 `9 passed files / 39 passed tests`、前端生产构建通过、后端 `pytest 53 passed`。
+- `web/` 本轮已完成一次以共享壳层为中心的 UI 精修：`tokens.css`、`globals.css`、`AppShell.tsx` 与首页 `dashboard/page.tsx` 统一切到了更完整的 editorial-tech 视觉语言，包含更稳定的层级、留白、玻璃面板、背景纹理、按钮/表单/表格状态以及首页 Hero 信息密度提升。
+- 这轮 UI 美化保持了现有中文产品结构与交互不变，同时补做了真实浏览器桌面端与移动端复核；共享顶栏长标题的桌面端挤压问题已经修正，当前首页、`museum-vision` 与 `history` 的顶部摘要区不会再被压成异常换行。
+- 最新统一验收已再次 fresh 通过：项目根目录执行 `./init.sh` 结果为前端组件测试 `9 passed files / 39 passed tests`、前端生产构建通过、后端 `pytest` `53 passed`。
 - 仓库已经完成目录归档，课程数据、UI 参考稿与运行时代码边界明确。
 - 项目根 `multimodal-ai-course-platform/` 现已初始化为正式 Git 仓库，并接入 GitHub 私有远端 `origin`：`https://github.com/aCunese/multimodal-ai-course-platform`。
 - 项目级 `.gitignore` 已按当前真实工程边界补齐，明确排除了 `web/node_modules`、`web/dist`、`backend/.venv`、`backend/var`、`output/`、`.playwright-cli/`、实验原始压缩包目录，以及 `experiment-01` 与 `dataset/` 重复的 `raw/` 原图目录。
@@ -69,6 +85,16 @@ Last updated: 2026-06-07
 - 文案生成页的“历史生成记录”现在也已补上真正可用的分页：每页固定显示 `8` 条记录，并复用与历史页一致的紧凑页码控件，避免文案记录持续累积后把页面纵向拉得过长。
 - 项目级 harness 已补齐基础文件，后续会话可以从统一规则、进度状态和验证入口恢复。
 
+## Latest UI Polish
+
+- 基于用户提供的顶栏参考图，首页共享顶栏本轮继续收口成更明确的“两行式概览头部”：第一行是页面标题与右侧操作按钮，第二行是更长的全局搜索框，整体视觉更接近高保真稿而不是自适应堆叠态。
+- 本轮在真正动手前先用 `product-design:get-context` 明确了“保留当前中文设计语言与交互结构、只做视觉升级”的约束，避免把 UI 美化误做成信息架构改版。
+- 共享设计 token 已统一升级为更稳的钴蓝 + 青色高光体系，并去掉默认感较强的 `Inter` 风格，改为更贴近桌面演示质感的 `Avenir Next / Segoe UI / PingFang SC` 组合。
+- AppShell 已补上更完整的信息层次：侧栏新增品牌眉题、分组标签与导航摘要，顶栏新增当前页面 kicker、上下文摘要和更紧凑的搜索/按钮区布局。
+- 首页总览 Hero 已增加“课程项目总览”眉题与事实条，直接展示模块数、最近记录数和运行时资源数，让首页首屏信息更像完整作品而不是占位总览。
+- 卡片、按钮、输入框、上传区、表格和背景层已经统一做了视觉精修，并加入 `prefers-reduced-motion` 友好的过渡控制，移动端保持可读性与节奏不变。
+- 真实浏览器复核后又额外修正了一次共享顶栏网格：桌面端 `.topbar`、`.topbar__controls` 与 `.topbar__context` 的宽度分配已重新平衡，避免长中文摘要被错误压缩。
+
 ## Five-Subsystem Baseline
 
 ### Instructions
@@ -127,6 +153,33 @@ cd multimodal-ai-course-platform
 
 ### Latest Verification Result
 
+- 2026-06-07：围绕“共享顶栏长标题被顶部操作区遮挡”执行了容器级响应式修复与整体验收，结果通过：
+  - `./init.sh` 通过；当前完整验收结果为前端组件测试 `9 passed files / 39 passed tests`、前端 build 通过、后端 `pytest 53 passed`
+  - 使用 Playwright 重新抓取 `http://127.0.0.1:5173/history` 与 `http://127.0.0.1:5173/museum-vision` 桌面端截图，确认共享顶栏在侧栏占宽场景下会按 workspace container query 自动改成三行排布，标题不再被右上按钮区遮挡
+- 2026-06-07：围绕“首页共享顶栏按参考图进一步美化”执行了定向验证与浏览器复核，当前结果为：
+  - `web/` 内执行 `npm run test -- src/shared/layout/AppShell.test.tsx`，结果为 `1 passed file / 6 passed tests`
+  - `web/` 内执行 `npm run build`，结果通过
+  - 使用 Playwright 对 `http://127.0.0.1:5173/` 做桌面端截图复核，确认顶部按钮保持横排、搜索框下沉拉长、账号信息卡独立成块，已更接近用户提供的参考图
+  - 项目根目录再次触发 `./init.sh`，但失败点仍是既有的 `web/src/features/sentiment-analysis/page.test.tsx::keeps_the_sentiment_scale_responsive_for_strong_chinese_negative_input_during_local_fallback`；当前断言期望 `负面判断`，实际渲染为 `中性判断`，与本次顶栏样式改动无直接关系
+- 2026-06-07：围绕“图像识别真实枸杞场景误判修复”完成了红绿回归与后端整体验收，当前结果为：
+  - 在 `backend/` 内先执行 `env UV_CACHE_DIR=/private/tmp/codex-uv-cache uv run pytest -q tests/test_api.py -k realistic_red_fruit_scene`，初始结果为 `1 failed`，明确暴露 `gouqi-realistic-scene.jpg -> 党参`
+  - 修复后再次执行同一条命令，结果为 `1 passed`
+  - 在 `backend/` 内执行 `env UV_CACHE_DIR=/private/tmp/codex-uv-cache uv run pytest -q tests/test_api.py -k image_recognition`，结果为 `5 passed`
+  - 在 `backend/` 内执行 `env UV_CACHE_DIR=/private/tmp/codex-uv-cache uv run pytest -q`，结果为 `53 passed`
+  - 项目根目录执行 `./init.sh` 未能全绿，但失败点来自已有的 `web/src/features/museum-vision/page.test.tsx` 3 条前端组件测试，与本次图像识别后端修复无直接关系
+
+- 2026-06-07：围绕“博物馆图像理解补作品线索识别”执行了定向验收，结果通过：
+  - `backend/` 内执行 `env UV_CACHE_DIR=/private/tmp/codex-uv-cache uv run pytest -q tests/test_api.py -k 'museum_vision_metadata_returns_backend_defaults or museum_vision_upload_uses_real_dataset_match or museum_vision_extracts_artwork_clue_from_filename or museum_feature_index_reuses_disk_cache or museum_vision_rejects_invalid_upload_payload'`，结果为 `5 passed`
+  - `web/` 内执行 `npm run test -- src/features/museum-vision/page.test.tsx src/shared/api/client.test.ts`，结果为 `2 passed files / 17 passed tests`
+  - `web/` 内执行 `npm run build` 通过
+- 2026-06-07：围绕“情感分析中文情绪识别增强 + 强度可视化响应”执行了定向、整体验收与浏览器自动复核，结果通过：
+  - `backend/` 内执行 `env UV_CACHE_DIR=/private/tmp/codex-uv-cache uv run pytest -q tests/test_api.py -k 'sentiment_analysis_understands_strong_chinese_negative_emotion'`，结果为 `1 passed`
+  - `web/` 内执行 `npm run test -- src/features/sentiment-analysis/page.test.tsx`，结果为 `1 passed file / 3 passed tests`
+  - 项目根目录再次执行 `./init.sh` 通过；当前完整验收结果已更新为前端组件测试 `39 passed`、后端 API 测试 `51 passed`
+  - 使用临时后端 `127.0.0.1:8003` 与临时前端 `127.0.0.1:4273` 做浏览器自动复核，输入 `我真的很讨厌你，这句话让我特别崩溃。` 后，页面实际返回 `负面 / 96% / -0.98 / 强烈负面`，命中负向关键词 `讨厌 / 崩溃`，同时浏览器控制台 `warn/error` 为 `0`
+- 2026-06-07：围绕“共享壳层视觉精修与首页总览 UI 升级”完成了 fresh 验收与真实浏览器复核，当前结果为：
+  - 项目根目录 fresh 执行 `./init.sh` 通过；完整验收结果为前端组件测试 `9 passed files / 38 passed tests`、前端 build 通过、后端 `pytest 50 passed`
+  - 真实浏览器桌面端与移动端抽检已完成，确认首页、`museum-vision` 与 `history` 顶栏摘要区在最新布局下可正常横向阅读
 - 2026-06-07：围绕“项目 Git 仓库初始化与 GitHub 建仓”完成了仓库级校验，当前结果为：
   - 项目根目录 fresh 执行 `./init.sh` 通过；当前完整验收结果为前端组件测试 `38 passed`、后端测试 `50 passed`
   - `gh auth status` 通过，确认当前 GitHub 账号为 `aCunese`
@@ -429,6 +482,9 @@ cd multimodal-ai-course-platform
 
 ## Known Risks
 
+- 当前没有活跃 blocker 卡住图像识别修复本身；后端 `pytest` 已重新完整转绿。
+- 但项目级 `./init.sh` 本轮没有全绿，失败点落在用户工作树里已存在的 `museum-vision` 前端组件测试断言漂移上；如果下一轮要恢复整仓统一绿基线，优先处理 `web/src/features/museum-vision/page.test.tsx` 与对应页面 metadata/文案变更，而不是回头改这次图像识别逻辑。
+
 - `web/` 现在已经为 6 个页面都补上了至少一条组件级回归，且历史页元信息合同也已接口化，但覆盖深度仍然有限，很多边界场景依然主要依赖 API 测试和 Playwright 烟雾回归。
 - 2026-06-06：按前端整体验收再次执行 fresh 验证，结果均通过：
   - 项目根目录执行 `./init.sh` 通过，结果为前端组件测试 `33 passed`、后端 API 测试 `41 passed`
@@ -450,6 +506,9 @@ cd multimodal-ai-course-platform
 - AppShell 顶栏搜索区和 toolbar 残留语义现在也已接口化，且最新统一验收已经恢复为完整绿；更直接的下一条单一切片更适合转向 `text-generation` residual section titles 或 `sentiment-analysis` residual panel titles/status phrases，而不是继续在 shared shell 上扩散范围。
 
 ## Recommended Next Steps
+
+1. 如果需要把项目基线重新拉回 `./init.sh` 全绿，优先修复 `web/src/features/museum-vision/page.test.tsx` 中 3 条已经漂移的断言，再复跑统一验收。
+2. 如果要继续强化图像识别稳健性，优先补更多“真实桌面拍摄/电商场景/带背景器皿”的中药图片回归，而不是立刻大改模型结构。
 
 1. 如果继续补单一切片，优先从 `text-generation` residual section titles 开始，把仍停留在前端本地的区块标题和提示语继续收口到 metadata 合同。
 2. 如果下一条不做文案生成，再考虑 `sentiment-analysis` residual panel titles/status phrases，保持“一次只推进一个明确 feature”。

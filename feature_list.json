@@ -66,7 +66,7 @@
         "feat-004"
       ],
       "status": "done",
-      "evidence": "web/src/features/image-recognition/page.tsx, web/src/shared/copy/display.ts, backend/app/api/routes.py::POST /api/v1/image-recognition/predict, backend/app/services/core.py experiment-01 herbal classifier + Chinese label cleanup, backend/tests/test_api.py::test_image_recognition_upload_uses_real_herbal_dataset; verified by ./init.sh on 2026-06-07 and Playwright upload of huaihua_1.jpg on 2026-06-06"
+      "evidence": "web/src/features/image-recognition/page.tsx, web/src/shared/copy/display.ts, backend/app/api/routes.py::POST /api/v1/image-recognition/predict, backend/app/services/core.py experiment-01 herbal classifier + Chinese label cleanup + gouqi second-pass crop refinement, backend/tests/test_api.py::test_image_recognition_upload_uses_real_herbal_dataset + test_image_recognition_prefers_gouqi_for_realistic_red_fruit_scene, backend/tests/fixtures/gouqi-realistic-scene.jpg; verified by backend image-recognition pytest subset (5 passed) and full backend pytest (53 passed) on 2026-06-07, and previously by Playwright upload of huaihua_1.jpg on 2026-06-06"
     },
     {
       "id": "feat-007",
@@ -76,7 +76,7 @@
         "feat-004"
       ],
       "status": "done",
-      "evidence": "web/src/features/sentiment-analysis/page.tsx, web/src/shared/copy/display.ts, backend/app/api/routes.py::POST /api/v1/sentiment-analysis/analyze, backend/app/services/core.py IMDb-backed sentiment lexicon + Chinese keyword rendering, verified by backend pytest sample regressions on 2026-06-07 and Playwright default-positive + negative-history roundtrip on 2026-06-06"
+      "evidence": "web/src/features/sentiment-analysis/page.tsx, web/src/features/sentiment-analysis/page.test.tsx, web/src/shared/fallbacks/local-text-tools.ts, web/src/styles/globals.css, backend/app/api/routes.py::POST /api/v1/sentiment-analysis/analyze, backend/app/services/core.py IMDb-backed lexicon + curated Chinese emotion phrases + responsive intensity scoring, backend/tests/test_api.py::test_sentiment_analysis_understands_strong_chinese_negative_emotion; verified by ./init.sh on 2026-06-07, targeted Chinese-negative pytest regression on 2026-06-07, and browser automation against fresh local services on 2026-06-07 confirming `我真的很讨厌你，这句话让我特别崩溃。 -> 负面 / 96% / -0.98 / 强烈负面`"
     },
     {
       "id": "feat-008",
@@ -96,7 +96,7 @@
         "feat-004"
       ],
       "status": "done",
-      "evidence": "web/src/features/museum-vision/page.tsx, web/src/shared/copy/display.ts, backend/app/api/routes.py::POST /api/v1/museum-vision/analyze, backend/app/services/core.py museum dataset similarity matching + Chinese institution copy, validated with backend upload regression test and ./init.sh on 2026-06-07, plus Playwright upload of smithsonian_786.jpg on 2026-06-06; the shared topbar long-title layout was further polished so the museum page label stays on one desktop line, and this was rechecked with Playwright screenshots on 2026-06-07"
+      "evidence": "web/src/features/museum-vision/page.tsx, web/src/shared/copy/display.ts, backend/app/api/routes.py::POST /api/v1/museum-vision/analyze, backend/app/services/core.py museum dataset similarity matching + Chinese institution copy + artwork clue extraction from uploaded filenames, backend/tests/test_api.py::test_museum_vision_extracts_artwork_clue_from_filename, web/src/features/museum-vision/page.test.tsx; validated with backend upload regression tests, web museum page tests, and web build on 2026-06-07; the shared topbar long-title layout was further polished so the museum page label stays on one desktop line, and this was rechecked with Playwright screenshots on 2026-06-07"
     },
     {
       "id": "feat-010",
@@ -555,6 +555,18 @@
       ],
       "status": "done",
       "evidence": ".gitignore now excludes web/node_modules, web/dist, backend/.venv, backend/var, output, .playwright-cli, experiment archives, and duplicated experiment-01 raw assets; local repository initialized with git init -b main; GitHub remote created at https://github.com/aCunese/multimodal-ai-course-platform and configured as origin; staged-file audit confirmed no tracked files over 50MB on 2026-06-07"
+    },
+    {
+      "id": "feat-048",
+      "name": "共享壳层视觉精修与首页总览 UI 升级",
+      "description": "在不改动现有产品结构与交互链路的前提下，统一提升 AppShell、首页 Hero 与共享卡片/表单/表格的视觉质感，并通过真实浏览器复核桌面端与移动端布局。",
+      "dependencies": [
+        "feat-005",
+        "feat-043",
+        "feat-046"
+      ],
+      "status": "done",
+      "evidence": "product-design:get-context brief confirmed the UI beautification direction before implementation; web/src/styles/tokens.css refreshed the editorial-tech palette, typography, shadows, and surface tokens; web/src/styles/globals.css polished shell background, cards, forms, tables, upload zones, transitions, and desktop/mobile topbar layout, then further refined the homepage shared topbar into a title-left / actions-right / search-second-row composition based on the user-provided reference image; a follow-up AppShell hotfix moved the topbar responsiveness from viewport-based breakpoints to workspace container queries so long titles on /history and /museum-vision no longer get covered by the right-side action group when the sidebar is present; web/src/shared/layout/AppShell.tsx enriched the sidebar and topbar presentation with section labels, context copy, denser information hierarchy, and the new two-row topbar structure; web/src/features/dashboard/page.tsx added the overview eyebrow and fact strip; web/src/features/text-generation/page.test.tsx and web/src/features/sentiment-analysis/page.test.tsx were updated to align with the current fallback UI; real browser desktop/mobile review on 2026-06-07 confirmed the topbar fix and responsive layout, and focused Playwright screenshot review on 2026-06-07 confirmed the latest history/museum topbar title no longer overlaps; unified verification passed with ./init.sh on 2026-06-07 (web 9 passed files / 39 passed tests, build passed, backend pytest 53 passed)"
     }
   ]
 }
