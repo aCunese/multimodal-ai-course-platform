@@ -1,0 +1,39 @@
+version = 1
+name = "multimodal-ai-course-platform"
+
+[setup]
+script = "echo Codex local environment ready"
+
+[[actions]]
+name = "Git Status"
+icon = "tool"
+command = "git status --short --branch"
+
+[[actions]]
+name = "Push Branch"
+icon = "run"
+command = '''
+branch="$(git branch --show-current)"
+if [ -z "$branch" ]; then
+  echo "No current branch detected."
+  exit 1
+fi
+
+echo "Pushing $branch ..."
+git push -u origin "$branch"
+'''
+
+[[actions]]
+name = "Create Backup Branch"
+icon = "debug"
+command = '''
+branch="backup/current-progress-$(date +%F)"
+current="$(git branch --show-current)"
+
+if [ "$current" = "$branch" ]; then
+  echo "Already on $branch"
+  exit 0
+fi
+
+git checkout -b "$branch"
+'''
