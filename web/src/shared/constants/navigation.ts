@@ -5,7 +5,7 @@ export const navItems: NavItem[] = [
     path: "/",
     label: "首页总览",
     icon: "home",
-    summary: "平台入口与综合统计",
+    summary: "查看模块入口与关键状态",
   },
   {
     path: "/image-recognition",
@@ -23,18 +23,18 @@ export const navItems: NavItem[] = [
     path: "/text-generation",
     label: "文案生成",
     icon: "pen",
-    summary: "根据主题生成课程演示文案",
+    summary: "根据主题生成多种文案",
   },
   {
     path: "/museum-vision",
-    label: "博物馆图像识别 / 描述",
+    label: "博物馆图像理解",
     icon: "museum",
     summary: "图像来源识别与内容描述",
   },
   {
     path: "/history",
-    label: "历史记录与项目说明",
+    label: "历史记录",
     icon: "history",
-    summary: "查看执行日志和项目结构",
+    summary: "查看各模块运行记录",
   },
 ];

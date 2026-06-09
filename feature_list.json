@@ -51,12 +51,12 @@
     {
       "id": "feat-005",
       "name": "首页总览页面",
-      "description": "实现首页总览模块，聚合 4 个实验入口、关键统计卡片和项目总览信息。",
+      "description": "实现首页总览模块，聚合 4 个实验入口、运行时状态和最近实验记录。",
       "dependencies": [
         "feat-004"
       ],
       "status": "done",
-      "evidence": "web/src/features/dashboard/page.tsx, web/src/assets/hero/dashboard-hero.png, backend/app/api/routes.py::GET /api/v1/dashboard; verified by Playwright on 2026-06-06, and the homepage Hero cover image was refreshed with the user-provided replacement asset on 2026-06-06"
+      "evidence": "web/src/features/dashboard/page.tsx, web/src/assets/hero/dashboard-hero.png, backend/app/api/routes.py::GET /api/v1/dashboard; verified by Playwright on 2026-06-06, the homepage Hero cover image was refreshed with the user-provided replacement asset on 2026-06-06, and unrelated metric/fact clutter was removed from the homepage Hero and summary area on 2026-06-09 with updated Vitest coverage plus fresh Playwright homepage verification"
     },
     {
       "id": "feat-006",
@@ -76,7 +76,7 @@
         "feat-004"
       ],
       "status": "done",
-      "evidence": "web/src/features/sentiment-analysis/page.tsx, web/src/features/sentiment-analysis/page.test.tsx, web/src/shared/fallbacks/local-text-tools.ts, web/src/styles/globals.css, backend/app/api/routes.py::POST /api/v1/sentiment-analysis/analyze, backend/app/services/core.py IMDb-backed lexicon + curated Chinese emotion phrases + responsive intensity scoring, backend/tests/test_api.py::test_sentiment_analysis_understands_strong_chinese_negative_emotion; verified by ./init.sh on 2026-06-07, targeted Chinese-negative pytest regression on 2026-06-07, and browser automation against fresh local services on 2026-06-07 confirming `我真的很讨厌你，这句话让我特别崩溃。 -> 负面 / 96% / -0.98 / 强烈负面`"
+      "evidence": "web/src/features/sentiment-analysis/page.tsx, web/src/features/sentiment-analysis/page.test.tsx, web/src/shared/fallbacks/local-text-tools.ts, backend/app/api/routes.py::GET/POST /api/v1/sentiment-analysis/*, backend/app/services/core.py IMDb-backed lexicon + curated Chinese emotion phrases + DeepSeek-first provider fallback + slimmer result layout, backend/tests/test_api.py::test_sentiment_analysis_understands_strong_chinese_negative_emotion; verified by ./init.sh on 2026-06-09, targeted page tests on 2026-06-09, and real local API verification on 2026-06-09 confirming `configuredProvider=deepseek / activeProvider=deepseek` plus `providerUsed=deepseek / usedFallback=false`"
     },
     {
       "id": "feat-008",
@@ -86,7 +86,7 @@
         "feat-004"
       ],
       "status": "done",
-      "evidence": "web/src/features/text-generation/page.tsx, web/src/features/text-generation/page.test.tsx, backend/app/api/routes.py::GET/POST /api/v1/text-generation/*; verified by Playwright generation run and history update on 2026-06-06, and the on-page history table now paginates in fixed 8-row chunks verified by Vitest on 2026-06-07"
+      "evidence": "web/src/features/text-generation/page.tsx, web/src/features/text-generation/page.test.tsx, backend/app/api/routes.py::GET/POST /api/v1/text-generation/*, backend/app/services/core.py::generate_text DeepSeek/local provider routing with streamlined result area; verified by ./init.sh on 2026-06-09, targeted page tests on 2026-06-09, and real local API verification on 2026-06-09 confirming `configuredProvider=deepseek / activeProvider=deepseek` plus `providerUsed=deepseek / usedFallback=false`"
     },
     {
       "id": "feat-009",
@@ -96,17 +96,17 @@
         "feat-004"
       ],
       "status": "done",
-      "evidence": "web/src/features/museum-vision/page.tsx, web/src/shared/copy/display.ts, backend/app/api/routes.py::POST /api/v1/museum-vision/analyze, backend/app/services/core.py museum dataset similarity matching + Chinese institution copy + artwork clue extraction from uploaded filenames, backend/tests/test_api.py::test_museum_vision_extracts_artwork_clue_from_filename, web/src/features/museum-vision/page.test.tsx; validated with backend upload regression tests, web museum page tests, and web build on 2026-06-07; the shared topbar long-title layout was further polished so the museum page label stays on one desktop line, and this was rechecked with Playwright screenshots on 2026-06-07"
+      "evidence": "web/src/features/museum-vision/page.tsx, web/src/shared/copy/display.ts, backend/app/api/routes.py::POST /api/v1/museum-vision/analyze, backend/app/services/core.py museum dataset similarity matching + Chinese institution copy + artwork clue extraction from uploaded filenames, backend/tests/test_api.py::test_museum_vision_extracts_artwork_clue_from_filename, web/src/features/museum-vision/page.test.tsx; validated with backend upload regression tests, web museum page tests, and web build on 2026-06-07; the shared topbar long-title layout was further polished so the museum page label stays on one desktop line, and this was rechecked with Playwright screenshots on 2026-06-07; the bottom data-source explainer panel was removed on 2026-06-09 to keep the page focused on upload, recognition, description, and tags"
     },
     {
       "id": "feat-010",
-      "name": "历史记录与项目说明页面",
-      "description": "实现历史记录、实验说明和答辩导览页面，沉淀成果说明与任务轨迹。",
+      "name": "历史记录页面",
+      "description": "实现历史记录筛选、导出和分页页面，沉淀各模块任务轨迹。",
       "dependencies": [
         "feat-004"
       ],
       "status": "done",
-      "evidence": "web/src/features/history/page.tsx, backend/app/api/routes.py::GET /api/v1/history; verified by Playwright history search roundtrip on 2026-06-06; the page now paginates history records in fixed 8-row chunks with compact page-number controls, verified by Vitest and Playwright page-1/page-2 screenshot checks on 2026-06-07"
+      "evidence": "web/src/features/history/page.tsx, backend/app/api/routes.py::GET /api/v1/history; verified by Playwright history search roundtrip on 2026-06-06; the page now paginates history records in fixed 8-row chunks with compact page-number controls, verified by Vitest and Playwright page-1/page-2 screenshot checks on 2026-06-07; the project-overview and module-spotlight blocks were removed on 2026-06-09 so the page now stays focused on record filtering, export, and pagination"
     },
     {
       "id": "feat-011",
@@ -519,7 +519,7 @@
         "feat-033"
       ],
       "status": "done",
-      "evidence": "backend/app/services/llm_provider.py prompt tuning + placeholder-title normalization + auto-provider detection when DEEPSEEK_API_KEY exists, backend/app/services/core.py::generate_text provider fallback and cleaner provider metadata copy, backend/tests/test_api.py DeepSeek success/fallback/auto-enable regressions, backend/tests/test_llm_provider.py prompt/title-quality/auto-provider regressions, docker-compose.yml provider defaults updated to auto, backend/README.md provider docs updated; verified by uv run pytest tests/test_llm_provider.py tests/test_api.py -k 'deepseek or text_generation_uses_deepseek_outputs_when_provider_enabled or text_generation_falls_back_to_local_outputs_when_deepseek_raises or text_generation_falls_back_to_local_outputs_when_api_key_missing or auto_enables_deepseek_when_api_key_exists' -q and ./init.sh on 2026-06-09"
+      "evidence": "backend/app/services/llm_provider.py prompt tuning + placeholder-title normalization + auto-provider detection when DEEPSEEK_API_KEY exists, backend/app/services/core.py::generate_text provider fallback and cleaner provider metadata copy, backend/app/main.py project-root `.env.local` autoload, backend/pyproject.toml python-dotenv runtime dependency, backend/tests/test_api.py DeepSeek success/fallback/auto-enable regressions, backend/tests/test_llm_provider.py prompt/title-quality/auto-provider regressions, docker-compose.yml provider defaults updated to auto, backend/README.md provider docs updated; verified by uv run pytest tests/test_llm_provider.py tests/test_api.py -k 'deepseek or text_generation_uses_deepseek_outputs_when_provider_enabled or text_generation_falls_back_to_local_outputs_when_deepseek_raises or text_generation_falls_back_to_local_outputs_when_api_key_missing or auto_enables_deepseek_when_api_key_exists' -q, real local API verification on 2026-06-09 confirming `configuredProvider=deepseek / activeProvider=deepseek` and `providerUsed=deepseek / usedFallback=false`, and ./init.sh on 2026-06-09"
     },
     {
       "id": "feat-045",
@@ -543,7 +543,7 @@
         "feat-044"
       ],
       "status": "done",
-      "evidence": "backend/app/schemas/__init__.py providerStatus/providerUsed/usedFallback/providerStatusMessage schema expansion, backend/app/services/llm_provider.py DeepSeek text+sentiment provider helpers plus auto-provider detection, backend/app/services/core.py sentiment provider fallback + text/sentiment provider observability + cleaner metadata copy, backend/tests/test_api.py metadata/provider fallback/auto-enable regressions, web/src/features/sentiment-analysis/page.tsx and web/src/features/text-generation/page.tsx removed verbose local-provider explanatory blocks while retaining engine status, docs/api/openapi.json, web/src/shared/api/generated-contract.ts, web/src/shared/layout/AppShell.tsx + web/src/styles/globals.css desktop topbar tightening, web/scripts/e2e-smoke.mjs Chinese display assertions refresh, and synchronized component tests across dashboard/history/image-recognition/museum-vision/text-generation/sentiment-analysis/AppShell; verified by cd web && npm run test (9 passed files / 39 passed tests), cd backend && uv run pytest -q (56 passed), and ./init.sh on 2026-06-09"
+      "evidence": "backend/app/schemas/__init__.py providerStatus/providerUsed/usedFallback/providerStatusMessage schema expansion, backend/app/services/llm_provider.py DeepSeek text+sentiment provider helpers plus auto-provider detection, backend/app/services/core.py sentiment provider fallback + text/sentiment provider observability + cleaner metadata copy, backend/app/main.py local secret autoload for `.env.local`, backend/tests/test_api.py metadata/provider fallback/auto-enable regressions, web/src/features/sentiment-analysis/page.tsx and web/src/features/text-generation/page.tsx removed verbose explanatory/status side panels while retaining engine status badges, docs/api/openapi.json, web/src/shared/api/generated-contract.ts, web/src/shared/layout/AppShell.tsx + web/src/styles/globals.css desktop topbar tightening, web/scripts/e2e-smoke.mjs Chinese display assertions refresh, and synchronized component tests across dashboard/history/image-recognition/museum-vision/text-generation/sentiment-analysis/AppShell; verified by real local API checks on 2026-06-09 confirming both text modules now report `configuredProvider=deepseek / activeProvider=deepseek` and return `providerUsed=deepseek / usedFallback=false`, plus ./init.sh on 2026-06-09"
     },
     {
       "id": "feat-047",

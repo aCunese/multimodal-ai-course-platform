@@ -3,12 +3,7 @@ import { startTransition, useEffect, useState } from "react";
 import { generateText, getGenerationHistory, getTextGenerationMetadata } from "../../shared/api/client";
 import { generationHistory, generationOutputs } from "../../mocks/platformData";
 import { buildLocalTextGeneration } from "../../shared/fallbacks/local-text-tools";
-import type {
-  GenerationHistoryItem,
-  GenerationOutput,
-  GenerationTone,
-  GenerationType,
-} from "../../shared/types/platform";
+import type { GenerationHistoryItem, GenerationOutput, GenerationTone, GenerationType } from "../../shared/types/platform";
 import type { GenerationQualityMetric, TextGenerationMetadataResponse } from "../../shared/api/types";
 import { Button, Panel, StatusBadge } from "../../shared/ui/Surface";
 
@@ -17,7 +12,6 @@ const defaultQualityMetrics: GenerationQualityMetric[] = [
   { label: "语言流畅度", value: 92 },
   { label: "创意表达", value: 86 },
 ];
-const historyPageSize = 8;
 
 const initialMetadata: TextGenerationMetadataResponse = {
   pageTitle: "文案生成",
@@ -91,22 +85,6 @@ function resolveSyncMessage(metadata: TextGenerationMetadataResponse, syncState:
   }
 }
 
-function buildPaginationItems(currentPage: number, totalPages: number) {
-  if (totalPages <= 7) {
-    return Array.from({ length: totalPages }, (_, index) => index + 1);
-  }
-
-  if (currentPage <= 4) {
-    return [1, 2, 3, 4, 5, "ellipsis", totalPages] as const;
-  }
-
-  if (currentPage >= totalPages - 3) {
-    return [1, "ellipsis", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages] as const;
-  }
-
-  return [1, "ellipsis", currentPage - 1, currentPage, currentPage + 1, "ellipsis", totalPages] as const;
-}
-
 export function TextGenerationPage() {
   const [metadata, setMetadata] = useState<TextGenerationMetadataResponse>(initialMetadata);
   const [theme, setTheme] = useState(initialMetadata.defaultConfig.theme);
@@ -116,22 +94,10 @@ export function TextGenerationPage() {
   const [outputs, setOutputs] = useState<GenerationOutput[]>(generationOutputs);
   const [history, setHistory] = useState<GenerationHistoryItem[]>(generationHistory);
   const [qualityMetrics, setQualityMetrics] = useState(defaultQualityMetrics);
-  const [qualityTip, setQualityTip] = useState(initialMetadata.defaultQualityTip);
-  const [toneKeywords, setToneKeywords] = useState(initialMetadata.defaultToneKeywords);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [lastGeneratedAt, setLastGeneratedAt] = useState("14:32:18");
   const [isGenerating, setIsGenerating] = useState(false);
   const [syncState, setSyncState] = useState<TextGenerationSyncState>("connecting");
   const [providerStatusLabel, setProviderStatusLabel] = useState(initialMetadata.providerStatus.statusLabel);
-  const [currentHistoryPage, setCurrentHistoryPage] = useState(1);
-
-  const totalHistoryPages = Math.max(1, Math.ceil(history.length / historyPageSize));
-  const safeCurrentHistoryPage = Math.min(currentHistoryPage, totalHistoryPages);
-  const currentHistoryPageStart = (safeCurrentHistoryPage - 1) * historyPageSize;
-  const paginatedHistory = history.slice(currentHistoryPageStart, currentHistoryPageStart + historyPageSize);
-  const currentHistoryRangeStart = history.length === 0 ? 0 : currentHistoryPageStart + 1;
-  const currentHistoryRangeEnd = Math.min(history.length, currentHistoryPageStart + paginatedHistory.length);
-  const historyPaginationItems = buildPaginationItems(safeCurrentHistoryPage, totalHistoryPages);
 
   const visibleSyncMessage = isGenerating ? metadata.generateLoadingMessage : resolveSyncMessage(metadata, syncState);
 
@@ -153,8 +119,6 @@ export function TextGenerationPage() {
         setQuantity(response.defaultConfig.quantity);
         setOutputs(response.sampleOutputs);
         setQualityMetrics(response.defaultQualityMetrics);
-        setQualityTip(response.defaultQualityTip);
-        setToneKeywords(response.defaultToneKeywords);
         setProviderStatusLabel(response.providerStatus.statusLabel);
       } catch {
         // Keep local metadata fallback when the backend metadata endpoint is unavailable.
@@ -170,7 +134,6 @@ export function TextGenerationPage() {
         }
 
         setHistory(response.items);
-        setCurrentHistoryPage(1);
         setSyncState("history-ready");
       } catch {
         if (!cancelled) {
@@ -202,11 +165,7 @@ export function TextGenerationPage() {
       startTransition(() => {
         setOutputs(response.outputs);
         setHistory(response.history);
-        setCurrentHistoryPage(1);
         setQualityMetrics(response.qualityMetrics);
-        setQualityTip(response.qualityTip);
-        setToneKeywords(response.toneKeywords);
-        setLastGeneratedAt(response.generatedAt);
         setCopiedId(null);
         setProviderStatusLabel(response.providerStatusMessage);
       });
@@ -218,11 +177,7 @@ export function TextGenerationPage() {
       startTransition(() => {
         setOutputs(fallbackResponse.outputs);
         setHistory(fallbackResponse.history);
-        setCurrentHistoryPage(1);
         setQualityMetrics(fallbackResponse.qualityMetrics);
-        setQualityTip(fallbackResponse.qualityTip);
-        setToneKeywords(fallbackResponse.toneKeywords);
-        setLastGeneratedAt(fallbackResponse.generatedAt);
         setCopiedId(null);
         setProviderStatusLabel(fallbackResponse.providerStatusMessage);
       });
@@ -233,11 +188,6 @@ export function TextGenerationPage() {
     }
   }
 
-  function handleHistoryPageChange(page: number) {
-    const nextPage = Math.max(1, Math.min(totalHistoryPages, page));
-    setCurrentHistoryPage(nextPage);
-  }
-
   function handleRestoreExample() {
     setTheme(metadata.defaultConfig.theme);
     setTone(metadata.defaultConfig.tone);
@@ -245,8 +195,6 @@ export function TextGenerationPage() {
     setQuantity(metadata.defaultConfig.quantity);
     setOutputs(metadata.sampleOutputs);
     setQualityMetrics(metadata.defaultQualityMetrics);
-    setQualityTip(metadata.defaultQualityTip);
-    setToneKeywords(metadata.defaultToneKeywords);
     setCopiedId(null);
     setProviderStatusLabel(metadata.providerStatus.statusLabel);
     setSyncState("restore-example");
@@ -357,165 +305,47 @@ export function TextGenerationPage() {
         </div>
       </Panel>
 
-      <section className="page-grid page-grid--content-aside">
-        <Panel
-          title="生成结果区"
-          icon="spark"
-          action={<StatusBadge tone={isGenerating ? "accent" : "success"}>已生成 {outputs.length} 条结果</StatusBadge>}
-        >
-          <div className="output-list">
-            {outputs.map((item, index) => (
-              <article key={item.id} className="generation-result">
-                <div className="generation-result__meta">
-                  <span className="generation-result__index">{index + 1}</span>
-                  <StatusBadge tone="accent">{item.type}</StatusBadge>
-                </div>
-                <div className="generation-result__body">
-                  <h3>{item.title}</h3>
-                  <p>{item.body}</p>
-                </div>
-                <div className="generation-result__actions">
-                  <Button variant="secondary" onClick={() => void handleCopy(item)} icon="copy">
-                    {copiedId === item.id ? metadata.copySuccessLabel : metadata.copyActionLabel}
-                  </Button>
-                  <Button variant="ghost" onClick={() => void handleGenerate()}>
-                    {metadata.regenerateButtonLabel}
-                  </Button>
-                </div>
-              </article>
-            ))}
-          </div>
-        </Panel>
-
-        <div className="stack-list">
-          <Panel title="生成质量提示" icon="shield">
-            <div className="quality-panel">
-              {qualityMetrics.map((metric) => (
-                <div key={metric.label} className="quality-meter">
-                  <div className="quality-meter__head">
-                    <span>{metric.label}</span>
-                    <strong>{metric.value}%</strong>
-                  </div>
-                  <div className="progress-bar progress-bar--soft">
-                    <span style={{ width: `${metric.value}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Panel>
-
-          <Panel title="生成摘要" icon="light">
-            <div className="check-list">
-              <div>
-                <strong>{providerStatusLabel}</strong>
-              </div>
-              <div>
-                <strong>{tone}风格</strong>
-                <p>{qualityTip}</p>
-              </div>
-              <div>
-                <strong>表达关键词</strong>
-                <p>{toneKeywords.join(" / ")}</p>
-              </div>
-              <div>
-                <strong>最近生成时间</strong>
-                <p>{lastGeneratedAt}</p>
-              </div>
-            </div>
-          </Panel>
-        </div>
-      </section>
-
       <Panel
-        title="历史生成记录"
-        icon="history"
-        action={
-          <span className="records-meta">
-            <span className="status-dot status-dot--success" />
-            <span>已累计 {history.length} 条记录</span>
-          </span>
-        }
+        title="生成结果区"
+        icon="spark"
+        action={<StatusBadge tone={isGenerating ? "accent" : "success"}>{providerStatusLabel}</StatusBadge>}
       >
-        <div className="table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>主题</th>
-                <th>类型</th>
-                <th>语气风格</th>
-                <th>生成数量</th>
-                <th>时间</th>
-                <th>状态</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedHistory.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.theme}</td>
-                  <td>{item.type}</td>
-                  <td>{item.tone}</td>
-                  <td>{item.count} 条</td>
-                  <td>{item.time}</td>
-                  <td>
-                    <StatusBadge tone={item.status === "已生成" ? "success" : "neutral"}>
-                      {item.status}
-                    </StatusBadge>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="quality-panel">
+          {qualityMetrics.map((metric) => (
+            <div key={metric.label} className="quality-meter">
+              <div className="quality-meter__head">
+                <span>{metric.label}</span>
+                <strong>{metric.value}%</strong>
+              </div>
+              <div className="progress-bar progress-bar--soft">
+                <span style={{ width: `${metric.value}%` }} />
+              </div>
+            </div>
+          ))}
         </div>
 
-        {totalHistoryPages > 1 ? (
-          <div className="history-pagination" aria-label="文案生成历史分页">
-            <div className="history-pagination__summary">
-              {`当前显示 ${currentHistoryRangeStart}-${currentHistoryRangeEnd} 条，共 ${history.length} 条`}
-            </div>
-
-            <div className="history-pagination__controls">
-              <Button
-                variant="secondary"
-                onClick={() => handleHistoryPageChange(safeCurrentHistoryPage - 1)}
-                disabled={safeCurrentHistoryPage === 1}
-              >
-                上一页
-              </Button>
-
-              <div className="history-pagination__pages">
-                {historyPaginationItems.map((item, index) =>
-                  item === "ellipsis" ? (
-                    <span key={`text-history-ellipsis-${index}`} className="history-pagination__ellipsis" aria-hidden="true">
-                      ...
-                    </span>
-                  ) : (
-                    <button
-                      key={item}
-                      type="button"
-                      className={`history-pagination__page${
-                        safeCurrentHistoryPage === item ? " history-pagination__page--active" : ""
-                      }`}
-                      onClick={() => handleHistoryPageChange(item)}
-                      aria-current={safeCurrentHistoryPage === item ? "page" : undefined}
-                    >
-                      {item}
-                    </button>
-                  ),
-                )}
+        <div className="output-list">
+          {outputs.map((item, index) => (
+            <article key={item.id} className="generation-result">
+              <div className="generation-result__meta">
+                <span className="generation-result__index">{index + 1}</span>
+                <StatusBadge tone="accent">{item.type}</StatusBadge>
               </div>
-
-              <Button
-                variant="secondary"
-                onClick={() => handleHistoryPageChange(safeCurrentHistoryPage + 1)}
-                disabled={safeCurrentHistoryPage === totalHistoryPages}
-              >
-                下一页
-              </Button>
-
-              <div className="history-pagination__summary">{`第 ${safeCurrentHistoryPage} / ${totalHistoryPages} 页`}</div>
-            </div>
-          </div>
-        ) : null}
+              <div className="generation-result__body">
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </div>
+              <div className="generation-result__actions">
+                <Button variant="secondary" onClick={() => void handleCopy(item)} icon="copy">
+                  {copiedId === item.id ? metadata.copySuccessLabel : metadata.copyActionLabel}
+                </Button>
+                <Button variant="ghost" onClick={() => void handleGenerate()}>
+                  {metadata.regenerateButtonLabel}
+                </Button>
+              </div>
+            </article>
+          ))}
+        </div>
       </Panel>
     </div>
   );

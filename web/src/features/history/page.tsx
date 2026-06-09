@@ -19,13 +19,13 @@ const statusToneMap: Record<HistoryStatus, "success" | "warning" | "neutral"> = 
 };
 
 const initialHistoryMetadata: HistoryMetadataResponse = {
-  pageTitle: "历史记录与项目说明",
-  pageDescription: "查看平台运行记录、实验结果和项目模块说明，帮助完成课程答辩与后续开发整理。",
+  pageTitle: "历史记录",
+  pageDescription: "查看平台各模块的运行记录，并按条件筛选或导出结果。",
   syncConnectedMessage: "已连接历史记录接口。",
   syncLoadingMessage: "正在同步历史记录...",
   syncReadyMessage: "历史记录已由后端接口实时提供。",
   syncFallbackMessage: "历史记录接口暂时不可用，当前展示的是本地演示数据。",
-  filterPanelTitle: "历史记录筛选区",
+  filterPanelTitle: "筛选记录",
   searchFieldLabel: "搜索内容",
   searchPlaceholder: "搜索输入内容、输出结果或记录 ID...",
   moduleFilterLabel: "模块筛选",
@@ -36,62 +36,22 @@ const initialHistoryMetadata: HistoryMetadataResponse = {
   exportButtonBusyLabel: "导出中...",
   exportSuccessMessageTemplate: "历史记录已从后端导出为 {format} 文件。",
   exportFallbackMessage: "历史记录导出接口暂时不可用，已导出当前页面数据。",
-  tableTitle: "历史记录表格",
+  tableTitle: "运行记录",
   tableLoadingMessage: "正在同步...",
   tableCountTemplate: "共 {count} 条记录",
   tableHeaders: ["记录 ID", "时间", "实验模块", "输入内容", "输出结果", "置信度 / 评分", "状态", "操作"],
   rowActionLabel: "查看",
-  projectOverviewTitle: "项目说明",
-  moduleSpotlightActionLabel: "查看详情",
+  projectOverviewTitle: "",
+  moduleSpotlightActionLabel: "",
   moduleFilters: ["全部", "图像识别", "情感分析", "文案生成", "博物馆图像理解"],
   statusFilters: ["全部", "成功", "警告", "失败"],
   exportFormats: [
     { label: "JSON", value: "json" },
     { label: "CSV", value: "csv" },
   ],
-  overviewSections: [
-    {
-      title: "平台定位",
-      body: "《多模态 AI 课程成果平台》用于整合课程中的多个 AI 实验，包括图像分类、文本情感分析、文本生成和博物馆图像理解。",
-    },
-    {
-      title: "当前完成度",
-      body: "前后端主链路已经打通，文本模块和两个图像模块都可接入真实课程数据，历史页也支持按筛选条件导出记录。",
-    },
-    {
-      title: "后续方向",
-      body: "下一步重点转向补强可复用自动化回归、沉淀模型缓存与导出物规范，把当前联调版继续收束成稳定成品。",
-    },
-  ],
-  valuePoints: [
-    "课程实验整合",
-    "多模态能力展示",
-    "前后端可扩展",
-    "可用于答辩演示",
-    "支持后续模型接入",
-  ],
-  moduleSpotlights: [
-    {
-      title: "图像分类模块",
-      description: "基于深度学习模型识别图片类别，输出类别标签、置信度和可视化分布。",
-      route: "/image-recognition",
-    },
-    {
-      title: "情感分析模块",
-      description: "对文本内容进行情感极性判断，输出情感倾向、关键词和置信评分。",
-      route: "/sentiment-analysis",
-    },
-    {
-      title: "文本生成模块",
-      description: "根据输入主题生成多条文案内容，支持多种表达风格和输出类型。",
-      route: "/text-generation",
-    },
-    {
-      title: "跨模态图像理解模块",
-      description: "结合图像与知识库进行馆藏推理与描述生成，完成结构化识别结果展示。",
-      route: "/museum-vision",
-    },
-  ],
+  overviewSections: [],
+  valuePoints: [],
+  moduleSpotlights: [],
 };
 
 const historyQueryDefaults = backendApiOperations.history_api_v1_history_get.queryDefaults;
@@ -120,17 +80,12 @@ function applyTemplate(template: string, values: Record<string, string | number>
 
 function resolveSyncMessage(metadata: HistoryMetadataResponse, syncState: HistorySyncState) {
   switch (syncState.kind) {
-    case "ready":
-      return "";
-    case "fallback":
-      return metadata.syncFallbackMessage;
     case "export-success":
       return applyTemplate(metadata.exportSuccessMessageTemplate, {
         format: syncState.format.toUpperCase(),
       });
     case "export-fallback":
       return metadata.exportFallbackMessage;
-    case "connected":
     default:
       return "";
   }
@@ -162,7 +117,7 @@ export function HistoryPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportFormat, setExportFormat] = useState<HistoryExportFormat>(defaultExportFormat);
-  const [syncState, setSyncState] = useState<HistorySyncState>({ kind: "connected" });
+  const [syncState, setSyncState] = useState<HistorySyncState>({ kind: "ready" });
 
   const deferredKeyword = useDeferredValue(keyword);
   const requestedPage = Number(searchParams.get("page") ?? "1");
@@ -218,13 +173,8 @@ export function HistoryPage() {
         }
 
         setRecords(response.records);
-        setSyncState({ kind: "ready" });
       } catch {
-        if (cancelled) {
-          return;
-        }
-
-        setSyncState({ kind: "fallback" });
+        // Keep local history fallback data when the backend history endpoint is unavailable.
       } finally {
         if (!cancelled) {
           setIsLoading(false);
@@ -509,40 +459,6 @@ export function HistoryPage() {
           </div>
         ) : null}
       </Panel>
-
-      <Panel id="project-overview" title={metadata.projectOverviewTitle} icon="file">
-        <div className="project-overview">
-          <div className="check-list">
-            {metadata.overviewSections.map((section) => (
-              <div key={section.title}>
-                <strong>{section.title}</strong>
-                <p>{section.body}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="value-strip">
-            {metadata.valuePoints.map((item) => (
-              <div key={item} className="value-strip__item">
-                <span className="value-strip__dot" />
-                <strong>{item}</strong>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Panel>
-
-      <section className="module-spotlight-grid">
-        {metadata.moduleSpotlights.map((item) => (
-          <article key={item.title} className="module-spotlight">
-            <h2>{item.title}</h2>
-            <p>{item.description}</p>
-            <Link to={item.route} className="inline-link">
-              <span>{metadata.moduleSpotlightActionLabel}</span>
-            </Link>
-          </article>
-        ))}
-      </section>
     </div>
   );
 }

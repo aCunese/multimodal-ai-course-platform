@@ -12,6 +12,15 @@ Last updated: 2026-06-09
 
 ## Current Focus
 
+- UI 结构本轮刚完成一次去冗余收口：`AppShell` 已去掉顶栏导出按钮、伪账号卡和侧栏底部演示环境卡；`dashboard` 去掉了 Hero 眉题、事实条和指标装饰卡；`history` 去掉了项目说明和模块导览；`museum-vision` 去掉了底部数据来源说明大面板。
+- 围绕这次 UI 去冗余已完成定向验证：`web/` 内 `npm run lint` 通过，`npm run test -- src/shared/layout/AppShell.test.tsx src/features/dashboard/page.test.tsx src/features/history/page.test.tsx src/features/museum-vision/page.test.tsx` 为 `4 passed files / 10 passed tests`；并已用 Playwright 打开 `http://127.0.0.1:4173/` 与 `/history` 做真实页面复核，截图已保存为 `homepage-ui-cleanup.png` 与 `history-ui-cleanup.png`。
+- 如果下一轮要继续做 UI 收口，建议优先看另外两个文本页是否也要同步缩减页面级说明条，而不是再把“项目说明 / 交付包 / 演示环境”类信息加回共享壳层。
+- 文本类模块本轮又补了一次更贴近真实使用预期的 DeepSeek 接线收口：`backend/app/services/llm_provider.py` 现在会在未显式声明 provider 时自动检测 `DEEPSEEK_API_KEY`，只要 key 存在，`text-generation` 与 `sentiment-analysis` 都会默认优先走 DeepSeek，不再要求额外手动把两个 provider 环境变量切到 `deepseek`。
+- `docker-compose.yml` 里的 `MULTIMODAL_TEXT_GENERATION_PROVIDER` 与 `MULTIMODAL_SENTIMENT_PROVIDER` 默认值也已同步改为 `auto`；后续容器环境只要提供 `DEEPSEEK_API_KEY`，这两个文本模块就会自动切换到 DeepSeek。
+- 本地密钥加载链路也已经补齐：`backend/app/main.py` 会在应用启动时自动读取项目根和 `backend/` 内的 `.env.local`，`backend/pyproject.toml` 已补上 `python-dotenv` 运行时依赖，因此本机当前不需要再手动导出环境变量。
+- 两个文本页面本轮顺手做了去冗余收口：`web/src/features/text-generation/page.tsx` 已删掉历史记录表和冗长引擎说明，`web/src/features/sentiment-analysis/page.tsx` 也移除了情感强度附属说明块与分析状态面板，只保留更直接的引擎状态和结果信息。
+- 这台机器当前运行环境已经实际启用 DeepSeek；我已通过 `GET /api/v1/text-generation/metadata`、`GET /api/v1/sentiment-analysis/metadata`、`POST /api/v1/text-generation/generate` 与 `POST /api/v1/sentiment-analysis/analyze` 复核，当前本地服务都返回 `configuredProvider=deepseek / activeProvider=deepseek`，同时实际请求也返回 `providerUsed=deepseek / usedFallback=false`。
+- 围绕这次 DeepSeek 自动优先、本地密钥自动加载与文本页瘦身的整体验收已经 fresh 通过：项目根目录执行 `./init.sh` 通过，真实本地 API 复核也已确认两个文本模块当前都在直接使用 DeepSeek。
 - 工作区根目录现在也有一个轻量 Git 外壳，用来让 Codex 在当前目录直接识别 Git 状态；根级 `.gitignore` 已明确忽略 `.playwright-mcp/`、根目录截图资产、废弃 `项目3/` 路径以及内层正式项目仓库 `multimodal-ai-course-platform/`，因此后续如果要查看业务代码状态，仍应进入正式项目根目录再执行 `git status`。
 - 本轮还顺手核对了旧 `项目3/` 目录，确认里面只有空白残留文档占位文件；这批占位文件已从工作区入口层清理，避免误把废弃路径当成正式项目根继续操作。
 - 首页顶栏全局搜索本轮又补了一次共享样式热修：`web/src/styles/globals.css` 现在把 `.topbar` 的 `overflow` 放开为 `visible`，并给 `.search-box__results` 增加更高的层级和滚动上限，因此搜索 `大都会艺术博物馆` 这类会返回多条历史建议的关键词时，建议面板不会再被首页 Hero 或下方模块卡片遮挡。
@@ -50,6 +59,15 @@ Last updated: 2026-06-09
 
 ## What Changed In This Session
 
+- `backend/app/main.py` 现已在应用启动时自动加载项目根与 `backend/` 下的 `.env.local`，`backend/pyproject.toml` 也已补上 `python-dotenv` 运行时依赖；因此本机当前无需手动导出环境变量，就能让文本模块直接拿到本地 DeepSeek 密钥。
+- `backend/app/services/llm_provider.py` 已把 `text-generation` 与 `sentiment-analysis` 的 provider 默认策略收口为 `auto`：只要存在 `DEEPSEEK_API_KEY`，两个模块就会自动优先走 DeepSeek；本轮实际复核的 metadata 与真实请求都已确认 `configuredProvider=deepseek / activeProvider=deepseek / providerUsed=deepseek / usedFallback=false`。
+- `web/src/features/text-generation/page.tsx` 与 `web/src/features/sentiment-analysis/page.tsx` 已按“减法优先”继续瘦身：文案页不再渲染历史大表与冗长引擎说明，情感页不再渲染情感强度附属说明块、分析状态卡和分析说明块；本轮还用 Playwright 对两个页面做了 DOM 级检查，确认这些区块已经从实际页面移除。
+- `web/src/shared/layout/AppShell.tsx` 本轮已删掉顶栏里的“导出演示报告 / 导出交付包 / 查看项目说明”按钮、伪账号胶囊和侧栏底部演示环境卡，只保留当前页面上下文和全局搜索。
+- `web/src/shared/constants/navigation.ts` 已同步压缩模块命名与摘要，把“博物馆图像识别 / 描述”收口为“博物馆图像理解”，把“历史记录与项目说明”收口为“历史记录”。
+- `web/src/features/dashboard/page.tsx` 已删除 Hero 眉题、事实条与指标装饰卡，让首页首屏回到“模块入口 + 运行时状态 + 最近记录”的核心结构。
+- `web/src/features/history/page.tsx` 已删除项目说明面板与模块导览区块，页面现在只保留筛选、导出、表格和分页；对应测试 `web/src/features/history/page.test.tsx` 已按新结构重写。
+- `web/src/features/museum-vision/page.tsx` 已删除底部数据来源说明面板；`web/src/features/museum-vision/page.test.tsx` 也已同步去掉相关断言。
+- `web/src/shared/layout/AppShell.test.tsx` 已按新壳层结构收口为搜索相关断言，不再维持导出按钮、账号卡和工具栏的旧测试假设。
 - `web/src/styles/globals.css` 本轮又补了一次首页搜索浮层热修：把共享顶栏 `.topbar` 从 `overflow: hidden` 调整为 `overflow: visible`，并给 `.search-box__results` 增加 `z-index`、`max-height`、`overflow-y: auto` 与 `overscroll-behavior: contain`，解决搜索建议被下方内容遮挡且长结果列表无法自收口的问题。
 - 这次热修已做真实页面复核：本地临时拉起 `uvicorn` 与 `vite` 后，用 Playwright 在首页输入 `大都会艺术博物馆`，确认建议面板可跨出顶栏显示在 Hero 上层，且 8 条结果会在面板内滚动；复核截图落盘为 `output/search-overlay-check.png`。
 - `web/src/styles/globals.css` 本轮继续补了一次共享顶栏热修：把 `.workspace` 升级为 `container-type: inline-size`，并新增两个 workspace 级 container query，让顶栏根据真实内容区宽度自适应切成两行或三行，而不是继续依赖会被侧栏干扰的 viewport 断点。
@@ -236,8 +254,7 @@ Last updated: 2026-06-09
 
 ## Blockers And Risks
 
-- 当前没有活跃 blocker 卡住图像识别修复本身；后端 `pytest` 已重新完整转绿。
-- 但项目级 `./init.sh` 本轮没有全绿，失败点落在用户工作树里已存在的 `museum-vision` 前端组件测试断言漂移上；如果下一轮要恢复整仓统一绿基线，优先处理 `web/src/features/museum-vision/page.test.tsx` 与对应页面 metadata/文案变更，而不是回头改这次图像识别逻辑。
+- 当前没有活跃 blocker；最新一轮 `./init.sh` 与真实 DeepSeek API 复核都已通过。
 - 当前 `每日 AI 邮件速递` 自动化已经完成创建，但本轮没有发送真实测试邮件；如果后续要百分百确认投递链路，需要额外做一次实际发送验证。
 - 如果后续页面开发跨度过大，容易再次回到“多个模块同时进行但没有完成证据”的状态，需要严格遵守单 feature 规则。
 - 当前 Git 基线已经建立，但像 `backend/var/`、`output/`、实验压缩包和重复原图这类本地资产现在是有意不入库的；如果后续有人需要完整原始素材，必须从本机工作区或外部备份恢复，而不是指望 GitHub 仓库自带这些文件。
@@ -252,11 +269,10 @@ Last updated: 2026-06-09
 
 ## First Good Next Tasks
 
-1. 如果需要把项目基线重新拉回 `./init.sh` 全绿，优先修复 `web/src/features/museum-vision/page.test.tsx` 中 3 条已经漂移的断言，再复跑统一验收。
-2. 如果要继续强化图像识别稳健性，优先补更多“真实桌面拍摄/电商场景/带背景器皿”的中药图片回归，而不是立刻大改模型结构。
-1. 如果用户希望立即确认邮件链路，优先执行一次真实测试发送到 `946265043@qq.com`，只验证单封测试信，不改动自动化逻辑。
-2. 如果继续做产品功能，再转 `text-generation` 或 `sentiment-analysis` 的下一条单一切片，不要同时跨两个页面。
-3. 如果继续推进工程质量，优先沿现有基线补更多失败分支测试，例如复制失败、导出失败、上传异常和接口异常保底。
+1. 如果继续做文本模块优化，优先提升 `text-generation` 与 `sentiment-analysis` 的 DeepSeek 提示词质量和结果稳定性，不要再回头折腾接入层。
+2. 如果继续做页面收口，优先排查其它页面是否还残留“项目说明 / 演示环境 / 无关说明”类装饰性文案，保持这轮精简方向一致。
+3. 如果用户希望立即确认邮件链路，再执行一次真实测试发送到 `946265043@qq.com`，只验证单封测试信，不改动自动化逻辑。
+4. 如果继续推进工程质量，优先沿现有基线补更多失败分支测试，例如复制失败、导出失败、上传异常和接口异常保底。
 
 ## Before Ending The Next Session
 

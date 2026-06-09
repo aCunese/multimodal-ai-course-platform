@@ -234,7 +234,6 @@ describe("MuseumVisionPage", () => {
     expect(await screen.findByRole("heading", { level: 2, name: "大都会艺术博物馆" })).toBeInTheDocument();
     expect(await screen.findByText("portrait_backend_sample.jpg")).toBeInTheDocument();
     expect(screen.getByText("古典人物肖像")).toBeInTheDocument();
-    expect(screen.getByText("后端 metadata 数据来源说明。")).toBeInTheDocument();
     expect(screen.getByText("样例描述由后端 metadata 提供。")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "后端复制描述" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "后端导出标签" })).toBeInTheDocument();

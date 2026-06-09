@@ -301,12 +301,12 @@ img {
   width: min(100%, 96rem);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(18rem, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
-    "context controls"
+    "context"
     "search search";
   align-items: start;
-  gap: 1.15rem 1.5rem;
+  gap: 1rem 1.5rem;
   padding: 1.4rem 1.7rem 1.2rem;
   margin-top: 1rem;
   overflow: visible;
@@ -410,8 +410,8 @@ img {
   grid-area: search;
   position: relative;
   z-index: 1;
-  width: min(100%, 47rem);
-  min-width: min(100%, 20rem);
+  width: min(100%, 40rem);
+  min-width: min(100%, 18rem);
 }
 
 .search-box__field {

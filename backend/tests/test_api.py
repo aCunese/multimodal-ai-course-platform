@@ -16,6 +16,13 @@ from app.services import core
 pytestmark = pytest.mark.anyio
 
 
+@pytest.fixture(autouse=True)
+def clear_local_deepseek_defaults(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.delenv("MULTIMODAL_TEXT_GENERATION_PROVIDER", raising=False)
+    monkeypatch.delenv("MULTIMODAL_SENTIMENT_PROVIDER", raising=False)
+
+
 def as_data_url(path: Path, mime_type: str = "image/jpeg") -> str:
     return f"data:{mime_type};base64,{base64.b64encode(path.read_bytes()).decode('ascii')}"
 

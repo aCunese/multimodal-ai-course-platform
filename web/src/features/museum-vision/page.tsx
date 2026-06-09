@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-import museumDetail from "../../assets/illustrations/museum-detail.jpg";
 import museumSample from "../../assets/illustrations/museum-sample.jpg";
 import {
   analyzeMuseumVision,
@@ -650,24 +649,6 @@ export function MuseumVisionPage() {
               {tag}
             </span>
           ))}
-        </div>
-      </Panel>
-
-      <Panel title="数据来源说明" icon="cube">
-        <div className="museum-data-source">
-          <div className="check-list">
-            {metadata.dataSourceItems.map((item) => (
-              <div key={item.title}>
-                <strong>{item.title}</strong>
-                <p>{formatMuseumCopy(item.body)}</p>
-              </div>
-            ))}
-            <div>
-              <strong>历史记录 ID</strong>
-              <p>{analysis.historyRecord.id}</p>
-            </div>
-          </div>
-          <img src={museumDetail} alt="数据来源说明插图" className="museum-data-source__art" />
         </div>
       </Panel>
     </div>

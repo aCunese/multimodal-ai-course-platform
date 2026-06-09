@@ -75,28 +75,6 @@ const initialMetadata: SentimentAnalysisMetadataResponse = {
 
 const localSentimentFallbackMessage = "情感分析接口暂时不可用，当前已根据输入内容执行本地兜底分析。";
 
-function resolveSentimentStrengthCopy(result: SentimentAnalysisResponse) {
-  const intensity = Math.abs(result.score);
-
-  if (result.status === "待分析") {
-    return "等待分析";
-  }
-
-  if (result.label === "中性") {
-    return intensity >= 0.18 ? "轻微摇摆" : "接近中性";
-  }
-
-  if (intensity >= 0.75) {
-    return `强烈${result.label}`;
-  }
-
-  if (intensity >= 0.45) {
-    return `明显${result.label}`;
-  }
-
-  return `轻微${result.label}`;
-}
-
 function renderSentimentKeywordLabel(label: string, usedFallback: boolean) {
   const translatedLabel = formatSentimentKeyword(label);
 
@@ -125,24 +103,6 @@ export function SentimentAnalysisPage() {
   const visibleNegativeKeywords = positiveOnly ? [] : result.negativeMatches;
   const confidenceTone =
     result.status === "待分析" ? "neutral" : result.label === "负面" ? "warning" : "success";
-  const scoreMarkerPosition = `${((result.score + 1) / 2) * 100}%`;
-  const scoreStrengthCopy = resolveSentimentStrengthCopy(result);
-  const scoreFillStyle =
-    result.score >= 0
-      ? { left: "50%", width: `${Math.abs(result.score) * 50}%` }
-      : { left: `${50 - Math.abs(result.score) * 50}%`, width: `${Math.abs(result.score) * 50}%` };
-  const scoreToneClass =
-    result.label === "负面"
-      ? "sentiment-scale__fill sentiment-scale__fill--negative"
-      : result.label === "正面"
-        ? "sentiment-scale__fill sentiment-scale__fill--positive"
-        : "sentiment-scale__fill sentiment-scale__fill--neutral";
-  const scorePointToneClass =
-    result.label === "负面"
-      ? "sentiment-scale__point sentiment-scale__point--negative"
-      : result.label === "正面"
-        ? "sentiment-scale__point sentiment-scale__point--positive"
-        : "sentiment-scale__point sentiment-scale__point--neutral";
   const visibleSyncMessage =
     isAnalyzing
       ? metadata.syncAnalyzingMessage
@@ -288,7 +248,7 @@ export function SentimentAnalysisPage() {
           </div>
         </Panel>
 
-        <Panel title="情感结果" icon="chart" action={<StatusBadge tone={confidenceTone}>{result.status}</StatusBadge>}>
+        <Panel title="情感结果" icon="chart" action={<StatusBadge tone={confidenceTone}>{providerStatusLabel}</StatusBadge>}>
           <div className="result-card-grid">
             <div className="result-mini-card">
               <p>情感倾向</p>
@@ -325,16 +285,17 @@ export function SentimentAnalysisPage() {
       >
         <div className="keyword-section">
           <div>
-              <p className="keyword-section__label">积极关键词（Top 5）</p>
-              <div className="chip-row">
-                {result.positiveMatches.map((item) => (
-                  <span key={item.label} className="chip chip--success chip--wide">
-                    {renderSentimentKeywordLabel(item.label, result.usedFallback)}
-                    <strong>{item.score}</strong>
-                  </span>
-                ))}
-              </div>
+            <p className="keyword-section__label">积极关键词（Top 5）</p>
+            <div className="chip-row">
+              {result.positiveMatches.map((item) => (
+                <span key={item.label} className="chip chip--success chip--wide">
+                  {renderSentimentKeywordLabel(item.label, result.usedFallback)}
+                  <strong>{item.score}</strong>
+                </span>
+              ))}
             </div>
+          </div>
+
           {!positiveOnly ? (
             <div>
               <p className="keyword-section__label">消极关键词（Top 3）</p>
@@ -350,56 +311,6 @@ export function SentimentAnalysisPage() {
           ) : null}
         </div>
       </Panel>
-
-      <section className="page-grid page-grid--two">
-        <Panel title="情感强度可视化" icon="spark">
-          <div className="sentiment-scale">
-            <div className="sentiment-scale__labels">
-              <span>负面</span>
-              <span>中性</span>
-              <span>正面</span>
-            </div>
-            <div className="sentiment-scale__bar">
-              <span className={scoreToneClass} style={scoreFillStyle} />
-              <span className={scorePointToneClass} style={{ left: scoreMarkerPosition }}>
-                {scoreStrengthCopy}
-              </span>
-            </div>
-            <div className="score-card">
-              <strong>{result.score.toFixed(2)} / 1.00</strong>
-              <p>{scoreStrengthCopy}</p>
-              <span className="field-caption">
-                积极线索 {result.positiveMatches.length} 条 · 消极线索 {result.negativeMatches.length} 条
-              </span>
-            </div>
-          </div>
-        </Panel>
-
-        <Panel title="分析状态" icon="history">
-          <dl className="info-list">
-            <div>
-              <dt>状态</dt>
-              <dd>{result.status}</dd>
-            </div>
-            <div>
-              <dt>完成时间</dt>
-              <dd>{result.completedAt}</dd>
-            </div>
-            <div>
-              <dt>处理耗时</dt>
-              <dd>{result.processingTime}</dd>
-            </div>
-            <div>
-              <dt>当前引擎</dt>
-              <dd>{providerStatusLabel}</dd>
-            </div>
-            <div>
-              <dt>任务 ID</dt>
-                <dd>{result.taskId}</dd>
-            </div>
-          </dl>
-        </Panel>
-      </section>
     </div>
   );
 }

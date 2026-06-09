@@ -200,12 +200,11 @@ describe("SentimentAnalysisPage", () => {
       screen.getByText("情感分析接口暂时不可用，当前已根据输入内容执行本地兜底分析。"),
     ).toBeInTheDocument();
     expect(screen.getByText("当前分析引擎：本地规则兜底")).toBeInTheDocument();
-    expect(screen.getAllByText("已完成")).toHaveLength(2);
     expect(screen.getByText("失败")).toBeInTheDocument();
     expect(screen.getByText("缺乏新意")).toBeInTheDocument();
   });
 
-  it("keeps the sentiment scale responsive for strong Chinese negative input during local fallback", async () => {
+  it("keeps strong Chinese negative input understandable during local fallback", async () => {
     getSentimentAnalysisMetadataMock.mockRejectedValue(new Error("metadata offline"));
     analyzeSentimentMock.mockRejectedValue(new Error("analyze offline"));
 
@@ -218,6 +217,6 @@ describe("SentimentAnalysisPage", () => {
 
     expect(await screen.findByText("负面判断")).toBeInTheDocument();
     expect(screen.getByText("讨厌")).toBeInTheDocument();
-    expect(screen.getByText(/-\d\.\d{2} \/ 1\.00/)).toBeInTheDocument();
+    expect(screen.getByText("崩溃")).toBeInTheDocument();
   });
 });
