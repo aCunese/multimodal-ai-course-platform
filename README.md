@@ -33,6 +33,8 @@ multimodal-ai-course-platform/
 │       ├── experiment-01-herbal-image-classification/
 │       ├── experiment-02-text-analysis-generation/
 │       └── experiment-03-museum-multimodal/
+├── deploy/
+│   └── docker/
 ├── docs/
 │   ├── api/
 │   ├── architecture/
@@ -81,10 +83,12 @@ multimodal-ai-course-platform/
 21. 项目根目录命名已经统一为 `multimodal-ai-course-platform/`，后续文档、脚本和交接流程都以这个路径为准。
 22. 课程文档生成脚本已经收回到 `scripts/`，工作区根目录不再保留业务脚本。
 23. 顶栏现在还支持通过后端 `GET /api/v1/project-deliverables/export` 一次下载 ZIP 交付包，统一包含项目报告、历史记录、运行时状态、历史页元信息、OpenAPI 合同，以及 `README / feature_list / progress / session-handoff / architecture` 等项目状态文档；包内 `manifest.json` 还会继续提供 `category / sizeBytes / sha256 / contentType / sourceKind / sourcePath` 等结构化元信息，便于课程提交、验收复核与项目交接。
+24. 项目现在还补齐了 Docker Compose 容器化交付链路：可用 `docker-compose.yml + deploy/docker/` 直接拉起前后端，并通过 `scripts/package_submission_bundles.sh` 一键生成“源码压缩包 + 容器化运行压缩包”，用于替代课程清单中的“虚拟机压缩包”。
 
 ## 下一步建议
 
 1. 继续扩展 `backend/tests/`，把缓存失效、异常恢复和模型产物兼容性场景补得更完整。
 2. 如果继续深化前端质量，优先沿现有 `Vitest + RTL` 基线补测更多关键模块，而不是回到只靠 smoke 的状态。
 3. 如果准备接入 CI 或正式部署流程，优先复用现有 `./init.sh e2e` 和 `backend/scripts/warm_runtime_assets.py`，避免另起一套验收命令。
-4. 如果继续深化后端能力，可以考虑把当前轻量运行时模型进一步沉淀为更接近课程原实验的离线权重或构建产物。
+4. 如果准备课程提交或答辩归档，优先使用 `./scripts/package_submission_bundles.sh` 生成容器替代交付物，并在提交说明中注明“Docker Compose 容器包用于替代虚拟机镜像”。
+5. 如果继续深化后端能力，可以考虑把当前轻量运行时模型进一步沉淀为更接近课程原实验的离线权重或构建产物。

@@ -30,13 +30,27 @@ class MockImage {
   }
 }
 
+class MockFileReader {
+  result: string | ArrayBuffer | null = null;
+  onload: null | (() => void) = null;
+  onerror: null | (() => void) = null;
+
+  readAsDataURL(file: Blob) {
+    const mimeType = file.type || "image/jpeg";
+    this.result = `data:${mimeType};base64,${btoa("mock-museum-image")}`;
+    queueMicrotask(() => {
+      this.onload?.();
+    });
+  }
+}
+
 describe("MuseumVisionPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     clipboardWriteTextMock.mockResolvedValue(undefined);
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(new Blob(["museum-image"], { type: "image/jpeg" }))));
     vi.stubGlobal("Image", MockImage);
-    vi.stubGlobal("FileReader", FileReader);
+    vi.stubGlobal("FileReader", MockFileReader);
     vi.stubGlobal("URL", {
       ...URL,
       createObjectURL: vi.fn(() => "blob:uploaded-museum-image"),
@@ -231,6 +245,9 @@ describe("MuseumVisionPage", () => {
     expect(screen.getByRole("button", { name: "后端打开预览" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "后端下载图片" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "后端切换预览" })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(analyzeMuseumVisionMock).toHaveBeenCalledTimes(1);
+    });
     expect(analyzeMuseumVisionMock).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -319,6 +336,9 @@ describe("MuseumVisionPage", () => {
     render(<MuseumVisionPage />);
 
     expect(await screen.findByRole("heading", { name: "大都会艺术博物馆" })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(analyzeMuseumVisionMock).toHaveBeenCalledTimes(1);
+    });
 
     const file = new File(["broken-upload"], "broken-upload.jpg", { type: "image/jpeg" });
     const fileInput = document.querySelector('input[type="file"]');

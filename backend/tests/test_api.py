@@ -192,7 +192,7 @@ async def test_sentiment_analysis_metadata_returns_backend_defaults(tmp_path: Pa
         "activeProvider": "local",
         "enabled": True,
         "statusLabel": "当前分析引擎：本地词典",
-        "detailMessage": "当前未启用 DeepSeek 情感分析，系统使用本地 IMDb 词典规则完成判断。",
+        "detailMessage": "当前使用本地分析服务；配置 DEEPSEEK_API_KEY 后会自动切换为 DeepSeek。",
     }
     assert payload["modelLabel"] == "IMDB 评论情感分析"
     assert payload["analysisNote"].startswith("本模型基于 IMDb 电影评论数据集训练")
@@ -254,7 +254,7 @@ async def test_text_generation_metadata_returns_backend_defaults(tmp_path: Path,
         "activeProvider": "local",
         "enabled": True,
         "statusLabel": "当前生成引擎：本地模板",
-        "detailMessage": "当前未启用 DeepSeek 文案生成，系统将使用本地模板与诗词语料生成结果。",
+        "detailMessage": "当前使用本地生成服务；配置 DEEPSEEK_API_KEY 后会自动切换为 DeepSeek。",
     }
     assert payload["sampleOutputs"][0]["title"] == "课程成果平台展示标题"
     assert payload["defaultQualityMetrics"][0]["label"] == "主题相关度"
@@ -439,9 +439,23 @@ async def test_text_generation_metadata_reports_deepseek_missing_key_status(tmp_
         "configuredProvider": "deepseek",
         "activeProvider": "local",
         "enabled": False,
-        "statusLabel": "当前生成引擎：本地模板（未启用 DeepSeek）",
-        "detailMessage": "已配置 DeepSeek 文案生成模式，但当前未检测到 DEEPSEEK_API_KEY，系统将回退到本地模板与诗词语料。",
+        "statusLabel": "当前生成引擎：本地模板",
+        "detailMessage": "未检测到 DEEPSEEK_API_KEY，当前继续使用本地模板与诗词语料生成结果。",
     }
+
+
+async def test_text_generation_metadata_auto_enables_deepseek_when_api_key_exists(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("MULTIMODAL_APP_DB_PATH", str(tmp_path / "generation-metadata-auto.db"))
+    monkeypatch.delenv("MULTIMODAL_TEXT_GENERATION_PROVIDER", raising=False)
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+    async with create_client() as client:
+        response = await client.get("/api/v1/text-generation/metadata")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["providerStatus"]["configuredProvider"] == "deepseek"
+    assert payload["providerStatus"]["activeProvider"] == "deepseek"
+    assert payload["providerStatus"]["enabled"] is True
+    assert payload["providerStatus"]["statusLabel"] == "当前生成引擎：DeepSeek"
 
 
 async def test_sentiment_analysis_uses_deepseek_when_provider_enabled(tmp_path: Path, monkeypatch):
@@ -498,6 +512,20 @@ async def test_sentiment_analysis_falls_back_to_local_when_deepseek_raises(tmp_p
     assert payload["providerUsed"] == "local"
     assert payload["usedFallback"] is True
     assert payload["providerStatusMessage"] == "当前分析引擎：本地词典（DeepSeek 回退）"
+
+
+async def test_sentiment_analysis_metadata_auto_enables_deepseek_when_api_key_exists(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("MULTIMODAL_APP_DB_PATH", str(tmp_path / "sentiment-metadata-auto.db"))
+    monkeypatch.delenv("MULTIMODAL_SENTIMENT_PROVIDER", raising=False)
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+    async with create_client() as client:
+        response = await client.get("/api/v1/sentiment-analysis/metadata")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["providerStatus"]["configuredProvider"] == "deepseek"
+    assert payload["providerStatus"]["activeProvider"] == "deepseek"
+    assert payload["providerStatus"]["enabled"] is True
+    assert payload["providerStatus"]["statusLabel"] == "当前分析引擎：DeepSeek"
 
 
 async def test_history_filter_finds_generated_record(tmp_path: Path, monkeypatch):

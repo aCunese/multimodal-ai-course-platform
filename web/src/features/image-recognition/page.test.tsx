@@ -27,12 +27,26 @@ class MockImage {
   }
 }
 
+class MockFileReader {
+  result: string | ArrayBuffer | null = null;
+  onload: null | (() => void) = null;
+  onerror: null | (() => void) = null;
+
+  readAsDataURL(file: Blob) {
+    const mimeType = file.type || "image/jpeg";
+    this.result = `data:${mimeType};base64,${btoa("mock-image-data")}`;
+    queueMicrotask(() => {
+      this.onload?.();
+    });
+  }
+}
+
 describe("ImageRecognitionPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(new Blob(["sample-image"], { type: "image/jpeg" }))));
     vi.stubGlobal("Image", MockImage);
-    vi.stubGlobal("FileReader", FileReader);
+    vi.stubGlobal("FileReader", MockFileReader);
     vi.stubGlobal("URL", {
       ...URL,
       createObjectURL: vi.fn(() => "blob:uploaded-herbal-image"),
@@ -168,6 +182,9 @@ describe("ImageRecognitionPage", () => {
     expect(screen.getByText("后端结果解释")).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 2, name: "后端概率分布" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 2, name: "后端模型信息" })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(classifyImageMock).toHaveBeenCalledTimes(1);
+    });
     expect(classifyImageMock).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -233,6 +250,9 @@ describe("ImageRecognitionPage", () => {
     render(<ImageRecognitionPage />);
 
     expect(await screen.findByRole("heading", { name: "党参" })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(classifyImageMock).toHaveBeenCalledTimes(1);
+    });
 
     const file = new File(["broken-upload"], "broken-upload.jpg", { type: "image/jpeg" });
     const fileInput = document.querySelector('input[type="file"]');

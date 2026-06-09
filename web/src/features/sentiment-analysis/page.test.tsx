@@ -153,12 +153,9 @@ describe("SentimentAnalysisPage", () => {
     expect(await screen.findByText("正面判断")).toBeInTheDocument();
     expect(await screen.findByText("精彩")).toBeInTheDocument();
     expect(await screen.findByText("节奏慢")).toBeInTheDocument();
-    expect(screen.getByText("后端情感模型说明")).toBeInTheDocument();
-    expect(screen.getByText("后端分析说明文案。")).toBeInTheDocument();
     expect(screen.getByLabelText("后端文本输入标签")).toBeInTheDocument();
     expect(screen.queryByText("后端分析已接通")).not.toBeInTheDocument();
     expect(screen.getByText("当前分析引擎：DeepSeek")).toBeInTheDocument();
-    expect(screen.getByText("后端当前已启用 DeepSeek 情感分析。")).toBeInTheDocument();
 
     await userEvent.clear(screen.getByRole("textbox"));
     await userEvent.type(screen.getByRole("textbox"), "This sequel is a flop and feels copied.");

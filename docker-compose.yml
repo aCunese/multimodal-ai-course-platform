@@ -1,0 +1,33 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: deploy/docker/backend.Dockerfile
+    container_name: multimodal-ai-course-platform-backend
+    environment:
+      MULTIMODAL_APP_DB_PATH: /app/backend/var/history.db
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      MULTIMODAL_TEXT_GENERATION_PROVIDER: ${MULTIMODAL_TEXT_GENERATION_PROVIDER:-auto}
+      MULTIMODAL_SENTIMENT_PROVIDER: ${MULTIMODAL_SENTIMENT_PROVIDER:-auto}
+    ports:
+      - "8000:8000"
+    volumes:
+      - backend_var:/app/backend/var
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: deploy/docker/frontend.Dockerfile
+      args:
+        VITE_API_BASE_URL: /api/v1
+    container_name: multimodal-ai-course-platform-web
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+volumes:
+  backend_var:

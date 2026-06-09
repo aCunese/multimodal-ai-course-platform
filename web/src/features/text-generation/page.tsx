@@ -68,7 +68,6 @@ type TextGenerationSyncState =
   | "copy-failure";
 
 const localTextGenerationFallbackMessage = "文案生成接口暂时不可用，当前已根据输入主题生成本地兜底结果。";
-const localTextGenerationFallbackDetail = "当前未连接后端生成服务，系统已按当前主题、风格和类型生成本地兜底文案。";
 
 function resolveSyncMessage(metadata: TextGenerationMetadataResponse, syncState: TextGenerationSyncState) {
   switch (syncState) {
@@ -90,22 +89,6 @@ function resolveSyncMessage(metadata: TextGenerationMetadataResponse, syncState:
     default:
       return metadata.syncConnectingMessage;
   }
-}
-
-function resolveProviderDetail(
-  metadata: TextGenerationMetadataResponse,
-  providerUsed: "local" | "deepseek",
-  usedFallback: boolean,
-) {
-  if (providerUsed === "deepseek" && !usedFallback) {
-    return "本次结果由 DeepSeek 实时生成。";
-  }
-
-  if (usedFallback) {
-    return "当前请求未能稳定使用 DeepSeek，系统已自动回退到本地模板并保留可用结果。";
-  }
-
-  return metadata.providerStatus.detailMessage;
 }
 
 function buildPaginationItems(currentPage: number, totalPages: number) {
@@ -140,7 +123,6 @@ export function TextGenerationPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [syncState, setSyncState] = useState<TextGenerationSyncState>("connecting");
   const [providerStatusLabel, setProviderStatusLabel] = useState(initialMetadata.providerStatus.statusLabel);
-  const [providerStatusDetail, setProviderStatusDetail] = useState(initialMetadata.providerStatus.detailMessage);
   const [currentHistoryPage, setCurrentHistoryPage] = useState(1);
 
   const totalHistoryPages = Math.max(1, Math.ceil(history.length / historyPageSize));
@@ -174,7 +156,6 @@ export function TextGenerationPage() {
         setQualityTip(response.defaultQualityTip);
         setToneKeywords(response.defaultToneKeywords);
         setProviderStatusLabel(response.providerStatus.statusLabel);
-        setProviderStatusDetail(response.providerStatus.detailMessage);
       } catch {
         // Keep local metadata fallback when the backend metadata endpoint is unavailable.
       }
@@ -228,7 +209,6 @@ export function TextGenerationPage() {
         setLastGeneratedAt(response.generatedAt);
         setCopiedId(null);
         setProviderStatusLabel(response.providerStatusMessage);
-        setProviderStatusDetail(resolveProviderDetail(metadata, response.providerUsed, response.usedFallback));
       });
 
       setSyncState("generate-success");
@@ -245,7 +225,6 @@ export function TextGenerationPage() {
         setLastGeneratedAt(fallbackResponse.generatedAt);
         setCopiedId(null);
         setProviderStatusLabel(fallbackResponse.providerStatusMessage);
-        setProviderStatusDetail(localTextGenerationFallbackDetail);
       });
 
       setSyncState("generate-local-fallback");
@@ -270,7 +249,6 @@ export function TextGenerationPage() {
     setToneKeywords(metadata.defaultToneKeywords);
     setCopiedId(null);
     setProviderStatusLabel(metadata.providerStatus.statusLabel);
-    setProviderStatusDetail(metadata.providerStatus.detailMessage);
     setSyncState("restore-example");
   }
 
@@ -426,11 +404,10 @@ export function TextGenerationPage() {
             </div>
           </Panel>
 
-          <Panel title="可用于答辩展示" icon="light">
+          <Panel title="生成摘要" icon="light">
             <div className="check-list">
               <div>
                 <strong>{providerStatusLabel}</strong>
-                <p>{providerStatusDetail}</p>
               </div>
               <div>
                 <strong>{tone}风格</strong>

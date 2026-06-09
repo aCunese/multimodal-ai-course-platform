@@ -74,7 +74,6 @@ const initialMetadata: SentimentAnalysisMetadataResponse = {
 };
 
 const localSentimentFallbackMessage = "情感分析接口暂时不可用，当前已根据输入内容执行本地兜底分析。";
-const localSentimentFallbackDetail = "当前未连接后端分析服务，系统已根据当前输入内容执行本地规则兜底。";
 
 function resolveSentimentStrengthCopy(result: SentimentAnalysisResponse) {
   const intensity = Math.abs(result.score);
@@ -113,21 +112,6 @@ function renderSentimentKeywordLabel(label: string, usedFallback: boolean) {
   );
 }
 
-function resolveProviderDetail(
-  metadata: SentimentAnalysisMetadataResponse,
-  response: SentimentAnalysisResponse,
-) {
-  if (response.providerUsed === "deepseek" && !response.usedFallback) {
-    return "本次结果由 DeepSeek 实时分析得出。";
-  }
-
-  if (response.usedFallback) {
-    return "当前请求未能稳定使用 DeepSeek，系统已自动回退到本地 IMDb 词典规则。";
-  }
-
-  return metadata.providerStatus.detailMessage;
-}
-
 export function SentimentAnalysisPage() {
   const [metadata, setMetadata] = useState<SentimentAnalysisMetadataResponse>(initialMetadata);
   const [text, setText] = useState(initialMetadata.sampleText);
@@ -136,7 +120,6 @@ export function SentimentAnalysisPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [syncMessage, setSyncMessage] = useState(initialMetadata.syncLoadingMessage);
   const [providerStatusLabel, setProviderStatusLabel] = useState(initialMetadata.providerStatus.statusLabel);
-  const [providerStatusDetail, setProviderStatusDetail] = useState(initialMetadata.providerStatus.detailMessage);
   const [hasTriggeredManualAnalysis, setHasTriggeredManualAnalysis] = useState(false);
 
   const visibleNegativeKeywords = positiveOnly ? [] : result.negativeMatches;
@@ -197,7 +180,6 @@ export function SentimentAnalysisPage() {
         setText(response.sampleText);
         setResult(response.pendingResult);
         setProviderStatusLabel(response.providerStatus.statusLabel);
-        setProviderStatusDetail(response.providerStatus.detailMessage);
       } catch {
         if (cancelled) {
           return;
@@ -226,14 +208,12 @@ export function SentimentAnalysisPage() {
         setResult(response);
         setSyncMessage(nextMetadata.syncReadyMessage);
         setProviderStatusLabel(response.providerStatusMessage);
-        setProviderStatusDetail(nextMetadata.providerStatus.detailMessage);
       } catch {
         if (!cancelled) {
           const fallbackResponse = buildLocalSentimentAnalysis(nextSampleText.trim());
           setResult(fallbackResponse);
           setSyncMessage(localSentimentFallbackMessage);
           setProviderStatusLabel(fallbackResponse.providerStatusMessage);
-          setProviderStatusDetail(localSentimentFallbackDetail);
         }
       } finally {
         if (!cancelled) {
@@ -264,13 +244,11 @@ export function SentimentAnalysisPage() {
       setResult(response);
       setSyncMessage(metadata.syncReadyMessage);
       setProviderStatusLabel(response.providerStatusMessage);
-      setProviderStatusDetail(resolveProviderDetail(metadata, response));
     } catch {
       const fallbackResponse = buildLocalSentimentAnalysis(nextText.trim());
       setResult(fallbackResponse);
       setSyncMessage(localSentimentFallbackMessage);
       setProviderStatusLabel(fallbackResponse.providerStatusMessage);
-      setProviderStatusDetail(localSentimentFallbackDetail);
     } finally {
       setIsAnalyzing(false);
     }
@@ -412,10 +390,6 @@ export function SentimentAnalysisPage() {
               <dd>{result.processingTime}</dd>
             </div>
             <div>
-              <dt>模型</dt>
-              <dd>{metadata.modelLabel}</dd>
-            </div>
-            <div>
               <dt>当前引擎</dt>
               <dd>{providerStatusLabel}</dd>
             </div>
@@ -426,19 +400,6 @@ export function SentimentAnalysisPage() {
           </dl>
         </Panel>
       </section>
-
-      <Panel title="分析说明" icon="light">
-        <div className="check-list">
-          <div>
-            <strong>引擎说明</strong>
-            <p>{providerStatusDetail}</p>
-          </div>
-          <div>
-            <strong>模型说明</strong>
-            <p>{metadata.analysisNote}</p>
-          </div>
-        </div>
-      </Panel>
     </div>
   );
 }

@@ -1,9 +1,19 @@
 # Progress
 
-Last updated: 2026-06-07
+Last updated: 2026-06-09
 
 ## Current Snapshot
 
+- 工作区根目录现已初始化为一个轻量 Git 路由仓库，并补上了根级 `.gitignore`：外层仓库现在会忽略 `.playwright-mcp/`、根目录临时截图资产、废弃 `项目3/` 路径以及内层正式项目仓库 `multimodal-ai-course-platform/`，这样 Codex 查看当前目录 Git 状态时不会再被嵌套仓库和调试噪音淹没。
+- 根目录旧 `项目3/` 已核对为仅含空白残留文档的废弃占位路径；本轮已按 canonical root 规则将这批占位文件清理出工作区入口层，避免后续会话误把旧路径当作正式项目入口。
+- 首页全局搜索建议层本轮补了一次共享样式热修：`web/src/styles/globals.css` 里把 `.topbar` 从 `overflow: hidden` 改为 `overflow: visible`，并为 `.search-box__results` 增加 `z-index`、可滚动高度上限与 `overscroll-behavior`，解决了用户搜索时建议面板被首页下方内容遮挡/裁切的问题。
+- 这次搜索层修复已经做过真实页面复核：用 Playwright 在 `http://127.0.0.1:5173/` 输入 `大都会艺术博物馆` 后，建议层可以完整浮到首页 Hero 上方显示，8 条结果全部可见，更多结果时会在面板内部滚动；截图已保存到 `output/search-overlay-check.png`。
+- 本轮已补齐课程提交所需的容器化交付链路：项目根新增 `docker-compose.yml`、`deploy/docker/` 与 `.dockerignore`，前端改为 `Nginx` 托管静态资源并反代 `FastAPI`，后端镜像则会携带课程数据、OpenAPI 合同与交付文档，适合作为“虚拟机压缩包”的容器替代方案。
+- `docs/course-materials/container-delivery.md` 已补上课程语境下的容器交付说明，明确了“源码压缩包 + 容器化运行压缩包”的替代提交方式；`scripts/package_submission_bundles.sh` 则已落成一键打包脚本，可自动生成两份提交压缩包。
+- 本轮已经实际执行 `./scripts/package_submission_bundles.sh`，并在 `output/submission/` 下生成 `源码压缩包.zip` 与 `容器化运行压缩包.zip` 两份交付物。
+- 围绕这次容器化交付做了静态验证：`bash -n scripts/package_submission_bundles.sh` 通过，`docker-compose.yml` 已用 Ruby `YAML.load_file` 成功解析出 `backend, web` 两个服务；但当前机器没有可用的 `docker` 命令，因此这轮无法本地执行 `docker compose build/up` 或导出预构建镜像 tar。
+- 启动项目时顺手修复了两组已经漂移的前端组件测试：`web/src/features/image-recognition/page.test.tsx` 与 `web/src/features/museum-vision/page.test.tsx` 现在都补上了稳定的图片读取 mock，并把断言对齐到当前 metadata 驱动页面行为；项目根目录 fresh 执行 `./init.sh` 已重新全绿，结果为前端组件测试 `9 passed files / 39 passed tests`、前端生产构建通过、后端 `pytest 53 passed`。
+- 当前本地开发服务也已直接拉起：后端 `uvicorn` 运行于 `http://127.0.0.1:8000`，前端 `Vite` 运行于 `http://127.0.0.1:5173/`，并已通过 `curl` 实际探活首页与 `GET /api/v1/dashboard`。
 - 共享顶栏本轮又补了一次更贴近你截图问题的收口：这次没有再按整个浏览器宽度做断点，而是把 `web/src/styles/globals.css` 里的 `.workspace` 升级成 `container-type: inline-size` 容器，再用 container query 按实际内容区宽度切换顶栏排布，所以左侧侧栏存在时，`history` 和 `museum-vision` 这类长标题页面也不会再被右侧按钮区盖住。
 - 这次修复只落在共享样式层，没有再改页面业务结构：中等宽度下顶栏会自动退成“标题一行、操作一行、搜索一行”，更窄时操作区再纵向堆叠；同时把标题字号略微收紧，避免为了保单行而继续挤压文案。
 - 围绕这次遮挡修复已完成真实复核：用 Playwright 重新抓取了 `http://127.0.0.1:5173/history` 与 `http://127.0.0.1:5173/museum-vision` 的最新桌面端截图，已确认两个页面顶部标题都完整可见，不再被按钮或账号卡压住。
@@ -153,6 +163,10 @@ cd multimodal-ai-course-platform
 
 ### Latest Verification Result
 
+- 2026-06-09：围绕“首页全局搜索建议被内容遮挡”执行了共享样式热修与真实浏览器复核，结果通过：
+  - `web/` 内执行 `npm run test -- src/shared/layout/AppShell.test.tsx`，结果为 `1 passed file / 6 passed tests`
+  - `web/` 内执行 `npm run build`，结果通过
+  - 使用 Playwright 打开 `http://127.0.0.1:5173/`，输入 `大都会艺术博物馆` 后确认 `.topbar` 计算样式为 `overflow: visible`，搜索建议层实际展开到底部内容之上，DOM 度量显示建议层底部已经越过顶栏底边且仍保持可见；对应复核截图已保存为 `output/search-overlay-check.png`
 - 2026-06-07：围绕“共享顶栏长标题被顶部操作区遮挡”执行了容器级响应式修复与整体验收，结果通过：
   - `./init.sh` 通过；当前完整验收结果为前端组件测试 `9 passed files / 39 passed tests`、前端 build 通过、后端 `pytest 53 passed`
   - 使用 Playwright 重新抓取 `http://127.0.0.1:5173/history` 与 `http://127.0.0.1:5173/museum-vision` 桌面端截图，确认共享顶栏在侧栏占宽场景下会按 workspace container query 自动改成三行排布，标题不再被右上按钮区遮挡

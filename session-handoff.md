@@ -1,6 +1,6 @@
 # Session Handoff
 
-Last updated: 2026-06-07
+Last updated: 2026-06-09
 
 ## Resume Checklist
 
@@ -12,6 +12,16 @@ Last updated: 2026-06-07
 
 ## Current Focus
 
+- 工作区根目录现在也有一个轻量 Git 外壳，用来让 Codex 在当前目录直接识别 Git 状态；根级 `.gitignore` 已明确忽略 `.playwright-mcp/`、根目录截图资产、废弃 `项目3/` 路径以及内层正式项目仓库 `multimodal-ai-course-platform/`，因此后续如果要查看业务代码状态，仍应进入正式项目根目录再执行 `git status`。
+- 本轮还顺手核对了旧 `项目3/` 目录，确认里面只有空白残留文档占位文件；这批占位文件已从工作区入口层清理，避免误把废弃路径当成正式项目根继续操作。
+- 首页顶栏全局搜索本轮又补了一次共享样式热修：`web/src/styles/globals.css` 现在把 `.topbar` 的 `overflow` 放开为 `visible`，并给 `.search-box__results` 增加更高的层级和滚动上限，因此搜索 `大都会艺术博物馆` 这类会返回多条历史建议的关键词时，建议面板不会再被首页 Hero 或下方模块卡片遮挡。
+- 围绕这次搜索建议遮挡修复已经完成定向验证与真实浏览器复核：`web` 内 `npm run test -- src/shared/layout/AppShell.test.tsx` 为 `6 passed`，`npm run build` 通过，并用 Playwright 在 `http://127.0.0.1:5173/` 输入 `大都会艺术博物馆` 做实际检查，确认建议层可完整浮出顶栏且截图已保存到 `output/search-overlay-check.png`。
+- `feat-049 课程容器化交付包` 已完成：项目根新增 `docker-compose.yml`、`.dockerignore` 与 `deploy/docker/`，前端采用 `Nginx` 托管静态构建产物并反代后端，后端镜像则会携带课程数据、文档与运行所需代码，当前可以用容器化运行包替代“虚拟机压缩包”提交。
+- `docs/course-materials/container-delivery.md` 已落成课程语境下的提交说明，明确建议采用“源码压缩包 + 容器化运行压缩包”的双包提交方式；`scripts/package_submission_bundles.sh` 已能一键生成这两份压缩包。
+- 本轮已实际生成交付物：`output/submission/源码压缩包.zip` 与 `output/submission/容器化运行压缩包.zip` 均已落盘，可直接作为本次课程提交候选产物。
+- 这条交付链路已经完成静态验证：`bash -n scripts/package_submission_bundles.sh` 通过，`docker-compose.yml` 已用 Ruby YAML 成功解析出 `backend`、`web` 两个服务；但当前机器没有可用的 `docker` 命令，所以本轮无法本地继续做 `docker compose up --build` 或导出预构建镜像 tar。
+- 启动阶段按规则执行的 `./init.sh` 现已重新全绿：本轮已修复 `web/src/features/image-recognition/page.test.tsx` 与 `web/src/features/museum-vision/page.test.tsx` 中 4 条已漂移断言，并补上稳定的 `FileReader` mock 以覆盖当前样例图 data-url 转换链路；fresh 验收结果为前端组件测试 `9 passed files / 39 passed tests`、前端 build 通过、后端 `pytest 53 passed`。
+- 当前本地服务也已经直接启动可用：后端位于 `http://127.0.0.1:8000`，前端位于 `http://127.0.0.1:5173/`，并已通过首页与 `GET /api/v1/dashboard` 探活。
 - `feat-048 共享壳层视觉精修与首页总览 UI 升级` 本轮又补了一次更精确的遮挡修复：`web/src/styles/globals.css` 现在把 `.workspace` 设为 `inline-size` 容器，并用 container query 按真实内容区宽度而不是整窗宽度来切换顶栏排布；因此在左侧边栏占宽的真实桌面场景里，`history` 和 `museum-vision` 的长标题不会再被右侧按钮区挤住。
 - 围绕这次遮挡修复已经完成 fresh 验收：项目根目录 `./init.sh` 通过，当前结果为前端组件测试 `9 passed files / 39 passed tests`、前端 build 通过、后端 `pytest 53 passed`。
 - 这次共享壳层热修也已经做了真实浏览器截图复核：重新抓取了 `/history` 与 `/museum-vision` 的桌面端页面，确认顶栏会自动退成“标题 / 操作 / 搜索”三行结构，标题完整可见且不再和按钮重叠。
@@ -40,6 +50,8 @@ Last updated: 2026-06-07
 
 ## What Changed In This Session
 
+- `web/src/styles/globals.css` 本轮又补了一次首页搜索浮层热修：把共享顶栏 `.topbar` 从 `overflow: hidden` 调整为 `overflow: visible`，并给 `.search-box__results` 增加 `z-index`、`max-height`、`overflow-y: auto` 与 `overscroll-behavior: contain`，解决搜索建议被下方内容遮挡且长结果列表无法自收口的问题。
+- 这次热修已做真实页面复核：本地临时拉起 `uvicorn` 与 `vite` 后，用 Playwright 在首页输入 `大都会艺术博物馆`，确认建议面板可跨出顶栏显示在 Hero 上层，且 8 条结果会在面板内滚动；复核截图落盘为 `output/search-overlay-check.png`。
 - `web/src/styles/globals.css` 本轮继续补了一次共享顶栏热修：把 `.workspace` 升级为 `container-type: inline-size`，并新增两个 workspace 级 container query，让顶栏根据真实内容区宽度自适应切成两行或三行，而不是继续依赖会被侧栏干扰的 viewport 断点。
 - 这次样式修复还顺手把中等宽度下的标题字号、按钮高度和账号卡最小宽度收紧了一档，因此 `history`、`museum-vision` 这类长标题页面在桌面浏览器里不会再出现“标题被按钮区盖住”的问题。
 - 针对这次热修重新执行了完整验收：项目根目录 `./init.sh` 通过，结果为前端 `9 passed files / 39 passed tests`、前端 build 通过、后端 `pytest 53 passed`；同时用 Playwright 重抓 `/history` 与 `/museum-vision` 截图确认视觉修复成立。

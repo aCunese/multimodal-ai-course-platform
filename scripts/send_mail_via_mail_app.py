@@ -5,6 +5,8 @@ from __future__ import annotations
 import argparse
 import subprocess
 import sys
+import tempfile
+from pathlib import Path
 
 
 APPLESCRIPT_SOURCE = """
@@ -66,21 +68,34 @@ def send_mail(
     account_name: str,
     sender_email: str,
 ) -> None:
-    subprocess.run(
-        [
-            "osascript",
-            "-e",
-            APPLESCRIPT_SOURCE,
-            recipient,
-            subject,
-            body,
-            account_name,
-            sender_email,
-        ],
-        check=True,
-        text=True,
-        capture_output=True,
-    )
+    script_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            suffix=".applescript",
+            delete=False,
+            encoding="utf-8",
+        ) as script_file:
+            script_file.write(APPLESCRIPT_SOURCE)
+            script_path = Path(script_file.name)
+
+        subprocess.run(
+            [
+                "osascript",
+                str(script_path),
+                recipient,
+                subject,
+                body,
+                account_name,
+                sender_email,
+            ],
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+    finally:
+        if script_path is not None:
+            script_path.unlink(missing_ok=True)
 
 
 def main() -> int:

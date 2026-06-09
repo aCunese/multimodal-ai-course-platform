@@ -40,7 +40,7 @@ describe("TextGenerationPage", () => {
         configuredProvider: "deepseek",
         activeProvider: "local",
         enabled: false,
-        statusLabel: "当前生成引擎：本地模板（未启用 DeepSeek）",
+        statusLabel: "当前生成引擎：本地模板",
         detailMessage: "后端未检测到 DeepSeek Key，当前回退到本地模板。",
       },
       toneOptions: ["正式", "活泼", "科技感", "文艺"],
@@ -161,8 +161,7 @@ describe("TextGenerationPage", () => {
     expect(screen.getByText("后端驱动的页面说明文案。")).toBeInTheDocument();
     expect(await screen.findByText("课程答辩展示自动化回归")).toBeInTheDocument();
     expect(screen.queryByText("后端历史记录已接通。")).not.toBeInTheDocument();
-    expect(screen.getByText("当前生成引擎：本地模板（未启用 DeepSeek）")).toBeInTheDocument();
-    expect(screen.getByText("后端未检测到 DeepSeek Key，当前回退到本地模板。")).toBeInTheDocument();
+    expect(screen.getByText("当前生成引擎：本地模板")).toBeInTheDocument();
 
     await userEvent.clear(screen.getByRole("textbox"));
     await userEvent.type(screen.getByRole("textbox"), "课程答辩展示自动化回归");

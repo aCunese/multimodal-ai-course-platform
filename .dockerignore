@@ -1,0 +1,11 @@
+.git
+.DS_Store
+.playwright-cli
+web/node_modules
+web/dist
+backend/.venv
+backend/.pytest_cache
+backend/var
+output
+data/**/*.zip
+

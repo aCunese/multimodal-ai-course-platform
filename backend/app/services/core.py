@@ -126,7 +126,7 @@ def _build_provider_status(
             configuredProvider="deepseek",
             activeProvider="local",
             enabled=enabled,
-            statusLabel=f"当前{local_label}（未启用 DeepSeek）",
+            statusLabel=f"当前{local_label}",
             detailMessage=missing_key_message,
         )
 
@@ -571,8 +571,8 @@ def _get_text_generation_provider_status() -> ModelProviderStatus:
         enabled=should_use_deepseek(settings),
         local_label="生成引擎：本地模板",
         deepseek_label="生成引擎",
-        local_message="当前未启用 DeepSeek 文案生成，系统将使用本地模板与诗词语料生成结果。",
-        missing_key_message="已配置 DeepSeek 文案生成模式，但当前未检测到 DEEPSEEK_API_KEY，系统将回退到本地模板与诗词语料。",
+        local_message="当前使用本地生成服务；配置 DEEPSEEK_API_KEY 后会自动切换为 DeepSeek。",
+        missing_key_message="未检测到 DEEPSEEK_API_KEY，当前继续使用本地模板与诗词语料生成结果。",
     )
 
 
@@ -804,8 +804,8 @@ def _get_sentiment_provider_status() -> ModelProviderStatus:
         enabled=should_use_deepseek(settings),
         local_label="分析引擎：本地词典",
         deepseek_label="分析引擎",
-        local_message="当前未启用 DeepSeek 情感分析，系统使用本地 IMDb 词典规则完成判断。",
-        missing_key_message="已配置 DeepSeek 情感分析模式，但当前未检测到 DEEPSEEK_API_KEY，系统将回退到本地 IMDb 词典规则。",
+        local_message="当前使用本地分析服务；配置 DEEPSEEK_API_KEY 后会自动切换为 DeepSeek。",
+        missing_key_message="未检测到 DEEPSEEK_API_KEY，当前继续使用本地规则完成分析。",
     )
 
 

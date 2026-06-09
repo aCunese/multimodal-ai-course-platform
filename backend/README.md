@@ -83,9 +83,10 @@ uv run uvicorn app.main:app --reload --port 8000
 
 ## DeepSeek 文案生成接入
 
-`POST /api/v1/text-generation/generate` 现在支持通过环境变量切换到 DeepSeek：
+`POST /api/v1/text-generation/generate` 和 `POST /api/v1/sentiment-analysis/analyze` 现在都支持通过环境变量切换到 DeepSeek：
 
-- `MULTIMODAL_TEXT_GENERATION_PROVIDER=local|deepseek`
+- `MULTIMODAL_TEXT_GENERATION_PROVIDER=auto|local|deepseek`
+- `MULTIMODAL_SENTIMENT_PROVIDER=auto|local|deepseek`
 - `DEEPSEEK_API_KEY`
 - `DEEPSEEK_BASE_URL`，默认 `https://api.deepseek.com`
 - `DEEPSEEK_MODEL`，默认 `deepseek-chat`
@@ -98,7 +99,8 @@ uv run uvicorn app.main:app --reload --port 8000
 
 回退策略：
 
-- 当 provider 为 `local` 时，继续使用现有本地模板与诗词语料生成。
+- 当 provider 为 `auto` 时，只要检测到 `DEEPSEEK_API_KEY`，文本生成和情感分析都会自动优先使用 DeepSeek。
+- 当 provider 为 `local` 时，继续使用现有本地模板 / 本地分析逻辑。
 - 当 provider 为 `deepseek` 且接口调用失败、返回非法 JSON 或未配置密钥时，自动回退到本地生成逻辑。
 
 ## 已提供接口

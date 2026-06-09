@@ -97,3 +97,17 @@ def test_generate_text_via_deepseek_rewrites_placeholder_titles(monkeypatch: pyt
     user_prompt = messages[-1]["content"]
     assert "title 绝对不能使用“标题 1”" in user_prompt
     assert "title 使用“标题 1”这种形式即可" not in user_prompt
+
+
+def test_get_deepseek_settings_auto_enables_provider_when_key_exists(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.delenv("MULTIMODAL_TEXT_GENERATION_PROVIDER", raising=False)
+    monkeypatch.delenv("MULTIMODAL_SENTIMENT_PROVIDER", raising=False)
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+
+    text_settings = llm_provider.get_deepseek_settings()
+    sentiment_settings = llm_provider.get_sentiment_deepseek_settings()
+
+    assert text_settings.provider == "deepseek"
+    assert sentiment_settings.provider == "deepseek"
+    assert llm_provider.should_use_deepseek(text_settings) is True
+    assert llm_provider.should_use_deepseek(sentiment_settings) is True
