@@ -1,4 +1,6 @@
 .DS_Store
+.codex/
+.kunsdd/
 
 # Frontend build and dependency artifacts
 web/node_modules/

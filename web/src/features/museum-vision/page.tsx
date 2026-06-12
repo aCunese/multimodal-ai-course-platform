@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-import museumDetail from "../../assets/illustrations/museum-detail.jpg";
 import museumSample from "../../assets/illustrations/museum-sample.jpg";
 import {
   analyzeMuseumVision,
@@ -112,6 +111,13 @@ const initialMetadata: MuseumVisionMetadataResponse = {
     institution: "大都会艺术博物馆",
     confidence: 89.6,
     description: "这是一幅具有古典风格的人物绘画作品，画面主体位于中央，背景色调柔和，整体呈现典型的博物馆藏品图像特征。",
+    artworkClue: {
+      title: "古典人物肖像",
+      era: "古典风格",
+      category: "人物肖像",
+      museumHint: "大都会艺术博物馆",
+      basis: "该线索根据课程样例名称与人物构图特征生成，用于帮助说明作品题材。",
+    },
     tags: ["人物肖像", "古典绘画", "博物馆藏品", "暖色调", "历史艺术", "服饰细节", "构图分析"],
     matches: [
       { institution: "大都会艺术博物馆", score: 89.6 },
@@ -133,7 +139,7 @@ const initialMetadata: MuseumVisionMetadataResponse = {
     },
   },
   sampleDescriptionNote: "当前描述结合样例图像的主体内容、构图风格与课程实验设定生成。",
-  uploadDescriptionNote: "当前描述基于上传图像的颜色、纹理与构图特征，并结合课程数据集中的相似样本生成。",
+  uploadDescriptionNote: "当前描述会同时参考上传文件名中的作品线索，以及图像颜色、纹理与构图特征，再结合课程数据集中的相似样本生成。",
   dataSourceItems: [
     {
       title: "数据来源",
@@ -576,6 +582,16 @@ export function MuseumVisionPage() {
                 <p className="result-summary__label">预测来源</p>
                 <h2>{formatMuseumInstitution(analysis.institution)}</h2>
                 <p className="analysis-copy">{formatMuseumCopy(analysis.sourceNote)}</p>
+                <div className="museum-artwork-clue">
+                  <p className="result-summary__label">作品线索</p>
+                  <h3>{analysis.artworkClue.title}</h3>
+                  <div className="museum-artwork-clue__meta">
+                    {analysis.artworkClue.era ? <span>时代：{analysis.artworkClue.era}</span> : null}
+                    {analysis.artworkClue.category ? <span>类型：{analysis.artworkClue.category}</span> : null}
+                    {analysis.artworkClue.museumHint ? <span>馆藏线索：{analysis.artworkClue.museumHint}</span> : null}
+                  </div>
+                  <p className="analysis-copy">{formatMuseumCopy(analysis.artworkClue.basis)}</p>
+                </div>
               </div>
             </div>
             <ConfidenceRing value={analysis.confidence} label="置信度" />
@@ -633,24 +649,6 @@ export function MuseumVisionPage() {
               {tag}
             </span>
           ))}
-        </div>
-      </Panel>
-
-      <Panel title="数据来源说明" icon="cube">
-        <div className="museum-data-source">
-          <div className="check-list">
-            {metadata.dataSourceItems.map((item) => (
-              <div key={item.title}>
-                <strong>{item.title}</strong>
-                <p>{formatMuseumCopy(item.body)}</p>
-              </div>
-            ))}
-            <div>
-              <strong>历史记录 ID</strong>
-              <p>{analysis.historyRecord.id}</p>
-            </div>
-          </div>
-          <img src={museumDetail} alt="数据来源说明插图" className="museum-data-source__art" />
         </div>
       </Panel>
     </div>

@@ -16,6 +16,13 @@ from app.services import core
 pytestmark = pytest.mark.anyio
 
 
+@pytest.fixture(autouse=True)
+def clear_local_deepseek_defaults(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.delenv("DEEPSEEK_API_KEY", raising=False)
+    monkeypatch.delenv("MULTIMODAL_TEXT_GENERATION_PROVIDER", raising=False)
+    monkeypatch.delenv("MULTIMODAL_SENTIMENT_PROVIDER", raising=False)
+
+
 def as_data_url(path: Path, mime_type: str = "image/jpeg") -> str:
     return f"data:{mime_type};base64,{base64.b64encode(path.read_bytes()).decode('ascii')}"
 
@@ -93,6 +100,22 @@ async def test_sentiment_analysis_creates_negative_result(tmp_path: Path, monkey
     payload = response.json()
     assert payload["label"] == "负面"
     assert payload["historyRecord"]["route"] == "/sentiment-analysis"
+
+
+async def test_sentiment_analysis_understands_strong_chinese_negative_emotion(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("MULTIMODAL_APP_DB_PATH", str(tmp_path / "sentiment-chinese-negative.db"))
+    async with create_client() as client:
+        response = await client.post(
+            "/api/v1/sentiment-analysis/analyze",
+            json={"text": "我真的很讨厌你，这句话让我特别崩溃。"},
+        )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["label"] == "负面"
+    assert payload["score"] < -0.6
+    assert payload["confidence"] >= 80
+    assert any(item["label"] == "讨厌" for item in payload["negativeMatches"])
+    assert "讨厌" in payload["explanation"]
 
 
 async def test_sentiment_analysis_keeps_frontend_sample_positive(tmp_path: Path, monkeypatch):
@@ -176,7 +199,7 @@ async def test_sentiment_analysis_metadata_returns_backend_defaults(tmp_path: Pa
         "activeProvider": "local",
         "enabled": True,
         "statusLabel": "当前分析引擎：本地词典",
-        "detailMessage": "当前未启用 DeepSeek 情感分析，系统使用本地 IMDb 词典规则完成判断。",
+        "detailMessage": "当前使用本地分析服务；配置 DEEPSEEK_API_KEY 后会自动切换为 DeepSeek。",
     }
     assert payload["modelLabel"] == "IMDB 评论情感分析"
     assert payload["analysisNote"].startswith("本模型基于 IMDb 电影评论数据集训练")
@@ -238,7 +261,7 @@ async def test_text_generation_metadata_returns_backend_defaults(tmp_path: Path,
         "activeProvider": "local",
         "enabled": True,
         "statusLabel": "当前生成引擎：本地模板",
-        "detailMessage": "当前未启用 DeepSeek 文案生成，系统将使用本地模板与诗词语料生成结果。",
+        "detailMessage": "当前使用本地生成服务；配置 DEEPSEEK_API_KEY 后会自动切换为 DeepSeek。",
     }
     assert payload["sampleOutputs"][0]["title"] == "课程成果平台展示标题"
     assert payload["defaultQualityMetrics"][0]["label"] == "主题相关度"
@@ -423,9 +446,23 @@ async def test_text_generation_metadata_reports_deepseek_missing_key_status(tmp_
         "configuredProvider": "deepseek",
         "activeProvider": "local",
         "enabled": False,
-        "statusLabel": "当前生成引擎：本地模板（未启用 DeepSeek）",
-        "detailMessage": "已配置 DeepSeek 文案生成模式，但当前未检测到 DEEPSEEK_API_KEY，系统将回退到本地模板与诗词语料。",
+        "statusLabel": "当前生成引擎：本地模板",
+        "detailMessage": "未检测到 DEEPSEEK_API_KEY，当前继续使用本地模板与诗词语料生成结果。",
     }
+
+
+async def test_text_generation_metadata_auto_enables_deepseek_when_api_key_exists(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("MULTIMODAL_APP_DB_PATH", str(tmp_path / "generation-metadata-auto.db"))
+    monkeypatch.delenv("MULTIMODAL_TEXT_GENERATION_PROVIDER", raising=False)
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+    async with create_client() as client:
+        response = await client.get("/api/v1/text-generation/metadata")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["providerStatus"]["configuredProvider"] == "deepseek"
+    assert payload["providerStatus"]["activeProvider"] == "deepseek"
+    assert payload["providerStatus"]["enabled"] is True
+    assert payload["providerStatus"]["statusLabel"] == "当前生成引擎：DeepSeek"
 
 
 async def test_sentiment_analysis_uses_deepseek_when_provider_enabled(tmp_path: Path, monkeypatch):
@@ -484,6 +521,20 @@ async def test_sentiment_analysis_falls_back_to_local_when_deepseek_raises(tmp_p
     assert payload["providerStatusMessage"] == "当前分析引擎：本地词典（DeepSeek 回退）"
 
 
+async def test_sentiment_analysis_metadata_auto_enables_deepseek_when_api_key_exists(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("MULTIMODAL_APP_DB_PATH", str(tmp_path / "sentiment-metadata-auto.db"))
+    monkeypatch.delenv("MULTIMODAL_SENTIMENT_PROVIDER", raising=False)
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "test-key")
+    async with create_client() as client:
+        response = await client.get("/api/v1/sentiment-analysis/metadata")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["providerStatus"]["configuredProvider"] == "deepseek"
+    assert payload["providerStatus"]["activeProvider"] == "deepseek"
+    assert payload["providerStatus"]["enabled"] is True
+    assert payload["providerStatus"]["statusLabel"] == "当前分析引擎：DeepSeek"
+
+
 async def test_history_filter_finds_generated_record(tmp_path: Path, monkeypatch):
     monkeypatch.setenv("MULTIMODAL_APP_DB_PATH", str(tmp_path / "history.db"))
     async with create_client() as client:
@@ -504,13 +555,13 @@ async def test_history_metadata_returns_backend_contract(tmp_path: Path, monkeyp
         response = await client.get("/api/v1/history/metadata")
     assert response.status_code == 200
     payload = response.json()
-    assert payload["pageTitle"] == "历史记录与项目说明"
-    assert payload["pageDescription"].startswith("查看平台运行记录")
+    assert payload["pageTitle"] == "历史记录"
+    assert payload["pageDescription"] == "查看平台各模块的运行记录，并按条件筛选或导出结果。"
     assert payload["syncConnectedMessage"] == "已连接历史记录接口。"
     assert payload["syncLoadingMessage"] == "正在同步历史记录..."
     assert payload["syncReadyMessage"] == "历史记录已由后端接口实时提供。"
     assert payload["syncFallbackMessage"] == "历史记录接口暂时不可用，当前展示的是本地演示数据。"
-    assert payload["filterPanelTitle"] == "历史记录筛选区"
+    assert payload["filterPanelTitle"] == "筛选记录"
     assert payload["searchFieldLabel"] == "搜索内容"
     assert payload["searchPlaceholder"] == "搜索输入内容、输出结果或记录 ID..."
     assert payload["moduleFilterLabel"] == "模块筛选"
@@ -521,12 +572,12 @@ async def test_history_metadata_returns_backend_contract(tmp_path: Path, monkeyp
     assert payload["exportButtonBusyLabel"] == "导出中..."
     assert payload["exportSuccessMessageTemplate"] == "历史记录已从后端导出为 {format} 文件。"
     assert payload["exportFallbackMessage"] == "历史记录导出接口暂时不可用，已导出当前页面数据。"
-    assert payload["tableTitle"] == "历史记录表格"
+    assert payload["tableTitle"] == "运行记录"
     assert payload["tableLoadingMessage"] == "正在同步..."
     assert payload["tableCountTemplate"] == "共 {count} 条记录"
     assert payload["tableHeaders"] == ["记录 ID", "时间", "实验模块", "输入内容", "输出结果", "置信度 / 评分", "状态", "操作"]
     assert payload["rowActionLabel"] == "查看"
-    assert payload["projectOverviewTitle"] == "项目说明"
+    assert payload["projectOverviewTitle"] == "项目概览"
     assert payload["moduleSpotlightActionLabel"] == "查看详情"
     assert payload["moduleFilters"][0] == "全部"
     assert payload["statusFilters"] == ["全部", "成功", "警告", "失败"]
@@ -550,13 +601,13 @@ async def test_app_shell_metadata_returns_backend_contract(tmp_path: Path, monke
     assert payload["searchLoadingMessage"] == "正在搜索..."
     assert payload["searchEmptyMessage"] == "未找到匹配结果，可直接回车跳转到历史记录页继续搜索。"
     assert payload["searchUnavailableMessage"] == "全局搜索接口暂时不可用，可直接回车跳转到历史记录页。"
-    assert payload["projectReportButtonLabel"] == "导出演示报告"
-    assert payload["projectReportFallbackTitle"] == "多模态 AI 课程成果平台演示报告"
-    assert payload["projectReportFallbackFilename"] == "multimodal-ai-demo-report.json"
-    assert payload["projectDeliverablesButtonLabel"] == "导出交付包"
-    assert payload["projectOverviewButtonLabel"] == "查看项目说明"
-    assert payload["accountDisplayName"] == "课程实验用户"
-    assert payload["accountRoleLabel"] == "学生"
+    assert payload["projectReportButtonLabel"] == "导出项目概览"
+    assert payload["projectReportFallbackTitle"] == "多模态 AI 课程成果平台项目概览"
+    assert payload["projectReportFallbackFilename"] == "multimodal-ai-project-overview.json"
+    assert payload["projectDeliverablesButtonLabel"] == "导出项目快照"
+    assert payload["projectOverviewButtonLabel"] == "查看技术说明"
+    assert payload["accountDisplayName"] == "公开演示环境"
+    assert payload["accountRoleLabel"] == "访客"
 
 
 async def test_search_returns_page_suggestions(tmp_path: Path, monkeypatch):
@@ -598,9 +649,9 @@ async def test_project_report_export_returns_live_backend_snapshot(tmp_path: Pat
         response = await client.get("/api/v1/project-report/export")
     assert response.status_code == 200
     assert "application/json" in response.headers["content-type"]
-    assert 'attachment; filename="multimodal-ai-demo-report-' in response.headers["content-disposition"]
+    assert 'attachment; filename="multimodal-ai-project-overview-' in response.headers["content-disposition"]
     payload = response.json()
-    assert payload["title"] == "多模态 AI 课程成果平台演示报告"
+    assert payload["title"] == "多模态 AI 课程成果平台项目概览"
     assert payload["reportVersion"] == "v1.0"
     assert payload["pages"][0]["path"] == "/"
     assert payload["dashboard"]["modules"][0]["route"] == "/image-recognition"
@@ -614,7 +665,7 @@ async def test_project_delivery_bundle_export_returns_zip_payload(tmp_path: Path
         response = await client.get("/api/v1/project-deliverables/export")
     assert response.status_code == 200
     assert "application/zip" in response.headers["content-type"]
-    assert 'attachment; filename="multimodal-ai-delivery-bundle-' in response.headers["content-disposition"]
+    assert 'attachment; filename="multimodal-ai-project-snapshot-' in response.headers["content-disposition"]
 
     with ZipFile(BytesIO(response.content)) as archive:
         names = set(archive.namelist())
@@ -626,14 +677,15 @@ async def test_project_delivery_bundle_export_returns_zip_payload(tmp_path: Path
         assert "history-metadata.json" in names
         assert "openapi.json" in names
         assert "README.md" in names
-        assert "feature_list.json" in names
-        assert "progress.md" in names
-        assert "session-handoff.md" in names
-        assert "architecture/web-architecture-spec.md" in names
+        assert "backend/README.md" in names
+        assert "docs/README.md" in names
+        assert "architecture/technical-overview.md" in names
+        assert "ui-reference/README.md" in names
+        assert "docker-compose.yml" in names
 
         manifest = json.loads(archive.read("manifest.json").decode("utf-8"))
-        assert manifest["title"] == "多模态 AI 课程成果平台交付包"
-        assert manifest["bundleVersion"] == "v1.1"
+        assert manifest["title"] == "多模态 AI 课程成果平台项目快照"
+        assert manifest["bundleVersion"] == "v2.0"
 
         files = {entry["path"]: entry for entry in manifest["files"]}
         report_entry = files["project-report.json"]
@@ -645,19 +697,19 @@ async def test_project_delivery_bundle_export_returns_zip_payload(tmp_path: Path
         assert report_entry["sizeBytes"] == len(archive.read("project-report.json"))
 
         readme_entry = files["README.md"]
-        assert readme_entry["category"] == "project-state"
+        assert readme_entry["category"] == "project-files"
         assert readme_entry["contentType"] == "text/markdown; charset=utf-8"
         assert readme_entry["sourceKind"] == "static"
         assert readme_entry["sourcePath"] == "README.md"
         assert len(readme_entry["sha256"]) == 64
 
-        architecture_entry = files["architecture/web-architecture-spec.md"]
+        architecture_entry = files["architecture/technical-overview.md"]
         assert architecture_entry["category"] == "architecture"
         assert architecture_entry["sourceKind"] == "static"
         assert architecture_entry["sourcePath"].startswith("docs/architecture/")
 
         report_payload = archive.read("project-report.json").decode("utf-8")
-        assert "多模态 AI 课程成果平台演示报告" in report_payload
+        assert "多模态 AI 课程成果平台项目概览" in report_payload
 
         readme_payload = archive.read("README.md").decode("utf-8")
         assert "多模态 AI 课程成果平台" in readme_payload
@@ -858,8 +910,12 @@ async def test_museum_vision_metadata_returns_backend_defaults(tmp_path: Path, m
         "sizeLabel": "1.82 MB",
     }
     assert payload["initialAnalysis"]["institution"] == "大都会艺术博物馆"
+    assert payload["initialAnalysis"]["artworkClue"]["title"] == "古典人物肖像"
     assert payload["sampleDescriptionNote"] == "当前描述结合样例图像的主体内容、构图风格与课程实验设定生成。"
-    assert payload["uploadDescriptionNote"] == "当前描述基于上传图像的颜色、纹理与构图特征，并结合课程数据集中的相似样本生成。"
+    assert (
+        payload["uploadDescriptionNote"]
+        == "当前描述会同时参考上传文件名中的作品线索，以及图像颜色、纹理与构图特征，再结合课程数据集中的相似样本生成。"
+    )
     assert payload["dataSourceItems"][0]["title"] == "数据来源"
 
 
@@ -924,6 +980,29 @@ async def test_image_recognition_upload_uses_real_herbal_dataset(tmp_path: Path,
     assert payload["label"] == "党参"
     assert payload["probabilities"][0]["label"] == "党参"
     assert payload["historyRecord"]["output"] == "党参"
+
+
+async def test_image_recognition_prefers_gouqi_for_realistic_red_fruit_scene(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("MULTIMODAL_APP_DB_PATH", str(tmp_path / "herbal-gouqi-scene.db"))
+    monkeypatch.setenv("MULTIMODAL_HERBAL_MODEL_CACHE_PATH", str(tmp_path / "herbal-gouqi-scene.pkl"))
+    core._load_herbal_classifier_cached.cache_clear()
+    sample_path = Path(__file__).resolve().parent / "fixtures" / "gouqi-realistic-scene.jpg"
+    async with create_client() as client:
+        response = await client.post(
+            "/api/v1/image-recognition/predict",
+            json={
+                "fileName": sample_path.name,
+                "width": 1080,
+                "height": 1837,
+                "sizeLabel": "381 KB",
+                "imageDataUrl": as_data_url(sample_path),
+            },
+        )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["label"] == "枸杞"
+    assert payload["probabilities"][0]["label"] == "枸杞"
+    assert payload["historyRecord"]["output"] == "枸杞"
 
 
 async def test_image_recognition_reuses_cached_herbal_classifier(tmp_path: Path, monkeypatch):
@@ -1015,6 +1094,43 @@ async def test_museum_vision_upload_uses_real_dataset_match(tmp_path: Path, monk
     assert payload["institution"] == "史密森学会"
     assert payload["matches"][0]["institution"] == "史密森学会"
     assert "课程数据集" in payload["sourceNote"]
+    assert payload["artworkClue"]["title"] == "smithsonian"
+    assert payload["artworkClue"]["museumHint"] == "史密森学会"
+
+
+async def test_museum_vision_extracts_artwork_clue_from_filename(tmp_path: Path, monkeypatch):
+    monkeypatch.setenv("MULTIMODAL_APP_DB_PATH", str(tmp_path / "museum-clue.db"))
+    monkeypatch.setenv("MULTIMODAL_MUSEUM_INDEX_CACHE_PATH", str(tmp_path / "museum-clue-index.pkl"))
+    core._load_museum_feature_index_cached.cache_clear()
+    sample_path = (
+        Path(__file__).resolve().parents[2]
+        / "data"
+        / "experiments"
+        / "experiment-03-museum-multimodal"
+        / "images"
+        / "smithsonian"
+        / "smithsonian_786.jpg"
+    )
+    async with create_client() as client:
+        response = await client.post(
+            "/api/v1/museum-vision/analyze",
+            json={
+                "fileName": "明清缂丝挂画_苏州博物馆馆藏_1_123梦游123_来自小红书网页版.jpg",
+                "format": "JPG",
+                "dimensions": "1080 × 1440",
+                "sizeLabel": "496 KB",
+                "sourceMode": "upload",
+                "imageDataUrl": as_data_url(sample_path),
+            },
+        )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["artworkClue"]["title"] == "明清缂丝挂画"
+    assert payload["artworkClue"]["era"] == "明清"
+    assert payload["artworkClue"]["category"] == "缂丝挂画"
+    assert payload["artworkClue"]["museumHint"] == "苏州博物馆"
+    assert "上传文件名" in payload["artworkClue"]["basis"]
+    assert "明清缂丝挂画" in payload["description"]
 
 
 async def test_museum_vision_rejects_invalid_upload_payload(tmp_path: Path, monkeypatch):

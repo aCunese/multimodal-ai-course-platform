@@ -248,6 +248,14 @@ export type ModuleCard = {
   icon: "home" | "image" | "heart" | "pen" | "museum" | "history" | "search" | "download" | "file" | "user" | "arrow-right" | "check" | "spark" | "chart" | "layers" | "shield" | "cube" | "upload" | "refresh" | "light" | "filter" | "clock" | "database" | "copy" | "tag";
 };
 
+export type MuseumArtworkClue = {
+  title: string;
+  era: string;
+  category: string;
+  museumHint: string;
+  basis: string;
+};
+
 export type MuseumMatch = {
   institution: string;
   score: number;
@@ -309,6 +317,7 @@ export type MuseumVisionResponse = {
   institution: string;
   confidence: number;
   description: string;
+  artworkClue: MuseumArtworkClue;
   tags: Array<string>;
   matches: Array<MuseumMatch>;
   historyRecord: HistoryRecord;

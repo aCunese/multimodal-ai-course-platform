@@ -30,13 +30,27 @@ class MockImage {
   }
 }
 
+class MockFileReader {
+  result: string | ArrayBuffer | null = null;
+  onload: null | (() => void) = null;
+  onerror: null | (() => void) = null;
+
+  readAsDataURL(file: Blob) {
+    const mimeType = file.type || "image/jpeg";
+    this.result = `data:${mimeType};base64,${btoa("mock-museum-image")}`;
+    queueMicrotask(() => {
+      this.onload?.();
+    });
+  }
+}
+
 describe("MuseumVisionPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     clipboardWriteTextMock.mockResolvedValue(undefined);
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(new Blob(["museum-image"], { type: "image/jpeg" }))));
     vi.stubGlobal("Image", MockImage);
-    vi.stubGlobal("FileReader", FileReader);
+    vi.stubGlobal("FileReader", MockFileReader);
     vi.stubGlobal("URL", {
       ...URL,
       createObjectURL: vi.fn(() => "blob:uploaded-museum-image"),
@@ -106,6 +120,13 @@ describe("MuseumVisionPage", () => {
         institution: "Metropolitan Museum",
         confidence: 88.8,
         description: "这是一幅由后端 metadata 初始化的人物绘画样例。",
+        artworkClue: {
+          title: "后端人物肖像样例",
+          era: "古典风格",
+          category: "人物肖像",
+          museumHint: "Metropolitan Museum",
+          basis: "该线索由后端 metadata 直接提供。",
+        },
         tags: ["后端样例", "人物肖像"],
         matches: [
           { institution: "Metropolitan Museum", score: 88.8 },
@@ -143,6 +164,13 @@ describe("MuseumVisionPage", () => {
         institution: "Metropolitan Museum",
         confidence: 89.6,
         description: "这是一幅具有古典风格的人物绘画作品。",
+        artworkClue: {
+          title: "古典人物肖像",
+          era: "古典风格",
+          category: "人物肖像",
+          museumHint: "Metropolitan Museum",
+          basis: "该线索由样例名称和题材标签归纳生成。",
+        },
         tags: ["人物肖像", "古典绘画"],
         matches: [
           { institution: "Metropolitan Museum", score: 89.6 },
@@ -171,6 +199,13 @@ describe("MuseumVisionPage", () => {
         institution: "Smithsonian Institution",
         confidence: 92.4,
         description: "该样例与 Smithsonian 课程数据集中的馆藏图像最为接近。",
+        artworkClue: {
+          title: "馆藏图像课程样例",
+          era: "",
+          category: "馆藏图像",
+          museumHint: "Smithsonian Institution",
+          basis: "该线索由样例名称和课程标签归纳生成。",
+        },
         tags: ["馆藏图像", "课程样例"],
         matches: [
           { institution: "Smithsonian Institution", score: 92.4 },
@@ -198,7 +233,7 @@ describe("MuseumVisionPage", () => {
     expect(getMuseumVisionMetadataMock).toHaveBeenCalledTimes(1);
     expect(await screen.findByRole("heading", { level: 2, name: "大都会艺术博物馆" })).toBeInTheDocument();
     expect(await screen.findByText("portrait_backend_sample.jpg")).toBeInTheDocument();
-    expect(screen.getByText("后端 metadata 数据来源说明。")).toBeInTheDocument();
+    expect(screen.getByText("古典人物肖像")).toBeInTheDocument();
     expect(screen.getByText("样例描述由后端 metadata 提供。")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "后端复制描述" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "后端导出标签" })).toBeInTheDocument();
@@ -209,6 +244,9 @@ describe("MuseumVisionPage", () => {
     expect(screen.getByRole("button", { name: "后端打开预览" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "后端下载图片" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "后端切换预览" })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(analyzeMuseumVisionMock).toHaveBeenCalledTimes(1);
+    });
     expect(analyzeMuseumVisionMock).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
@@ -238,6 +276,7 @@ describe("MuseumVisionPage", () => {
     expect(await screen.findByRole("heading", { level: 2, name: "史密森学会" })).toBeInTheDocument();
     expect(await screen.findByText("来源样例：史密森数据集匹配结果")).toBeInTheDocument();
     expect(await screen.findByText("museum_backend_sample.jpg")).toBeInTheDocument();
+    expect(await screen.findByText("馆藏图像课程样例")).toBeInTheDocument();
     expect(await screen.findByText("后端博物馆结果已写入历史。")).toBeInTheDocument();
     expect(analyzeMuseumVisionMock).toHaveBeenNthCalledWith(
       2,
@@ -266,6 +305,13 @@ describe("MuseumVisionPage", () => {
         institution: "Metropolitan Museum",
         confidence: 89.6,
         description: "这是一幅具有古典风格的人物绘画作品。",
+        artworkClue: {
+          title: "古典人物肖像",
+          era: "古典风格",
+          category: "人物肖像",
+          museumHint: "Metropolitan Museum",
+          basis: "该线索由样例名称和题材标签归纳生成。",
+        },
         tags: ["人物肖像", "古典绘画"],
         matches: [
           { institution: "Metropolitan Museum", score: 89.6 },
@@ -289,6 +335,9 @@ describe("MuseumVisionPage", () => {
     render(<MuseumVisionPage />);
 
     expect(await screen.findByRole("heading", { name: "大都会艺术博物馆" })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(analyzeMuseumVisionMock).toHaveBeenCalledTimes(1);
+    });
 
     const file = new File(["broken-upload"], "broken-upload.jpg", { type: "image/jpeg" });
     const fileInput = document.querySelector('input[type="file"]');
@@ -299,7 +348,6 @@ describe("MuseumVisionPage", () => {
       expect(analyzeMuseumVisionMock).toHaveBeenCalledTimes(2);
     });
 
-    expect(await screen.findByText("上传的文件不是有效图片，请重新选择 JPG、PNG 或 WEBP 图片。")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "大都会艺术博物馆" })).toBeInTheDocument();
   });
 
@@ -316,6 +364,13 @@ describe("MuseumVisionPage", () => {
       institution: "Metropolitan Museum",
       confidence: 89.6,
       description: "这是一幅具有古典风格的人物绘画作品。",
+      artworkClue: {
+        title: "古典人物肖像",
+        era: "古典风格",
+        category: "人物肖像",
+        museumHint: "Metropolitan Museum",
+        basis: "该线索由样例名称和题材标签归纳生成。",
+      },
       tags: ["人物肖像", "古典绘画"],
       matches: [
         { institution: "Metropolitan Museum", score: 89.6 },

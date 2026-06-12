@@ -46,28 +46,17 @@ describe("HistoryPage", () => {
       tableCountTemplate: "后端共 {count} 条",
       tableHeaders: ["后端记录列", "后端时间列", "后端模块列", "后端输入列", "后端输出列", "后端评分列", "后端状态列", "后端操作列"],
       rowActionLabel: "后端查看记录",
-      projectOverviewTitle: "后端项目说明标题",
-      moduleSpotlightActionLabel: "后端查看详情",
+      projectOverviewTitle: "",
+      moduleSpotlightActionLabel: "",
       moduleFilters: ["全部", "图像识别", "运行时资源"],
       statusFilters: ["全部", "成功", "失败"],
       exportFormats: [
         { label: "JSON", value: "json" },
         { label: "CSV", value: "csv" },
       ],
-      overviewSections: [
-        {
-          title: "接口合同",
-          body: "历史页的筛选项、项目说明和模块导览已经统一由后端接口提供。",
-        },
-      ],
-      valuePoints: ["接口驱动页面"],
-      moduleSpotlights: [
-        {
-          title: "运行时资源模块",
-          description: "聚合缓存状态、预热入口和交付校验信息。",
-          route: "/history#project-overview",
-        },
-      ],
+      overviewSections: [],
+      valuePoints: [],
+      moduleSpotlights: [],
     });
     getHistoryRecordsMock.mockResolvedValue({
       records: [
@@ -96,30 +85,23 @@ describe("HistoryPage", () => {
     expect(screen.getByText("后端历史页说明文案。")).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 2, name: "后端筛选区标题" })).toBeInTheDocument();
     expect(screen.getByLabelText("后端搜索标签")).toHaveAttribute("placeholder", "后端搜索占位");
-    expect(await screen.findByText("接口合同")).toBeInTheDocument();
-    expect(screen.getByText("历史页的筛选项、项目说明和模块导览已经统一由后端接口提供。")).toBeInTheDocument();
-    expect(screen.getByText("接口驱动页面")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "运行时资源" })).toBeInTheDocument();
-    expect(screen.getByText("运行时资源模块")).toBeInTheDocument();
     expect(screen.getByRole("heading", { level: 2, name: "后端历史表格标题" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "后端记录列" })).toBeInTheDocument();
     expect(screen.getByRole("columnheader", { name: "后端操作列" })).toBeInTheDocument();
     expect(screen.queryByText("后端实时同步完成。")).not.toBeInTheDocument();
     expect(screen.getByText("后端共 1 条")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "后端查看记录" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { level: 2, name: "后端项目说明标题" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /后端查看详情/i })).toBeInTheDocument();
   });
 
   it("falls back to client-side CSV export when backend export fails", async () => {
     getHistoryMetadataMock.mockResolvedValue({
-      pageTitle: "历史记录与项目说明",
-      pageDescription: "查看平台运行记录、实验结果和项目模块说明，帮助完成课程答辩与后续开发整理。",
+      pageTitle: "历史记录",
+      pageDescription: "查看平台各模块的运行记录，并按条件筛选或导出结果。",
       syncConnectedMessage: "已连接历史记录接口。",
       syncLoadingMessage: "正在同步历史记录...",
       syncReadyMessage: "历史记录已由后端接口实时提供。",
       syncFallbackMessage: "历史记录接口暂时不可用，当前展示的是本地演示数据。",
-      filterPanelTitle: "历史记录筛选区",
+      filterPanelTitle: "筛选记录",
       searchFieldLabel: "搜索内容",
       searchPlaceholder: "搜索输入内容、输出结果或记录 ID...",
       moduleFilterLabel: "模块筛选",
@@ -130,13 +112,13 @@ describe("HistoryPage", () => {
       exportButtonBusyLabel: "导出中...",
       exportSuccessMessageTemplate: "历史记录已从后端导出为 {format} 文件。",
       exportFallbackMessage: "历史记录导出接口暂时不可用，已导出当前页面数据。",
-      tableTitle: "历史记录表格",
+      tableTitle: "运行记录",
       tableLoadingMessage: "正在同步...",
       tableCountTemplate: "共 {count} 条记录",
       tableHeaders: ["记录 ID", "时间", "实验模块", "输入内容", "输出结果", "置信度 / 评分", "状态", "操作"],
       rowActionLabel: "查看",
-      projectOverviewTitle: "项目说明",
-      moduleSpotlightActionLabel: "查看详情",
+      projectOverviewTitle: "",
+      moduleSpotlightActionLabel: "",
       moduleFilters: ["全部", "图像识别", "情感分析", "文案生成", "博物馆图像理解"],
       statusFilters: ["全部", "成功", "警告", "失败"],
       exportFormats: [

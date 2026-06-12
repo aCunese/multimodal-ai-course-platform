@@ -74,7 +74,6 @@ const initialMetadata: SentimentAnalysisMetadataResponse = {
 };
 
 const localSentimentFallbackMessage = "情感分析接口暂时不可用，当前已根据输入内容执行本地兜底分析。";
-const localSentimentFallbackDetail = "当前未连接后端分析服务，系统已根据当前输入内容执行本地规则兜底。";
 
 function renderSentimentKeywordLabel(label: string, usedFallback: boolean) {
   const translatedLabel = formatSentimentKeyword(label);
@@ -91,21 +90,6 @@ function renderSentimentKeywordLabel(label: string, usedFallback: boolean) {
   );
 }
 
-function resolveProviderDetail(
-  metadata: SentimentAnalysisMetadataResponse,
-  response: SentimentAnalysisResponse,
-) {
-  if (response.providerUsed === "deepseek" && !response.usedFallback) {
-    return "本次结果由 DeepSeek 实时分析得出。";
-  }
-
-  if (response.usedFallback) {
-    return "当前请求未能稳定使用 DeepSeek，系统已自动回退到本地 IMDb 词典规则。";
-  }
-
-  return metadata.providerStatus.detailMessage;
-}
-
 export function SentimentAnalysisPage() {
   const [metadata, setMetadata] = useState<SentimentAnalysisMetadataResponse>(initialMetadata);
   const [text, setText] = useState(initialMetadata.sampleText);
@@ -114,13 +98,11 @@ export function SentimentAnalysisPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [syncMessage, setSyncMessage] = useState(initialMetadata.syncLoadingMessage);
   const [providerStatusLabel, setProviderStatusLabel] = useState(initialMetadata.providerStatus.statusLabel);
-  const [providerStatusDetail, setProviderStatusDetail] = useState(initialMetadata.providerStatus.detailMessage);
   const [hasTriggeredManualAnalysis, setHasTriggeredManualAnalysis] = useState(false);
 
   const visibleNegativeKeywords = positiveOnly ? [] : result.negativeMatches;
   const confidenceTone =
     result.status === "待分析" ? "neutral" : result.label === "负面" ? "warning" : "success";
-  const scoreMarkerPosition = `${((result.score + 1) / 2) * 100}%`;
   const visibleSyncMessage =
     isAnalyzing
       ? metadata.syncAnalyzingMessage
@@ -158,7 +140,6 @@ export function SentimentAnalysisPage() {
         setText(response.sampleText);
         setResult(response.pendingResult);
         setProviderStatusLabel(response.providerStatus.statusLabel);
-        setProviderStatusDetail(response.providerStatus.detailMessage);
       } catch {
         if (cancelled) {
           return;
@@ -187,14 +168,12 @@ export function SentimentAnalysisPage() {
         setResult(response);
         setSyncMessage(nextMetadata.syncReadyMessage);
         setProviderStatusLabel(response.providerStatusMessage);
-        setProviderStatusDetail(nextMetadata.providerStatus.detailMessage);
       } catch {
         if (!cancelled) {
           const fallbackResponse = buildLocalSentimentAnalysis(nextSampleText.trim());
           setResult(fallbackResponse);
           setSyncMessage(localSentimentFallbackMessage);
           setProviderStatusLabel(fallbackResponse.providerStatusMessage);
-          setProviderStatusDetail(localSentimentFallbackDetail);
         }
       } finally {
         if (!cancelled) {
@@ -225,13 +204,11 @@ export function SentimentAnalysisPage() {
       setResult(response);
       setSyncMessage(metadata.syncReadyMessage);
       setProviderStatusLabel(response.providerStatusMessage);
-      setProviderStatusDetail(resolveProviderDetail(metadata, response));
     } catch {
       const fallbackResponse = buildLocalSentimentAnalysis(nextText.trim());
       setResult(fallbackResponse);
       setSyncMessage(localSentimentFallbackMessage);
       setProviderStatusLabel(fallbackResponse.providerStatusMessage);
-      setProviderStatusDetail(localSentimentFallbackDetail);
     } finally {
       setIsAnalyzing(false);
     }
@@ -271,7 +248,7 @@ export function SentimentAnalysisPage() {
           </div>
         </Panel>
 
-        <Panel title="情感结果" icon="chart" action={<StatusBadge tone={confidenceTone}>{result.status}</StatusBadge>}>
+        <Panel title="情感结果" icon="chart" action={<StatusBadge tone={confidenceTone}>{providerStatusLabel}</StatusBadge>}>
           <div className="result-card-grid">
             <div className="result-mini-card">
               <p>情感倾向</p>
@@ -308,16 +285,17 @@ export function SentimentAnalysisPage() {
       >
         <div className="keyword-section">
           <div>
-              <p className="keyword-section__label">积极关键词（Top 5）</p>
-              <div className="chip-row">
-                {result.positiveMatches.map((item) => (
-                  <span key={item.label} className="chip chip--success chip--wide">
-                    {renderSentimentKeywordLabel(item.label, result.usedFallback)}
-                    <strong>{item.score}</strong>
-                  </span>
-                ))}
-              </div>
+            <p className="keyword-section__label">积极关键词（Top 5）</p>
+            <div className="chip-row">
+              {result.positiveMatches.map((item) => (
+                <span key={item.label} className="chip chip--success chip--wide">
+                  {renderSentimentKeywordLabel(item.label, result.usedFallback)}
+                  <strong>{item.score}</strong>
+                </span>
+              ))}
             </div>
+          </div>
+
           {!positiveOnly ? (
             <div>
               <p className="keyword-section__label">消极关键词（Top 3）</p>
@@ -331,75 +309,6 @@ export function SentimentAnalysisPage() {
               </div>
             </div>
           ) : null}
-        </div>
-      </Panel>
-
-      <section className="page-grid page-grid--two">
-        <Panel title="情感强度可视化" icon="spark">
-          <div className="sentiment-scale">
-            <div className="sentiment-scale__labels">
-              <span>负面</span>
-              <span>中性</span>
-              <span>正面</span>
-            </div>
-            <div className="sentiment-scale__bar">
-              <span className="sentiment-scale__point" style={{ left: scoreMarkerPosition }}>
-                {result.score.toFixed(2)}
-              </span>
-            </div>
-            <div className="score-card">
-              <strong>{result.score.toFixed(2)} / 1.00</strong>
-              <p>
-                {result.label === "正面"
-                  ? "偏正面"
-                  : result.label === "负面"
-                    ? "偏负面"
-                    : "接近中性"}
-              </p>
-            </div>
-          </div>
-        </Panel>
-
-        <Panel title="分析状态" icon="history">
-          <dl className="info-list">
-            <div>
-              <dt>状态</dt>
-              <dd>{result.status}</dd>
-            </div>
-            <div>
-              <dt>完成时间</dt>
-              <dd>{result.completedAt}</dd>
-            </div>
-            <div>
-              <dt>处理耗时</dt>
-              <dd>{result.processingTime}</dd>
-            </div>
-            <div>
-              <dt>模型</dt>
-              <dd>{metadata.modelLabel}</dd>
-            </div>
-            <div>
-              <dt>当前引擎</dt>
-              <dd>{providerStatusLabel}</dd>
-            </div>
-            <div>
-              <dt>任务 ID</dt>
-                <dd>{result.taskId}</dd>
-            </div>
-          </dl>
-        </Panel>
-      </section>
-
-      <Panel title="分析说明" icon="light">
-        <div className="check-list">
-          <div>
-            <strong>引擎说明</strong>
-            <p>{providerStatusDetail}</p>
-          </div>
-          <div>
-            <strong>模型说明</strong>
-            <p>{metadata.analysisNote}</p>
-          </div>
         </div>
       </Panel>
     </div>

@@ -21,9 +21,16 @@ class DeepSeekSettings:
 
 
 def _get_deepseek_settings(provider_env_var: str) -> DeepSeekSettings:
+    api_key = os.getenv("DEEPSEEK_API_KEY")
+    provider = os.getenv(provider_env_var, "").strip().lower()
+    if not provider:
+        provider = "deepseek" if api_key else "local"
+    elif provider == "auto":
+        provider = "deepseek" if api_key else "local"
+
     return DeepSeekSettings(
-        provider=os.getenv(provider_env_var, "local").strip().lower() or "local",
-        api_key=os.getenv("DEEPSEEK_API_KEY"),
+        provider=provider,
+        api_key=api_key,
         base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com").rstrip("/"),
         model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat").strip() or "deepseek-chat",
         timeout_seconds=float(os.getenv("DEEPSEEK_TIMEOUT_SECONDS", "30")),

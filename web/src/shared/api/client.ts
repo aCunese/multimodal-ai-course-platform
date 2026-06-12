@@ -276,13 +276,13 @@ export async function downloadHistoryRecords(query: HistoryQuery, format: Histor
 
 export async function downloadProjectReport() {
   return requestDownloadOperation("project_report_export_api_v1_project_report_export_get", {
-    fallbackFilename: "multimodal-ai-demo-report.json",
+    fallbackFilename: "multimodal-ai-project-overview.json",
   });
 }
 
 export async function downloadProjectDeliveryBundle() {
   return requestDownloadOperation("project_delivery_bundle_export_api_v1_project_deliverables_export_get", {
-    fallbackFilename: "multimodal-ai-delivery-bundle.zip",
+    fallbackFilename: "multimodal-ai-project-snapshot.zip",
   });
 }
 

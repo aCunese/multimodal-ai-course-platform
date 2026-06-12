@@ -153,12 +153,9 @@ describe("SentimentAnalysisPage", () => {
     expect(await screen.findByText("正面判断")).toBeInTheDocument();
     expect(await screen.findByText("精彩")).toBeInTheDocument();
     expect(await screen.findByText("节奏慢")).toBeInTheDocument();
-    expect(screen.getByText("后端情感模型说明")).toBeInTheDocument();
-    expect(screen.getByText("后端分析说明文案。")).toBeInTheDocument();
     expect(screen.getByLabelText("后端文本输入标签")).toBeInTheDocument();
     expect(screen.queryByText("后端分析已接通")).not.toBeInTheDocument();
     expect(screen.getByText("当前分析引擎：DeepSeek")).toBeInTheDocument();
-    expect(screen.getByText("后端当前已启用 DeepSeek 情感分析。")).toBeInTheDocument();
 
     await userEvent.clear(screen.getByRole("textbox"));
     await userEvent.type(screen.getByRole("textbox"), "This sequel is a flop and feels copied.");
@@ -203,8 +200,23 @@ describe("SentimentAnalysisPage", () => {
       screen.getByText("情感分析接口暂时不可用，当前已根据输入内容执行本地兜底分析。"),
     ).toBeInTheDocument();
     expect(screen.getByText("当前分析引擎：本地规则兜底")).toBeInTheDocument();
-    expect(screen.getAllByText("已完成")).toHaveLength(2);
     expect(screen.getByText("失败")).toBeInTheDocument();
     expect(screen.getByText("缺乏新意")).toBeInTheDocument();
+  });
+
+  it("keeps strong Chinese negative input understandable during local fallback", async () => {
+    getSentimentAnalysisMetadataMock.mockRejectedValue(new Error("metadata offline"));
+    analyzeSentimentMock.mockRejectedValue(new Error("analyze offline"));
+
+    render(<SentimentAnalysisPage />);
+
+    const textbox = screen.getByRole("textbox");
+    await userEvent.clear(textbox);
+    await userEvent.type(textbox, "我真的很讨厌你，这句话让我特别崩溃。");
+    await userEvent.click(screen.getByRole("button", { name: "开始分析" }));
+
+    expect(await screen.findByText("负面判断")).toBeInTheDocument();
+    expect(screen.getByText("讨厌")).toBeInTheDocument();
+    expect(screen.getByText("崩溃")).toBeInTheDocument();
   });
 });

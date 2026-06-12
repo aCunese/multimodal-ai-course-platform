@@ -70,6 +70,7 @@ from ..schemas import (
     MetricCard,
     ModelProviderStatus,
     ModuleCard,
+    MuseumArtworkClue,
     MuseumMatch,
     MuseumVisionDataSourceItem,
     MuseumVisionMetadataResponse,
@@ -125,7 +126,7 @@ def _build_provider_status(
             configuredProvider="deepseek",
             activeProvider="local",
             enabled=enabled,
-            statusLabel=f"当前{local_label}（未启用 DeepSeek）",
+            statusLabel=f"当前{local_label}",
             detailMessage=missing_key_message,
         )
 
@@ -207,7 +208,7 @@ PROJECT_REPORT_PAGES = [
     ProjectReportPage(label="情感分析", path="/sentiment-analysis", summary="文本情绪判断与关键词分析"),
     ProjectReportPage(label="文案生成", path="/text-generation", summary="根据主题生成课程演示文案"),
     ProjectReportPage(label="博物馆图像识别 / 描述", path="/museum-vision", summary="图像来源识别与内容描述"),
-    ProjectReportPage(label="历史记录与项目说明", path="/history", summary="查看执行日志和项目结构"),
+    ProjectReportPage(label="历史记录", path="/history", summary="查看运行记录、筛选结果并导出数据"),
 ]
 
 SEARCH_PAGE_ITEMS = [
@@ -258,12 +259,12 @@ SEARCH_PAGE_ITEMS = [
     },
     {
         "id": "page-history",
-        "title": "历史记录与项目说明",
+        "title": "历史记录",
         "subtitle": "页面入口",
-        "description": "搜索任务记录、导出结果并查看项目说明结构。",
+        "description": "搜索任务记录、按条件筛选并导出结果。",
         "route": "/history",
         "icon": "history",
-        "keywords": "历史 记录 项目 说明 导出 search logs",
+        "keywords": "历史 记录 导出 搜索 logs export history",
     },
 ]
 
@@ -273,13 +274,13 @@ APP_SHELL_SEARCH_RESULTS_ARIA_LABEL = "搜索建议"
 APP_SHELL_SEARCH_LOADING_MESSAGE = "正在搜索..."
 APP_SHELL_SEARCH_EMPTY_MESSAGE = "未找到匹配结果，可直接回车跳转到历史记录页继续搜索。"
 APP_SHELL_SEARCH_UNAVAILABLE_MESSAGE = "全局搜索接口暂时不可用，可直接回车跳转到历史记录页。"
-APP_SHELL_PROJECT_REPORT_BUTTON_LABEL = "导出演示报告"
-APP_SHELL_PROJECT_REPORT_FALLBACK_TITLE = "多模态 AI 课程成果平台演示报告"
-APP_SHELL_PROJECT_REPORT_FALLBACK_FILENAME = "multimodal-ai-demo-report.json"
-APP_SHELL_PROJECT_DELIVERABLES_BUTTON_LABEL = "导出交付包"
-APP_SHELL_PROJECT_OVERVIEW_BUTTON_LABEL = "查看项目说明"
-APP_SHELL_ACCOUNT_DISPLAY_NAME = "课程实验用户"
-APP_SHELL_ACCOUNT_ROLE_LABEL = "学生"
+APP_SHELL_PROJECT_REPORT_BUTTON_LABEL = "导出项目概览"
+APP_SHELL_PROJECT_REPORT_FALLBACK_TITLE = "多模态 AI 课程成果平台项目概览"
+APP_SHELL_PROJECT_REPORT_FALLBACK_FILENAME = "multimodal-ai-project-overview.json"
+APP_SHELL_PROJECT_DELIVERABLES_BUTTON_LABEL = "导出项目快照"
+APP_SHELL_PROJECT_OVERVIEW_BUTTON_LABEL = "查看技术说明"
+APP_SHELL_ACCOUNT_DISPLAY_NAME = "公开演示环境"
+APP_SHELL_ACCOUNT_ROLE_LABEL = "访客"
 
 SEARCH_ICON_BY_MODULE = {
     "图像识别": "image",
@@ -290,13 +291,13 @@ SEARCH_ICON_BY_MODULE = {
 
 HISTORY_MODULE_FILTERS = ["全部", "图像识别", "情感分析", "文案生成", "博物馆图像理解"]
 HISTORY_STATUS_FILTERS = ["全部", "成功", "警告", "失败"]
-HISTORY_PAGE_TITLE = "历史记录与项目说明"
-HISTORY_PAGE_DESCRIPTION = "查看平台运行记录、实验结果和项目模块说明，帮助完成课程答辩与后续开发整理。"
+HISTORY_PAGE_TITLE = "历史记录"
+HISTORY_PAGE_DESCRIPTION = "查看平台各模块的运行记录，并按条件筛选或导出结果。"
 HISTORY_SYNC_CONNECTED_MESSAGE = "已连接历史记录接口。"
 HISTORY_SYNC_LOADING_MESSAGE = "正在同步历史记录..."
 HISTORY_SYNC_READY_MESSAGE = "历史记录已由后端接口实时提供。"
 HISTORY_SYNC_FALLBACK_MESSAGE = "历史记录接口暂时不可用，当前展示的是本地演示数据。"
-HISTORY_FILTER_PANEL_TITLE = "历史记录筛选区"
+HISTORY_FILTER_PANEL_TITLE = "筛选记录"
 HISTORY_SEARCH_FIELD_LABEL = "搜索内容"
 HISTORY_SEARCH_PLACEHOLDER = "搜索输入内容、输出结果或记录 ID..."
 HISTORY_MODULE_FILTER_LABEL = "模块筛选"
@@ -307,12 +308,12 @@ HISTORY_EXPORT_BUTTON_LABEL = "导出"
 HISTORY_EXPORT_BUTTON_BUSY_LABEL = "导出中..."
 HISTORY_EXPORT_SUCCESS_MESSAGE_TEMPLATE = "历史记录已从后端导出为 {format} 文件。"
 HISTORY_EXPORT_FALLBACK_MESSAGE = "历史记录导出接口暂时不可用，已导出当前页面数据。"
-HISTORY_TABLE_TITLE = "历史记录表格"
+HISTORY_TABLE_TITLE = "运行记录"
 HISTORY_TABLE_LOADING_MESSAGE = "正在同步..."
 HISTORY_TABLE_COUNT_TEMPLATE = "共 {count} 条记录"
 HISTORY_TABLE_HEADERS = ["记录 ID", "时间", "实验模块", "输入内容", "输出结果", "置信度 / 评分", "状态", "操作"]
 HISTORY_ROW_ACTION_LABEL = "查看"
-HISTORY_PROJECT_OVERVIEW_TITLE = "项目说明"
+HISTORY_PROJECT_OVERVIEW_TITLE = "项目概览"
 HISTORY_MODULE_SPOTLIGHT_ACTION_LABEL = "查看详情"
 HISTORY_EXPORT_FORMATS = [
     HistoryExportFormatOption(label="JSON", value="json"),
@@ -321,22 +322,22 @@ HISTORY_EXPORT_FORMATS = [
 HISTORY_OVERVIEW_SECTIONS = [
     ProjectOverviewSection(
         title="平台定位",
-        body="《多模态 AI 课程成果平台》用于整合课程中的多个 AI 实验，包括图像分类、文本情感分析、文本生成和博物馆图像理解。",
+        body="该项目把图像识别、情感分析、文案生成和博物馆图像理解整合到同一个可运行的全栈演示平台中。",
     ),
     ProjectOverviewSection(
-        title="当前完成度",
-        body="前后端主链路已经打通，文本模块和两个图像模块都可接入真实课程数据，历史页也支持按筛选条件导出记录。",
+        title="实现范围",
+        body="前端 6 个页面、后端接口、历史记录、运行时缓存和 OpenAPI 合同同步已经串成完整链路，可直接本地运行与验证。",
     ),
     ProjectOverviewSection(
-        title="后续方向",
-        body="下一步重点转向补强可复用自动化回归、沉淀模型缓存与导出物规范，把当前联调版继续收束成稳定成品。",
+        title="工程重点",
+        body="项目重点在于把演示体验、真实 API、缓存预热和自动化回归一起做完整，而不是只停留在页面原型层。",
     ),
 ]
 HISTORY_VALUE_POINTS = [
-    "课程实验整合",
     "多模态能力展示",
-    "前后端可扩展",
-    "可用于答辩演示",
+    "真实 API 联调",
+    "自动化验证",
+    "可扩展全栈结构",
     "支持后续模型接入",
 ]
 HISTORY_MODULE_SPOTLIGHTS = [
@@ -512,7 +513,7 @@ SEED_GENERATION_HISTORY = [
 TEXT_GENERATION_TONE_OPTIONS = ["正式", "活泼", "科技感", "文艺"]
 TEXT_GENERATION_TYPES = ["标题", "宣传语", "短文案", "诗意表达"]
 TEXT_GENERATION_PAGE_TITLE = "文案生成"
-TEXT_GENERATION_PAGE_DESCRIPTION = "输入主题、语气和输出类型，生成适合课程答辩、海报展示和项目说明的演示文案。"
+TEXT_GENERATION_PAGE_DESCRIPTION = "输入主题、语气和输出类型，生成适合项目展示、海报呈现和产品介绍的演示文案。"
 TEXT_GENERATION_SYNC_CONNECTING_MESSAGE = "正在连接文案生成接口..."
 TEXT_GENERATION_SYNC_HISTORY_READY_MESSAGE = "文案生成历史记录已由后端接口提供。"
 TEXT_GENERATION_SYNC_FALLBACK_MESSAGE = "文案生成接口暂时不可用，当前展示本地演示数据。"
@@ -570,8 +571,8 @@ def _get_text_generation_provider_status() -> ModelProviderStatus:
         enabled=should_use_deepseek(settings),
         local_label="生成引擎：本地模板",
         deepseek_label="生成引擎",
-        local_message="当前未启用 DeepSeek 文案生成，系统将使用本地模板与诗词语料生成结果。",
-        missing_key_message="已配置 DeepSeek 文案生成模式，但当前未检测到 DEEPSEEK_API_KEY，系统将回退到本地模板与诗词语料。",
+        local_message="当前使用本地生成服务；配置 DEEPSEEK_API_KEY 后会自动切换为 DeepSeek。",
+        missing_key_message="未检测到 DEEPSEEK_API_KEY，当前继续使用本地模板与诗词语料生成结果。",
     )
 
 
@@ -694,6 +695,13 @@ MUSEUM_VISION_INITIAL_ANALYSIS = MuseumVisionResponse(
     institution="大都会艺术博物馆",
     confidence=89.6,
     description="这是一幅具有古典风格的人物绘画作品，画面主体位于中央，背景色调柔和，整体呈现典型的博物馆藏品图像特征。",
+    artworkClue=MuseumArtworkClue(
+        title="古典人物肖像",
+        era="古典风格",
+        category="人物肖像",
+        museumHint="大都会艺术博物馆",
+        basis="该线索根据课程样例名称与画面中的人物构图特征生成，用于帮助说明作品题材。",
+    ),
     tags=["人物肖像", "古典绘画", "博物馆藏品", "暖色调", "历史艺术", "服饰细节", "构图分析"],
     matches=[
         MuseumMatch(institution="大都会艺术博物馆", score=89.6),
@@ -716,7 +724,7 @@ MUSEUM_VISION_INITIAL_ANALYSIS = MuseumVisionResponse(
 )
 MUSEUM_VISION_SAMPLE_DESCRIPTION_NOTE = "当前描述结合样例图像的主体内容、构图风格与课程实验设定生成。"
 MUSEUM_VISION_UPLOAD_DESCRIPTION_NOTE = (
-    "当前描述基于上传图像的颜色、纹理与构图特征，并结合课程数据集中的相似样本生成。"
+    "当前描述会同时参考上传文件名中的作品线索，以及图像颜色、纹理与构图特征，再结合课程数据集中的相似样本生成。"
 )
 MUSEUM_VISION_DATA_SOURCE_ITEMS = [
     MuseumVisionDataSourceItem(
@@ -796,8 +804,8 @@ def _get_sentiment_provider_status() -> ModelProviderStatus:
         enabled=should_use_deepseek(settings),
         local_label="分析引擎：本地词典",
         deepseek_label="分析引擎",
-        local_message="当前未启用 DeepSeek 情感分析，系统使用本地 IMDb 词典规则完成判断。",
-        missing_key_message="已配置 DeepSeek 情感分析模式，但当前未检测到 DEEPSEEK_API_KEY，系统将回退到本地 IMDb 词典规则。",
+        local_message="当前使用本地分析服务；配置 DEEPSEEK_API_KEY 后会自动切换为 DeepSeek。",
+        missing_key_message="未检测到 DEEPSEEK_API_KEY，当前继续使用本地规则完成分析。",
     )
 
 
@@ -848,6 +856,57 @@ SENTIMENT_KEYWORD_TRANSLATIONS = {
     "copied": "缺乏新意",
 }
 
+CURATED_SENTIMENT_PHRASES = {
+    "喜欢": 0.78,
+    "开心": 0.84,
+    "高兴": 0.8,
+    "满意": 0.71,
+    "感动": 0.79,
+    "惊喜": 0.76,
+    "安心": 0.66,
+    "治愈": 0.74,
+    "推荐": 0.68,
+    "太棒了": 0.95,
+    "讨厌": -0.94,
+    "崩溃": -0.98,
+    "难过": -0.84,
+    "伤心": -0.86,
+    "失望": -0.78,
+    "生气": -0.85,
+    "愤怒": -0.9,
+    "焦虑": -0.82,
+    "压抑": -0.8,
+    "难受": -0.79,
+    "痛苦": -0.88,
+    "糟糕": -0.76,
+    "恶心": -0.88,
+    "害怕": -0.74,
+    "恐惧": -0.8,
+    "后悔": -0.7,
+    "受不了": -0.9,
+    "不能接受": -0.92,
+}
+
+SENTIMENT_INTENSIFIER_WEIGHTS = (
+    ("超级", 1.42),
+    ("极其", 1.38),
+    ("特别", 1.3),
+    ("非常", 1.28),
+    ("太", 1.22),
+    ("真的", 1.18),
+    ("很", 1.12),
+)
+
+SENTIMENT_SOFTENER_WEIGHTS = (
+    ("有一点", 0.78),
+    ("有点", 0.8),
+    ("稍微", 0.82),
+    ("有些", 0.86),
+    ("一点点", 0.72),
+)
+
+SENTIMENT_NEGATIONS = ("并不", "不是", "没有", "没", "不", "无")
+
 SENTIMENT_STOP_WORDS = {
     "this",
     "that",
@@ -887,11 +946,11 @@ TONE_KEYWORDS = {
     "正式": ["结构清晰", "适合答辩", "语言稳健"],
     "活泼": ["传播轻快", "适合展示", "记忆点强"],
     "科技感": ["技术气质", "未来感强", "适合产品页"],
-    "文艺": ["语言柔和", "画面感强", "适合项目说明"],
+    "文艺": ["语言柔和", "画面感强", "适合项目介绍"],
 }
 
 QUALITY_TIPS = {
-    "正式": "推荐用于课程答辩封面、项目说明页和成果汇报摘要。",
+    "正式": "推荐用于项目首页、展示封面和成果摘要。",
     "活泼": "推荐用于海报、班级展示页和对外传播的短句模块。",
     "科技感": "推荐用于产品化展示、模块介绍和平台价值主张区域。",
     "文艺": "推荐用于作品陈述、收尾总结和具氛围感的项目描述。",
@@ -947,6 +1006,9 @@ HERBAL_DESCRIPTIONS = {
 }
 HERBAL_PROBABILITY_ORDER = ["dangshen", "gouqi", "huaihua", "jinyinhua", "baihe"]
 HERBAL_MODEL_CACHE_VERSION = "herbal-classifier-v1"
+HERBAL_GOUQI_REFINEMENT_MIN_BRIGHT_RED_COVERAGE = 0.18
+HERBAL_GOUQI_REFINEMENT_MAX_MARGIN = 0.13
+HERBAL_GOUQI_REFINEMENT_MIN_CROP_CONFIDENCE = 0.65
 MUSEUM_INDEX_CACHE_VERSION = "museum-feature-index-v1"
 MUSEUM_IMAGE_DATASET_ROOT = (
     Path(__file__).resolve().parents[3]
@@ -968,6 +1030,13 @@ MUSEUM_PRESETS = {
         "institution": "大都会艺术博物馆",
         "confidence": 89.6,
         "description": "这是一幅具有古典风格的人物绘画作品，画面主体位于中央，背景色调柔和，整体呈现典型的博物馆藏品图像特征。",
+        "artworkClue": MuseumArtworkClue(
+            title="古典人物肖像",
+            era="古典风格",
+            category="人物肖像",
+            museumHint="大都会艺术博物馆",
+            basis="该线索根据课程样例名称与人物构图特征生成，用于说明画面题材。",
+        ),
         "tags": ["人物肖像", "古典绘画", "博物馆藏品", "暖色调", "历史艺术", "服饰细节", "构图分析"],
         "matches": [
             MuseumMatch(institution="大都会艺术博物馆", score=89.6),
@@ -981,6 +1050,13 @@ MUSEUM_PRESETS = {
         "institution": "大都会艺术博物馆",
         "confidence": 91.2,
         "description": "图像呈现典型山水留白结构，近景与远景层次清晰，整体风格偏向东方传统绘画，具有较强的馆藏检索特征。",
+        "artworkClue": MuseumArtworkClue(
+            title="东方山水画",
+            era="传统绘画风格",
+            category="山水画",
+            museumHint="大都会艺术博物馆",
+            basis="该线索根据课程样例名称与山水留白构图特征生成，用于说明画面题材。",
+        ),
         "tags": ["山水", "纸本", "墨色层次", "馆藏溯源", "东方绘画", "留白构图", "题跋分析"],
         "matches": [
             MuseumMatch(institution="大都会艺术博物馆", score=91.2),
@@ -1111,11 +1187,60 @@ def _display_sentiment_keyword(word: str) -> str:
     return SENTIMENT_KEYWORD_TRANSLATIONS.get(word, word)
 
 
+def _upsert_sentiment_match(
+    bucket: dict[str, KeywordMatch],
+    *,
+    label: str,
+    score: float,
+) -> None:
+    importance = _keyword_importance(score)
+    existing = bucket.get(label)
+    if existing is None or importance > existing.score:
+        bucket[label] = KeywordMatch(label=label, score=importance)
+
+
+def _iter_phrase_occurrences(text: str, phrase: str) -> list[int]:
+    positions: list[int] = []
+    start = 0
+    while True:
+        index = text.find(phrase, start)
+        if index == -1:
+            return positions
+        positions.append(index)
+        start = index + len(phrase)
+
+
+def _apply_phrase_sentiment_context(*, text: str, phrase: str, start: int, base_score: float) -> float:
+    leading_context = text[max(0, start - 4) : start]
+    trailing_context = text[start + len(phrase) : start + len(phrase) + 2]
+    multiplier = 1.0
+
+    for token, factor in SENTIMENT_SOFTENER_WEIGHTS:
+        if token in leading_context:
+            multiplier = min(multiplier, factor)
+
+    for token, factor in SENTIMENT_INTENSIFIER_WEIGHTS:
+        if token in leading_context:
+            multiplier = max(multiplier, factor)
+
+    if any(leading_context.endswith(token) for token in SENTIMENT_NEGATIONS):
+        multiplier *= -0.72
+
+    punctuation_window = text[max(0, start - 1) : start + len(phrase) + 2]
+    if any(mark in punctuation_window for mark in ("!", "！")):
+        multiplier *= 1.06
+
+    if any(token in trailing_context for token in ("死了", "爆了")):
+        multiplier *= 1.08
+
+    return round(base_score * multiplier, 4)
+
+
 def _extract_sentiment_matches(text: str) -> tuple[list[KeywordMatch], list[KeywordMatch], float]:
     words = list(dict.fromkeys(re.findall(r"[a-z']+", text.lower())))
     lexicon = _combined_sentiment_lexicon()
-    positive_matches: list[KeywordMatch] = []
-    negative_matches: list[KeywordMatch] = []
+    positive_matches: dict[str, KeywordMatch] = {}
+    negative_matches: dict[str, KeywordMatch] = {}
     raw_score = 0.0
 
     for word in words:
@@ -1123,13 +1248,24 @@ def _extract_sentiment_matches(text: str) -> tuple[list[KeywordMatch], list[Keyw
         if score is None:
             continue
         raw_score += score
-        item = KeywordMatch(label=_display_sentiment_keyword(word), score=_keyword_importance(score))
+        label = _display_sentiment_keyword(word)
         if score > 0:
-            positive_matches.append(item)
+            _upsert_sentiment_match(positive_matches, label=label, score=score)
         else:
-            negative_matches.append(item)
+            _upsert_sentiment_match(negative_matches, label=label, score=score)
 
-    return positive_matches, negative_matches, raw_score
+    for phrase, base_score in CURATED_SENTIMENT_PHRASES.items():
+        for start in _iter_phrase_occurrences(text, phrase):
+            adjusted_score = _apply_phrase_sentiment_context(text=text, phrase=phrase, start=start, base_score=base_score)
+            if adjusted_score == 0:
+                continue
+            raw_score += adjusted_score
+            if adjusted_score > 0:
+                _upsert_sentiment_match(positive_matches, label=phrase, score=adjusted_score)
+            else:
+                _upsert_sentiment_match(negative_matches, label=phrase, score=adjusted_score)
+
+    return list(positive_matches.values()), list(negative_matches.values()), raw_score
 
 
 def _decode_data_url(data_url: str | None) -> tuple[bytes, str] | None:
@@ -1271,6 +1407,92 @@ def _extract_herbal_feature_from_bytes(image_bytes: bytes) -> np.ndarray | None:
         features.append(hist.astype(np.float32))
 
     return np.concatenate(features).astype(np.float32)
+
+
+def _predict_herbal_probability_map(model: object, image_bytes: bytes) -> dict[str, float] | None:
+    if model is None or np is None:
+        return None
+
+    feature = _extract_herbal_feature_from_bytes(image_bytes)
+    if feature is None:
+        return None
+
+    probabilities = model.predict_proba([feature])[0]
+    classes = list(model.classes_)
+    return {label: float(score) for label, score in zip(classes, probabilities)}
+
+
+def _measure_herbal_bright_red_coverage(image_bytes: bytes) -> float:
+    if np is None or Image is None:
+        return 0.0
+
+    try:
+        with Image.open(BytesIO(image_bytes)) as image:
+            hsv_array = np.asarray(image.convert("HSV").resize((256, 256)), dtype=np.float32) / 255.0
+    except OSError:
+        return 0.0
+
+    hue = hsv_array[:, :, 0]
+    saturation = hsv_array[:, :, 1]
+    value = hsv_array[:, :, 2]
+    mask = (((hue <= 0.06) | (hue >= 0.97)) & (saturation >= 0.5) & (value >= 0.35))
+    return float(mask.mean())
+
+
+def _extract_herbal_lower_focus_crop_bytes(image_bytes: bytes) -> bytes | None:
+    if Image is None:
+        return None
+
+    try:
+        with Image.open(BytesIO(image_bytes)) as image:
+            rgb = image.convert("RGB")
+            width, height = rgb.size
+            crop_top = min(height - 1, max(0, int(height * 0.35)))
+            cropped = rgb.crop((0, crop_top, width, height))
+            buffer = BytesIO()
+            cropped.save(buffer, format="JPEG", quality=95)
+    except OSError:
+        return None
+
+    return buffer.getvalue()
+
+
+def _refine_herbal_probability_map_for_gouqi(
+    model: object,
+    image_bytes: bytes,
+    probability_map: dict[str, float],
+) -> dict[str, float]:
+    ranked = sorted(probability_map.items(), key=lambda item: item[1], reverse=True)
+    if len(ranked) < 2:
+        return probability_map
+
+    top_key, top_score = ranked[0]
+    second_key, second_score = ranked[1]
+    if top_key == "gouqi" or second_key != "gouqi":
+        return probability_map
+
+    bright_red_coverage = _measure_herbal_bright_red_coverage(image_bytes)
+    if bright_red_coverage < HERBAL_GOUQI_REFINEMENT_MIN_BRIGHT_RED_COVERAGE:
+        return probability_map
+
+    if (top_score - second_score) > HERBAL_GOUQI_REFINEMENT_MAX_MARGIN:
+        return probability_map
+
+    focus_crop_bytes = _extract_herbal_lower_focus_crop_bytes(image_bytes)
+    if focus_crop_bytes is None:
+        return probability_map
+
+    focus_probability_map = _predict_herbal_probability_map(model, focus_crop_bytes)
+    if focus_probability_map is None:
+        return probability_map
+
+    if focus_probability_map.get("gouqi", 0.0) < HERBAL_GOUQI_REFINEMENT_MIN_CROP_CONFIDENCE:
+        return probability_map
+
+    if max(focus_probability_map, key=focus_probability_map.get) != "gouqi":
+        return probability_map
+
+    return focus_probability_map
 
 
 def _get_herbal_classifier_cache_path() -> Path:
@@ -1725,10 +1947,175 @@ def _edge_tag(edge_density: float) -> str:
     return "纹理均衡"
 
 
+MUSEUM_FILENAME_NOISE_PATTERNS = [
+    r"来自.*$",
+    r"小红书.*$",
+    r"微信图片.*$",
+    r"截图.*$",
+]
+
+MUSEUM_ERA_PATTERNS = [
+    "新石器",
+    "商周",
+    "春秋",
+    "战国",
+    "秦汉",
+    "魏晋",
+    "南北朝",
+    "隋唐",
+    "唐代",
+    "宋代",
+    "元代",
+    "明代",
+    "清代",
+    "近现代",
+    "民国",
+    "当代",
+    "明清",
+    "唐",
+    "宋",
+    "元",
+    "明",
+    "清",
+]
+
+MUSEUM_CATEGORY_PATTERNS = [
+    "缂丝挂画",
+    "缂丝",
+    "挂画",
+    "山水画",
+    "人物画",
+    "人物肖像",
+    "肖像画",
+    "花鸟画",
+    "书法",
+    "青铜器",
+    "瓷器",
+    "玉器",
+    "手卷",
+    "册页",
+    "卷轴",
+]
+
+MUSEUM_TAG_CATEGORY_MAP = {
+    "人物肖像": "人物肖像",
+    "山水": "山水画",
+    "古典绘画": "古典绘画",
+    "东方绘画": "东方绘画",
+}
+
+
+def _clean_museum_filename_segments(file_name: str) -> list[str]:
+    stem = Path(file_name).stem
+    cleaned = stem
+    for pattern in MUSEUM_FILENAME_NOISE_PATTERNS:
+        cleaned = re.sub(pattern, " ", cleaned, flags=re.IGNORECASE)
+
+    raw_segments = re.split(r"[_|｜\-—]+", cleaned)
+    segments: list[str] = []
+    for segment in raw_segments:
+        normalized = re.sub(r"\s+", " ", segment).strip(" ·.()[]【】（）")
+        if not normalized:
+            continue
+        if not re.search(r"[\u4e00-\u9fffA-Za-z]", normalized):
+            continue
+        segments.append(normalized)
+    return segments
+
+
+def _extract_museum_hint(segments: list[str]) -> str:
+    for segment in segments:
+        if any(keyword in segment for keyword in ("博物馆", "美术馆", "艺术馆", "museum", "Museum")):
+            return re.sub(r"(馆藏|藏品|收藏)$", "", segment).strip()
+    return ""
+
+
+def _extract_artwork_title(segments: list[str], museum_hint: str) -> str:
+    best_title = ""
+    best_score = -10
+    for segment in segments:
+        score = 0
+        if museum_hint and museum_hint in segment:
+            score -= 4
+        if re.fullmatch(r"[A-Za-z0-9 ]+", segment):
+            score -= 3
+        if re.search(r"\d", segment):
+            score -= 1
+        chinese_length = len(re.findall(r"[\u4e00-\u9fff]", segment))
+        score += chinese_length
+        if any(keyword in segment for keyword in ("画", "缂丝", "卷", "册页", "器", "像", "图")):
+            score += 3
+        if any(keyword in segment for keyword in ("馆藏", "博物馆", "美术馆")):
+            score -= 2
+        if score > best_score:
+            best_score = score
+            best_title = segment
+    return best_title
+
+
+def _extract_era_from_text(text: str) -> str:
+    for era in MUSEUM_ERA_PATTERNS:
+        if era in text:
+            return era
+    return ""
+
+
+def _extract_category_from_text(text: str, tags: list[str]) -> str:
+    for category in MUSEUM_CATEGORY_PATTERNS:
+        if category in text:
+            return category
+
+    for tag in tags:
+        mapped = MUSEUM_TAG_CATEGORY_MAP.get(tag)
+        if mapped:
+            return mapped
+    return ""
+
+
+def _build_museum_artwork_clue(
+    *,
+    file_name: str,
+    tags: list[str],
+    fallback_institution: str,
+    default_title: str = "",
+) -> MuseumArtworkClue:
+    segments = _clean_museum_filename_segments(file_name)
+    museum_hint = _extract_museum_hint(segments)
+    joined_text = " ".join(segments)
+    title = _extract_artwork_title(segments, museum_hint)
+    if not title:
+        title = default_title
+
+    era = _extract_era_from_text(joined_text or title)
+    category = _extract_category_from_text(joined_text or title, tags)
+
+    if not title:
+        if category:
+            title = f"未命名{category}"
+        else:
+            title = "未识别到明确作品名"
+
+    if not museum_hint:
+        museum_hint = fallback_institution
+
+    if segments:
+        basis = "该线索优先来自上传文件名中的中文文本，再结合画面题材标签做了归纳。"
+    else:
+        basis = "未识别到明确文件名线索，当前作品信息主要依据画面题材标签与机构相似度生成。"
+
+    return MuseumArtworkClue(
+        title=title,
+        era=era,
+        category=category,
+        museumHint=museum_hint,
+        basis=basis,
+    )
+
+
 def _build_museum_upload_analysis(
     payload: MuseumVisionRequest,
     image_bytes: bytes,
-) -> tuple[str, float, str, str, list[str], list[MuseumMatch]]:
+) -> tuple[str, float, str, str, MuseumArtworkClue, list[str], list[MuseumMatch]]:
     extracted = _extract_visual_feature_from_bytes(image_bytes)
     museum_index = _load_museum_feature_index()
     features = museum_index["features"]
@@ -1771,11 +2158,20 @@ def _build_museum_upload_analysis(
     texture = _edge_tag(float(profile["edge_density"]))
 
     source_note = f"上传图像已与课程数据集比对，最相近的 {top_match.institution} 样本包括 {example_text}。"
+    artwork_clue = _build_museum_artwork_clue(
+        file_name=payload.fileName,
+        tags=[orientation, tone, contrast, texture],
+        fallback_institution=top_match.institution,
+    )
     description = (
         f"系统先对上传图像的颜色分布、灰度纹理和构图比例做特征提取，再与课程博物馆图像数据集进行相似度检索。"
         f"当前图像呈现 {orientation}、{tone} 和 {contrast} 的视觉特征，整体细节表现为 {texture}，"
         f"因此结果更接近 {top_match.institution} 的馆藏图像风格。"
     )
+    if artwork_clue.title != "未识别到明确作品名":
+        description += (
+            f" 结合上传文件名中的线索，系统还推测这件作品可概括为“{artwork_clue.title}”。"
+        )
     tags = [
         "课程数据集比对",
         top_match.institution,
@@ -1785,9 +2181,13 @@ def _build_museum_upload_analysis(
         texture,
         "上传图像",
     ]
+    if artwork_clue.category:
+        tags.insert(2, artwork_clue.category)
+    if artwork_clue.era:
+        tags.insert(2, artwork_clue.era)
 
     confidence = round(min(98.6, max(62.0, top_match.score + 18.0)), 1)
-    return top_match.institution, confidence, source_note, description, tags, matches[:4]
+    return top_match.institution, confidence, source_note, description, artwork_clue, tags, matches[:4]
 
 
 def _confidence_value(text: str) -> float | None:
@@ -2176,7 +2576,7 @@ def export_history_records(
 def export_project_report() -> tuple[str, str, bytes]:
     payload = ProjectReportExportResponse(
         generatedAt=datetime.now().isoformat(timespec="seconds"),
-        title="多模态 AI 课程成果平台演示报告",
+        title="多模态 AI 课程成果平台项目概览",
         reportVersion="v1.0",
         pages=PROJECT_REPORT_PAGES,
         dashboard=get_dashboard_summary(),
@@ -2185,7 +2585,7 @@ def export_project_report() -> tuple[str, str, bytes]:
     )
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     return (
-        f"multimodal-ai-demo-report-{timestamp}.json",
+        f"multimodal-ai-project-overview-{timestamp}.json",
         "application/json; charset=utf-8",
         json.dumps(payload.model_dump(), ensure_ascii=False, indent=2).encode("utf-8"),
     )
@@ -2208,24 +2608,38 @@ def export_project_delivery_bundle() -> tuple[str, str, bytes]:
         openapi_content = json.dumps({"warning": "openapi snapshot missing"}, ensure_ascii=False, indent=2).encode("utf-8")
 
     static_file_entries: list[tuple[str, str, Path]] = [
-        ("README.md", "project-state", project_root / "README.md"),
-        ("feature_list.json", "project-state", project_root / "feature_list.json"),
-        ("progress.md", "project-state", project_root / "progress.md"),
-        ("session-handoff.md", "project-state", project_root / "session-handoff.md"),
+        ("README.md", "project-files", project_root / "README.md"),
+        ("backend/README.md", "project-files", project_root / "backend" / "README.md"),
+        ("docs/README.md", "documentation", project_root / "docs" / "README.md"),
         (
-            "architecture/web-architecture-spec.md",
+            "architecture/technical-overview.md",
             "architecture",
-            project_root / "docs" / "architecture" / "2026-06-05-multimodal-ai-platform-web-architecture-spec.md",
+            project_root / "docs" / "architecture" / "technical-overview.md",
         ),
         (
-            "architecture/project-harness-baseline.md",
-            "architecture",
-            project_root / "docs" / "architecture" / "2026-06-05-project-harness-baseline.md",
+            "ui-reference/README.md",
+            "ui-reference",
+            project_root / "docs" / "ui-reference" / "README.md",
         ),
         (
-            "architecture/project-root-canonicalization.md",
-            "architecture",
-            project_root / "docs" / "architecture" / "2026-06-05-project-root-canonicalization.md",
+            "docker-compose.yml",
+            "deployment",
+            project_root / "docker-compose.yml",
+        ),
+        (
+            "deploy/docker/backend.Dockerfile",
+            "deployment",
+            project_root / "deploy" / "docker" / "backend.Dockerfile",
+        ),
+        (
+            "deploy/docker/frontend.Dockerfile",
+            "deployment",
+            project_root / "deploy" / "docker" / "frontend.Dockerfile",
+        ),
+        (
+            "deploy/docker/nginx.conf",
+            "deployment",
+            project_root / "deploy" / "docker" / "nginx.conf",
         ),
     ]
     generated_file_entries: list[tuple[str, str, str, bytes]] = [
@@ -2318,8 +2732,8 @@ def export_project_delivery_bundle() -> tuple[str, str, bytes]:
 
     manifest = {
         "generatedAt": generated_at,
-        "title": "多模态 AI 课程成果平台交付包",
-        "bundleVersion": "v1.1",
+        "title": "多模态 AI 课程成果平台项目快照",
+        "bundleVersion": "v2.0",
         "sourceReportFile": report_filename,
         "sourceHistoryJsonFile": history_json_filename,
         "sourceHistoryCsvFile": history_csv_filename,
@@ -2336,7 +2750,7 @@ def export_project_delivery_bundle() -> tuple[str, str, bytes]:
             archive.writestr(name, content)
 
     return (
-        f"multimodal-ai-delivery-bundle-{timestamp}.zip",
+        f"multimodal-ai-project-snapshot-{timestamp}.zip",
         "application/zip",
         buffer.getvalue(),
     )
@@ -2581,7 +2995,7 @@ def get_dashboard_summary() -> DashboardSummaryResponse:
         MetricCard(
             label="历史记录",
             value=f"{len(history_count)} 条",
-            caption="SQLite 历史记录可驱动首页总览与项目说明页面。",
+            caption="SQLite 历史记录可驱动首页总览与历史记录页面。",
             icon="clock",
         ),
         MetricCard(
@@ -2605,15 +3019,15 @@ def classify_image(payload: ImageRecognitionRequest) -> ImageRecognitionResponse
         classifier_bundle = _load_herbal_classifier()
         model = classifier_bundle["model"]
         try:
-            feature = _extract_herbal_feature_from_bytes(image_bytes)
+            probability_map = _predict_herbal_probability_map(model, image_bytes)
         except OSError:
             raise UploadValidationError("上传的图片内容无法解析，请重新选择清晰的 JPG、PNG 或 WEBP 图片。") from None
 
-        if model is not None and feature is not None:
-            probabilities = model.predict_proba([feature])[0]
-            classes = list(model.classes_)
-            probability_map = {label: float(score) for label, score in zip(classes, probabilities)}
-            predicted_key = classes[int(np.argmax(probabilities))]
+        if model is not None and probability_map is not None:
+            # When the full-frame scene is ambiguous, re-check a lower subject crop
+            # so bright-red gouqi berries are less likely to be diluted by props/background.
+            probability_map = _refine_herbal_probability_map_for_gouqi(model, image_bytes, probability_map)
+            predicted_key = max(probability_map, key=probability_map.get)
             predicted_score = probability_map[predicted_key]
 
             sorted_keys = sorted(
@@ -2712,7 +3126,7 @@ def _build_sentiment_explanation(label: str, positives: list[str], negatives: li
     if label == "负面" and negatives:
         return f"文本中出现 {'、'.join(negatives)} 等负面表达，因此模型判断当前文本更偏向负面情绪。"
     if not positives and not negatives:
-        return "当前文本没有命中足够明显的 IMDb 情感关键词，系统暂时将其判断为中性表达。"
+        return "当前文本没有命中足够明显的中英文情绪线索，系统暂时将其判断为中性表达。"
     return "文本中的正负面信号接近，整体表达更平稳，因此模型判断为中性情绪。"
 
 
@@ -2745,8 +3159,19 @@ def _build_local_sentiment_response(payload: SentimentAnalysisRequest, *, used_f
     positive_pool = matched_positive
     negative_pool = matched_negative
 
-    normalized_score = round(max(-1.0, min(1.0, math.tanh(raw_score / 2.4))), 2)
-    confidence = round((0.58 + min(0.37, abs(normalized_score) * 0.36)) * 1000) / 10
+    positive_signal = sum(item.score for item in positive_pool)
+    negative_signal = sum(item.score for item in negative_pool)
+    total_signal = positive_signal + negative_signal
+
+    if total_signal > 0:
+        normalized_score = round(max(-0.98, min(0.98, (positive_signal - negative_signal) / total_signal)), 2)
+    else:
+        normalized_score = round(max(-0.98, min(0.98, math.tanh(raw_score / 2.4))), 2)
+
+    confidence = round(
+        min(96.0, max(58.0, 58.0 + total_signal * 12.5 + abs(normalized_score) * 18.0)),
+        1,
+    )
 
     if normalized_score > 0.12:
         label = "正面"
@@ -2921,7 +3346,7 @@ def _build_output(theme: str, tone: str, generation_type: str, index: int) -> Ge
 
     if generation_type == "短文案":
         body = {
-            "正式": f"{theme_label} 面向课程答辩与成果汇报场景，统一展示实验输入、模型输出、可视化指标和项目说明。",
+            "正式": f"{theme_label} 面向项目展示与成果汇报场景，统一展示实验输入、模型输出和可视化指标。",
             "活泼": f"{theme_label} 让图像识别、文本分析和生成式内容同台出现，做成一眼就能讲清楚的互动 demo。",
             "科技感": f"{theme_label} 通过模块化前端和统一数据结构，把多模态实验整合为一套可演示、可扩展的交互界面。",
             "文艺": f"{theme_label} 把模型运行的轨迹轻轻铺开，让每一次输入与输出都能被完整讲述。",
@@ -3063,7 +3488,7 @@ def analyze_museum_vision(payload: MuseumVisionRequest) -> MuseumVisionResponse:
     if decoded_upload is not None:
         try:
             image_bytes, _mime_type = decoded_upload
-            institution, confidence, source_note, description, tags, matches = _build_museum_upload_analysis(
+            institution, confidence, source_note, description, artwork_clue, tags, matches = _build_museum_upload_analysis(
                 payload,
                 image_bytes,
             )
@@ -3080,6 +3505,7 @@ def analyze_museum_vision(payload: MuseumVisionRequest) -> MuseumVisionResponse:
         confidence = preset["confidence"]
         source_note = preset["sourceNote"]
         description = preset["description"]
+        artwork_clue = preset["artworkClue"]
         tags = preset["tags"]
         matches = preset["matches"]
         dimensions = payload.dimensions or ("768 × 768" if preset_key == "landscape" else "960 × 1280")
@@ -3105,6 +3531,7 @@ def analyze_museum_vision(payload: MuseumVisionRequest) -> MuseumVisionResponse:
         institution=institution,
         confidence=confidence,
         description=description,
+        artworkClue=artwork_clue,
         tags=tags,
         matches=matches,
         historyRecord=history_record,

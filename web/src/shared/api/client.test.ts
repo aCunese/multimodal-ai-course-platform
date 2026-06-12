@@ -434,11 +434,11 @@ describe("api client download helpers", () => {
 
   it("downloads the project report from the backend contract", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(new Blob(['{"title":"多模态 AI 课程成果平台演示报告"}'], { type: "application/json" }), {
+      new Response(new Blob(['{"title":"多模态 AI 课程成果平台项目概览"}'], { type: "application/json" }), {
         status: 200,
         headers: {
           "Content-Type": "application/json; charset=utf-8",
-          "Content-Disposition": 'attachment; filename="multimodal-ai-demo-report-20260606.json"',
+          "Content-Disposition": 'attachment; filename="multimodal-ai-project-overview-20260606.json"',
         },
       }),
     );
@@ -452,7 +452,7 @@ describe("api client download helpers", () => {
         method: "GET",
       }),
     );
-    expect(result.filename).toBe("multimodal-ai-demo-report-20260606.json");
+    expect(result.filename).toBe("multimodal-ai-project-overview-20260606.json");
     expect(result.blob.type).toContain("application/json");
   });
 
@@ -462,7 +462,7 @@ describe("api client download helpers", () => {
         status: 200,
         headers: {
           "Content-Type": "application/zip",
-          "Content-Disposition": 'attachment; filename="multimodal-ai-delivery-bundle-20260606.zip"',
+          "Content-Disposition": 'attachment; filename="multimodal-ai-project-snapshot-20260606.zip"',
         },
       }),
     );
@@ -476,7 +476,7 @@ describe("api client download helpers", () => {
         method: "GET",
       }),
     );
-    expect(result.filename).toBe("multimodal-ai-delivery-bundle-20260606.zip");
+    expect(result.filename).toBe("multimodal-ai-project-snapshot-20260606.zip");
     expect(result.blob.type).toContain("application/zip");
   });
 
@@ -533,6 +533,13 @@ describe("api client download helpers", () => {
           institution: "Metropolitan Museum",
           confidence: 89.6,
           description: "这是一幅具有古典风格的人物绘画作品。",
+          artworkClue: {
+            title: "古典人物肖像",
+            era: "古典风格",
+            category: "人物肖像",
+            museumHint: "Metropolitan Museum",
+            basis: "该线索根据课程样例名称与人物构图特征生成。",
+          },
           tags: ["人物肖像", "古典绘画"],
           matches: [{ institution: "Metropolitan Museum", score: 89.6 }],
           historyRecord: {
@@ -549,7 +556,7 @@ describe("api client download helpers", () => {
           },
         },
         sampleDescriptionNote: "当前描述结合样例图像的主体内容、构图风格与课程实验设定生成。",
-        uploadDescriptionNote: "当前描述基于上传图像的颜色、纹理与构图特征，并结合课程数据集中的相似样本生成。",
+        uploadDescriptionNote: "当前描述会同时参考上传文件名中的作品线索，以及图像颜色、纹理与构图特征，再结合课程数据集中的相似样本生成。",
         dataSourceItems: [
           {
             title: "数据来源",

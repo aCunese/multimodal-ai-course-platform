@@ -7,7 +7,7 @@ MODE="${1:-full}"
 
 cd "$ROOT_DIR"
 
-echo "== multimodal-ai-course-platform harness init =="
+echo "== multimodal-ai-course-platform verification =="
 echo "root: $ROOT_DIR"
 echo "mode: $MODE"
 
@@ -22,15 +22,14 @@ case "$MODE" in
 esac
 
 required_files=(
-  "AGENTS.md"
   "README.md"
-  "feature_list.json"
-  "progress.md"
-  "session-handoff.md"
+  "docs/README.md"
+  "docs/architecture/technical-overview.md"
+  "backend/README.md"
 )
 
 echo
-echo "== Checking required harness files =="
+echo "== Checking required project files =="
 for file in "${required_files[@]}"; do
   if [[ ! -f "$file" ]]; then
     echo "Missing required file: $file" >&2
@@ -145,4 +144,4 @@ if [[ "$MODE" == "e2e" ]]; then
 fi
 
 echo
-echo "Harness verification complete."
+echo "Project verification complete."

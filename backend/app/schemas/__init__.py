@@ -468,6 +468,14 @@ class MuseumMatch(BaseModel):
     score: float
 
 
+class MuseumArtworkClue(BaseModel):
+    title: str
+    era: str
+    category: str
+    museumHint: str
+    basis: str
+
+
 class MuseumVisionResponse(BaseModel):
     name: str
     format: str
@@ -478,6 +486,7 @@ class MuseumVisionResponse(BaseModel):
     institution: str
     confidence: float
     description: str
+    artworkClue: MuseumArtworkClue
     tags: list[str]
     matches: list[MuseumMatch]
     historyRecord: HistoryRecord

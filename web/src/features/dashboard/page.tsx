@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import heroImage from "../../assets/hero/dashboard-hero.png";
-import shieldArtwork from "../../assets/illustrations/shield-orbit.png";
-import cubeArtwork from "../../assets/illustrations/data-cube.png";
 import { getDashboardMetadata, getDashboardSummary, getRuntimeAssets, warmRuntimeAssets } from "../../shared/api/client";
 import type { DashboardMetadataResponse, DashboardSummaryResponse, RuntimeAssetStatus } from "../../shared/api/types";
 import type { HistoryStatus } from "../../shared/types/platform";
@@ -74,7 +72,6 @@ export function DashboardPage() {
   const navigate = useNavigate();
   const [metadata, setMetadata] = useState(initialMetadata);
   const [summary, setSummary] = useState(initialSummary);
-  const [syncState, setSyncState] = useState<"loading" | "ready" | "fallback">("loading");
   const [runtimeAssets, setRuntimeAssets] = useState<RuntimeAssetStatus[]>([]);
   const [isRuntimeLoading, setIsRuntimeLoading] = useState(true);
   const [isRuntimeWarming, setIsRuntimeWarming] = useState(false);
@@ -113,8 +110,6 @@ export function DashboardPage() {
     let cancelled = false;
 
     async function syncDashboard() {
-      setSyncState("loading");
-
       try {
         const response = await getDashboardSummary();
 
@@ -123,13 +118,8 @@ export function DashboardPage() {
         }
 
         setSummary(response);
-        setSyncState("ready");
       } catch {
-        if (cancelled) {
-          return;
-        }
-
-        setSyncState("fallback");
+        // Keep local dashboard fallback data when the backend summary endpoint is unavailable.
       }
     }
 
@@ -183,12 +173,6 @@ export function DashboardPage() {
     : coldRuntimeAssets.length > 0
       ? metadata.runtimeWarmActionColdLabel
       : metadata.runtimeWarmActionReadyLabel;
-  const visibleSyncMessage =
-    syncState === "loading"
-      ? metadata.syncLoadingMessage
-      : syncState === "fallback"
-        ? metadata.syncFallbackMessage
-        : "";
 
   async function handleWarmRuntimeAssets() {
     setIsRuntimeWarming(true);
@@ -212,16 +196,10 @@ export function DashboardPage() {
         <h1>{metadata.pageTitle}</h1>
         <p>{metadata.pageDescription}</p>
       </div>
-      {visibleSyncMessage ? (
-        <section className="page-meta-bar" aria-live="polite">
-          <p className="field-caption page-meta-bar__message">{visibleSyncMessage}</p>
-        </section>
-      ) : null}
 
       <section className="hero-banner" style={{ backgroundImage: `url(${heroImage})` }}>
         <div className="hero-banner__overlay" />
         <div className="hero-banner__content">
-          <p className="hero-banner__eyebrow">课程项目总览</p>
           <h2>{metadata.heroTitle}</h2>
           <p>{metadata.heroDescription}</p>
           <div className="hero-banner__actions">
@@ -231,11 +209,6 @@ export function DashboardPage() {
             <Button variant="secondary" onClick={() => navigate(metadata.secondaryAction.route)}>
               {metadata.secondaryAction.label}
             </Button>
-          </div>
-          <div className="hero-banner__facts" aria-label="平台关键摘要">
-            <span>{`${summary.modules.length} 个实验模块`}</span>
-            <span>{`${summary.recentHistory.length} 条近期记录`}</span>
-            <span>{`${availableRuntimeAssets.length} 项缓存可用`}</span>
           </div>
         </div>
       </section>
@@ -259,34 +232,6 @@ export function DashboardPage() {
                 <Icon name="arrow-right" size={16} />
               </Link>
             </div>
-          </Panel>
-        ))}
-      </section>
-
-      <section className="metrics-grid">
-        {summary.metrics.map((metric, index) => (
-          <Panel
-            key={metric.label}
-            className={`metric-card${index < 2 ? " metric-card--with-art" : ""}`}
-          >
-            <div className="metric-card__meta">
-              <span className="metric-card__icon">
-                <Icon name={metric.icon} size={20} />
-              </span>
-              <p>{metric.label}</p>
-            </div>
-            <strong>{metric.value}</strong>
-            <p>{metric.caption}</p>
-            {index === 0 ? (
-              <img src={cubeArtwork} alt="" className="metric-card__art metric-card__art--cube" />
-            ) : null}
-            {index === 1 ? (
-              <img
-                src={shieldArtwork}
-                alt=""
-                className="metric-card__art metric-card__art--shield"
-              />
-            ) : null}
           </Panel>
         ))}
       </section>
