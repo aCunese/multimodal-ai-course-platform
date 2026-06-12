@@ -434,11 +434,11 @@ describe("api client download helpers", () => {
 
   it("downloads the project report from the backend contract", async () => {
     const fetchMock = vi.fn().mockResolvedValue(
-      new Response(new Blob(['{"title":"多模态 AI 课程成果平台演示报告"}'], { type: "application/json" }), {
+      new Response(new Blob(['{"title":"多模态 AI 课程成果平台项目概览"}'], { type: "application/json" }), {
         status: 200,
         headers: {
           "Content-Type": "application/json; charset=utf-8",
-          "Content-Disposition": 'attachment; filename="multimodal-ai-demo-report-20260606.json"',
+          "Content-Disposition": 'attachment; filename="multimodal-ai-project-overview-20260606.json"',
         },
       }),
     );
@@ -452,7 +452,7 @@ describe("api client download helpers", () => {
         method: "GET",
       }),
     );
-    expect(result.filename).toBe("multimodal-ai-demo-report-20260606.json");
+    expect(result.filename).toBe("multimodal-ai-project-overview-20260606.json");
     expect(result.blob.type).toContain("application/json");
   });
 
@@ -462,7 +462,7 @@ describe("api client download helpers", () => {
         status: 200,
         headers: {
           "Content-Type": "application/zip",
-          "Content-Disposition": 'attachment; filename="multimodal-ai-delivery-bundle-20260606.zip"',
+          "Content-Disposition": 'attachment; filename="multimodal-ai-project-snapshot-20260606.zip"',
         },
       }),
     );
@@ -476,7 +476,7 @@ describe("api client download helpers", () => {
         method: "GET",
       }),
     );
-    expect(result.filename).toBe("multimodal-ai-delivery-bundle-20260606.zip");
+    expect(result.filename).toBe("multimodal-ai-project-snapshot-20260606.zip");
     expect(result.blob.type).toContain("application/zip");
   });
 

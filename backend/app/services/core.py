@@ -208,7 +208,7 @@ PROJECT_REPORT_PAGES = [
     ProjectReportPage(label="情感分析", path="/sentiment-analysis", summary="文本情绪判断与关键词分析"),
     ProjectReportPage(label="文案生成", path="/text-generation", summary="根据主题生成课程演示文案"),
     ProjectReportPage(label="博物馆图像识别 / 描述", path="/museum-vision", summary="图像来源识别与内容描述"),
-    ProjectReportPage(label="历史记录与项目说明", path="/history", summary="查看执行日志和项目结构"),
+    ProjectReportPage(label="历史记录", path="/history", summary="查看运行记录、筛选结果并导出数据"),
 ]
 
 SEARCH_PAGE_ITEMS = [
@@ -259,12 +259,12 @@ SEARCH_PAGE_ITEMS = [
     },
     {
         "id": "page-history",
-        "title": "历史记录与项目说明",
+        "title": "历史记录",
         "subtitle": "页面入口",
-        "description": "搜索任务记录、导出结果并查看项目说明结构。",
+        "description": "搜索任务记录、按条件筛选并导出结果。",
         "route": "/history",
         "icon": "history",
-        "keywords": "历史 记录 项目 说明 导出 search logs",
+        "keywords": "历史 记录 导出 搜索 logs export history",
     },
 ]
 
@@ -274,13 +274,13 @@ APP_SHELL_SEARCH_RESULTS_ARIA_LABEL = "搜索建议"
 APP_SHELL_SEARCH_LOADING_MESSAGE = "正在搜索..."
 APP_SHELL_SEARCH_EMPTY_MESSAGE = "未找到匹配结果，可直接回车跳转到历史记录页继续搜索。"
 APP_SHELL_SEARCH_UNAVAILABLE_MESSAGE = "全局搜索接口暂时不可用，可直接回车跳转到历史记录页。"
-APP_SHELL_PROJECT_REPORT_BUTTON_LABEL = "导出演示报告"
-APP_SHELL_PROJECT_REPORT_FALLBACK_TITLE = "多模态 AI 课程成果平台演示报告"
-APP_SHELL_PROJECT_REPORT_FALLBACK_FILENAME = "multimodal-ai-demo-report.json"
-APP_SHELL_PROJECT_DELIVERABLES_BUTTON_LABEL = "导出交付包"
-APP_SHELL_PROJECT_OVERVIEW_BUTTON_LABEL = "查看项目说明"
-APP_SHELL_ACCOUNT_DISPLAY_NAME = "课程实验用户"
-APP_SHELL_ACCOUNT_ROLE_LABEL = "学生"
+APP_SHELL_PROJECT_REPORT_BUTTON_LABEL = "导出项目概览"
+APP_SHELL_PROJECT_REPORT_FALLBACK_TITLE = "多模态 AI 课程成果平台项目概览"
+APP_SHELL_PROJECT_REPORT_FALLBACK_FILENAME = "multimodal-ai-project-overview.json"
+APP_SHELL_PROJECT_DELIVERABLES_BUTTON_LABEL = "导出项目快照"
+APP_SHELL_PROJECT_OVERVIEW_BUTTON_LABEL = "查看技术说明"
+APP_SHELL_ACCOUNT_DISPLAY_NAME = "公开演示环境"
+APP_SHELL_ACCOUNT_ROLE_LABEL = "访客"
 
 SEARCH_ICON_BY_MODULE = {
     "图像识别": "image",
@@ -291,13 +291,13 @@ SEARCH_ICON_BY_MODULE = {
 
 HISTORY_MODULE_FILTERS = ["全部", "图像识别", "情感分析", "文案生成", "博物馆图像理解"]
 HISTORY_STATUS_FILTERS = ["全部", "成功", "警告", "失败"]
-HISTORY_PAGE_TITLE = "历史记录与项目说明"
-HISTORY_PAGE_DESCRIPTION = "查看平台运行记录、实验结果和项目模块说明，帮助完成课程答辩与后续开发整理。"
+HISTORY_PAGE_TITLE = "历史记录"
+HISTORY_PAGE_DESCRIPTION = "查看平台各模块的运行记录，并按条件筛选或导出结果。"
 HISTORY_SYNC_CONNECTED_MESSAGE = "已连接历史记录接口。"
 HISTORY_SYNC_LOADING_MESSAGE = "正在同步历史记录..."
 HISTORY_SYNC_READY_MESSAGE = "历史记录已由后端接口实时提供。"
 HISTORY_SYNC_FALLBACK_MESSAGE = "历史记录接口暂时不可用，当前展示的是本地演示数据。"
-HISTORY_FILTER_PANEL_TITLE = "历史记录筛选区"
+HISTORY_FILTER_PANEL_TITLE = "筛选记录"
 HISTORY_SEARCH_FIELD_LABEL = "搜索内容"
 HISTORY_SEARCH_PLACEHOLDER = "搜索输入内容、输出结果或记录 ID..."
 HISTORY_MODULE_FILTER_LABEL = "模块筛选"
@@ -308,12 +308,12 @@ HISTORY_EXPORT_BUTTON_LABEL = "导出"
 HISTORY_EXPORT_BUTTON_BUSY_LABEL = "导出中..."
 HISTORY_EXPORT_SUCCESS_MESSAGE_TEMPLATE = "历史记录已从后端导出为 {format} 文件。"
 HISTORY_EXPORT_FALLBACK_MESSAGE = "历史记录导出接口暂时不可用，已导出当前页面数据。"
-HISTORY_TABLE_TITLE = "历史记录表格"
+HISTORY_TABLE_TITLE = "运行记录"
 HISTORY_TABLE_LOADING_MESSAGE = "正在同步..."
 HISTORY_TABLE_COUNT_TEMPLATE = "共 {count} 条记录"
 HISTORY_TABLE_HEADERS = ["记录 ID", "时间", "实验模块", "输入内容", "输出结果", "置信度 / 评分", "状态", "操作"]
 HISTORY_ROW_ACTION_LABEL = "查看"
-HISTORY_PROJECT_OVERVIEW_TITLE = "项目说明"
+HISTORY_PROJECT_OVERVIEW_TITLE = "项目概览"
 HISTORY_MODULE_SPOTLIGHT_ACTION_LABEL = "查看详情"
 HISTORY_EXPORT_FORMATS = [
     HistoryExportFormatOption(label="JSON", value="json"),
@@ -322,22 +322,22 @@ HISTORY_EXPORT_FORMATS = [
 HISTORY_OVERVIEW_SECTIONS = [
     ProjectOverviewSection(
         title="平台定位",
-        body="《多模态 AI 课程成果平台》用于整合课程中的多个 AI 实验，包括图像分类、文本情感分析、文本生成和博物馆图像理解。",
+        body="该项目把图像识别、情感分析、文案生成和博物馆图像理解整合到同一个可运行的全栈演示平台中。",
     ),
     ProjectOverviewSection(
-        title="当前完成度",
-        body="前后端主链路已经打通，文本模块和两个图像模块都可接入真实课程数据，历史页也支持按筛选条件导出记录。",
+        title="实现范围",
+        body="前端 6 个页面、后端接口、历史记录、运行时缓存和 OpenAPI 合同同步已经串成完整链路，可直接本地运行与验证。",
     ),
     ProjectOverviewSection(
-        title="后续方向",
-        body="下一步重点转向补强可复用自动化回归、沉淀模型缓存与导出物规范，把当前联调版继续收束成稳定成品。",
+        title="工程重点",
+        body="项目重点在于把演示体验、真实 API、缓存预热和自动化回归一起做完整，而不是只停留在页面原型层。",
     ),
 ]
 HISTORY_VALUE_POINTS = [
-    "课程实验整合",
     "多模态能力展示",
-    "前后端可扩展",
-    "可用于答辩演示",
+    "真实 API 联调",
+    "自动化验证",
+    "可扩展全栈结构",
     "支持后续模型接入",
 ]
 HISTORY_MODULE_SPOTLIGHTS = [
@@ -513,7 +513,7 @@ SEED_GENERATION_HISTORY = [
 TEXT_GENERATION_TONE_OPTIONS = ["正式", "活泼", "科技感", "文艺"]
 TEXT_GENERATION_TYPES = ["标题", "宣传语", "短文案", "诗意表达"]
 TEXT_GENERATION_PAGE_TITLE = "文案生成"
-TEXT_GENERATION_PAGE_DESCRIPTION = "输入主题、语气和输出类型，生成适合课程答辩、海报展示和项目说明的演示文案。"
+TEXT_GENERATION_PAGE_DESCRIPTION = "输入主题、语气和输出类型，生成适合项目展示、海报呈现和产品介绍的演示文案。"
 TEXT_GENERATION_SYNC_CONNECTING_MESSAGE = "正在连接文案生成接口..."
 TEXT_GENERATION_SYNC_HISTORY_READY_MESSAGE = "文案生成历史记录已由后端接口提供。"
 TEXT_GENERATION_SYNC_FALLBACK_MESSAGE = "文案生成接口暂时不可用，当前展示本地演示数据。"
@@ -946,11 +946,11 @@ TONE_KEYWORDS = {
     "正式": ["结构清晰", "适合答辩", "语言稳健"],
     "活泼": ["传播轻快", "适合展示", "记忆点强"],
     "科技感": ["技术气质", "未来感强", "适合产品页"],
-    "文艺": ["语言柔和", "画面感强", "适合项目说明"],
+    "文艺": ["语言柔和", "画面感强", "适合项目介绍"],
 }
 
 QUALITY_TIPS = {
-    "正式": "推荐用于课程答辩封面、项目说明页和成果汇报摘要。",
+    "正式": "推荐用于项目首页、展示封面和成果摘要。",
     "活泼": "推荐用于海报、班级展示页和对外传播的短句模块。",
     "科技感": "推荐用于产品化展示、模块介绍和平台价值主张区域。",
     "文艺": "推荐用于作品陈述、收尾总结和具氛围感的项目描述。",
@@ -2576,7 +2576,7 @@ def export_history_records(
 def export_project_report() -> tuple[str, str, bytes]:
     payload = ProjectReportExportResponse(
         generatedAt=datetime.now().isoformat(timespec="seconds"),
-        title="多模态 AI 课程成果平台演示报告",
+        title="多模态 AI 课程成果平台项目概览",
         reportVersion="v1.0",
         pages=PROJECT_REPORT_PAGES,
         dashboard=get_dashboard_summary(),
@@ -2585,7 +2585,7 @@ def export_project_report() -> tuple[str, str, bytes]:
     )
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     return (
-        f"multimodal-ai-demo-report-{timestamp}.json",
+        f"multimodal-ai-project-overview-{timestamp}.json",
         "application/json; charset=utf-8",
         json.dumps(payload.model_dump(), ensure_ascii=False, indent=2).encode("utf-8"),
     )
@@ -2608,24 +2608,38 @@ def export_project_delivery_bundle() -> tuple[str, str, bytes]:
         openapi_content = json.dumps({"warning": "openapi snapshot missing"}, ensure_ascii=False, indent=2).encode("utf-8")
 
     static_file_entries: list[tuple[str, str, Path]] = [
-        ("README.md", "project-state", project_root / "README.md"),
-        ("feature_list.json", "project-state", project_root / "feature_list.json"),
-        ("progress.md", "project-state", project_root / "progress.md"),
-        ("session-handoff.md", "project-state", project_root / "session-handoff.md"),
+        ("README.md", "project-files", project_root / "README.md"),
+        ("backend/README.md", "project-files", project_root / "backend" / "README.md"),
+        ("docs/README.md", "documentation", project_root / "docs" / "README.md"),
         (
-            "architecture/web-architecture-spec.md",
+            "architecture/technical-overview.md",
             "architecture",
-            project_root / "docs" / "architecture" / "2026-06-05-multimodal-ai-platform-web-architecture-spec.md",
+            project_root / "docs" / "architecture" / "technical-overview.md",
         ),
         (
-            "architecture/project-harness-baseline.md",
-            "architecture",
-            project_root / "docs" / "architecture" / "2026-06-05-project-harness-baseline.md",
+            "ui-reference/README.md",
+            "ui-reference",
+            project_root / "docs" / "ui-reference" / "README.md",
         ),
         (
-            "architecture/project-root-canonicalization.md",
-            "architecture",
-            project_root / "docs" / "architecture" / "2026-06-05-project-root-canonicalization.md",
+            "docker-compose.yml",
+            "deployment",
+            project_root / "docker-compose.yml",
+        ),
+        (
+            "deploy/docker/backend.Dockerfile",
+            "deployment",
+            project_root / "deploy" / "docker" / "backend.Dockerfile",
+        ),
+        (
+            "deploy/docker/frontend.Dockerfile",
+            "deployment",
+            project_root / "deploy" / "docker" / "frontend.Dockerfile",
+        ),
+        (
+            "deploy/docker/nginx.conf",
+            "deployment",
+            project_root / "deploy" / "docker" / "nginx.conf",
         ),
     ]
     generated_file_entries: list[tuple[str, str, str, bytes]] = [
@@ -2718,8 +2732,8 @@ def export_project_delivery_bundle() -> tuple[str, str, bytes]:
 
     manifest = {
         "generatedAt": generated_at,
-        "title": "多模态 AI 课程成果平台交付包",
-        "bundleVersion": "v1.1",
+        "title": "多模态 AI 课程成果平台项目快照",
+        "bundleVersion": "v2.0",
         "sourceReportFile": report_filename,
         "sourceHistoryJsonFile": history_json_filename,
         "sourceHistoryCsvFile": history_csv_filename,
@@ -2736,7 +2750,7 @@ def export_project_delivery_bundle() -> tuple[str, str, bytes]:
             archive.writestr(name, content)
 
     return (
-        f"multimodal-ai-delivery-bundle-{timestamp}.zip",
+        f"multimodal-ai-project-snapshot-{timestamp}.zip",
         "application/zip",
         buffer.getvalue(),
     )
@@ -2981,7 +2995,7 @@ def get_dashboard_summary() -> DashboardSummaryResponse:
         MetricCard(
             label="历史记录",
             value=f"{len(history_count)} 条",
-            caption="SQLite 历史记录可驱动首页总览与项目说明页面。",
+            caption="SQLite 历史记录可驱动首页总览与历史记录页面。",
             icon="clock",
         ),
         MetricCard(
@@ -3332,7 +3346,7 @@ def _build_output(theme: str, tone: str, generation_type: str, index: int) -> Ge
 
     if generation_type == "短文案":
         body = {
-            "正式": f"{theme_label} 面向课程答辩与成果汇报场景，统一展示实验输入、模型输出、可视化指标和项目说明。",
+            "正式": f"{theme_label} 面向项目展示与成果汇报场景，统一展示实验输入、模型输出和可视化指标。",
             "活泼": f"{theme_label} 让图像识别、文本分析和生成式内容同台出现，做成一眼就能讲清楚的互动 demo。",
             "科技感": f"{theme_label} 通过模块化前端和统一数据结构，把多模态实验整合为一套可演示、可扩展的交互界面。",
             "文艺": f"{theme_label} 把模型运行的轨迹轻轻铺开，让每一次输入与输出都能被完整讲述。",

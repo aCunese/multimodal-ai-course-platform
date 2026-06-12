@@ -82,7 +82,7 @@ HISTORY_EXPORT_RESPONSES = {
 
 PROJECT_REPORT_EXPORT_RESPONSES = {
     200: {
-        "description": "Exported the current project demo report as a downloadable JSON attachment.",
+        "description": "Exported the current project overview as a downloadable JSON attachment.",
         "headers": {
             "Content-Disposition": {
                 "description": "Suggested attachment filename for the exported project report.",
@@ -94,7 +94,7 @@ PROJECT_REPORT_EXPORT_RESPONSES = {
 
 PROJECT_DELIVERY_BUNDLE_EXPORT_RESPONSES = {
     200: {
-        "description": "Exported the current project deliverables as a downloadable ZIP bundle.",
+        "description": "Exported the current project snapshot as a downloadable ZIP bundle.",
         "content": {
             "application/zip": {
                 "schema": {

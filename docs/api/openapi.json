@@ -3068,7 +3068,7 @@
                 }
               }
             },
-            "description": "Exported the current project deliverables as a downloadable ZIP bundle.",
+            "description": "Exported the current project snapshot as a downloadable ZIP bundle.",
             "headers": {
               "Content-Disposition": {
                 "description": "Suggested attachment filename for the exported delivery bundle.",
@@ -3094,7 +3094,7 @@
                 }
               }
             },
-            "description": "Exported the current project demo report as a downloadable JSON attachment.",
+            "description": "Exported the current project overview as a downloadable JSON attachment.",
             "headers": {
               "Content-Disposition": {
                 "description": "Suggested attachment filename for the exported project report.",

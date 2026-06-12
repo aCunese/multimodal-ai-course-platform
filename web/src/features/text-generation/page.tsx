@@ -15,7 +15,7 @@ const defaultQualityMetrics: GenerationQualityMetric[] = [
 
 const initialMetadata: TextGenerationMetadataResponse = {
   pageTitle: "文案生成",
-  pageDescription: "输入主题、语气和输出类型，生成适合课程答辩、海报展示和项目说明的演示文案。",
+  pageDescription: "输入主题、语气和输出类型，生成适合项目展示、海报呈现和产品介绍的演示文案。",
   syncConnectingMessage: "正在连接文案生成接口...",
   syncHistoryReadyMessage: "文案生成历史记录已由后端接口提供。",
   syncFallbackMessage: "文案生成接口暂时不可用，当前展示本地演示数据。",

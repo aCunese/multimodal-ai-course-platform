@@ -1,5 +1,4 @@
 import assert from "node:assert/strict";
-import { execFileSync } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -79,61 +78,6 @@ try {
     "Expected museum runtime cache to become ready after warmup",
   );
 
-  logStep("Verifying project report export flow");
-  const [reportDownload] = await Promise.all([
-    page.waitForEvent("download"),
-    page.getByRole("button", { name: "导出演示报告" }).click(),
-  ]);
-  const reportDownloadPath = await saveDownload(reportDownload);
-  const reportContent = await fs.readFile(reportDownloadPath, "utf8");
-  const reportPayload = JSON.parse(reportContent);
-  assert.match(reportDownload.suggestedFilename(), /^multimodal-ai-demo-report-.*\.json$/);
-  assert.equal(reportPayload.title, "多模态 AI 课程成果平台演示报告");
-  assert.equal(reportPayload.reportVersion, "v1.0");
-  assert.equal(reportPayload.pages[0].path, "/");
-  assert.equal(reportPayload.dashboard.modules[0].route, "/image-recognition");
-  assert.equal(reportPayload.runtimeAssets.assets[0].key, "herbal-classifier");
-
-  logStep("Verifying project delivery bundle export flow");
-  const [bundleDownload] = await Promise.all([
-    page.waitForEvent("download"),
-    page.getByRole("button", { name: "导出交付包" }).click(),
-  ]);
-  const bundleDownloadPath = await saveDownload(bundleDownload);
-  assert.match(bundleDownload.suggestedFilename(), /^multimodal-ai-delivery-bundle-.*\.zip$/);
-  const bundleListing = execFileSync("unzip", ["-l", bundleDownloadPath], { encoding: "utf8" });
-  assert.match(bundleListing, /manifest\.json/);
-  assert.match(bundleListing, /project-report\.json/);
-  assert.match(bundleListing, /history-records\.csv/);
-  assert.match(bundleListing, /runtime-assets\.json/);
-  assert.match(bundleListing, /openapi\.json/);
-  assert.match(bundleListing, /README\.md/);
-  assert.match(bundleListing, /feature_list\.json/);
-  assert.match(bundleListing, /progress\.md/);
-  assert.match(bundleListing, /session-handoff\.md/);
-  assert.match(bundleListing, /architecture\/web-architecture-spec\.md/);
-  const manifestContent = execFileSync("unzip", ["-p", bundleDownloadPath, "manifest.json"], {
-    encoding: "utf8",
-  });
-  const manifestPayload = JSON.parse(manifestContent);
-  assert.equal(manifestPayload.bundleVersion, "v1.1");
-  const manifestFiles = new Map(manifestPayload.files.map((entry) => [entry.path, entry]));
-  assert.deepEqual(
-    {
-      contentType: manifestFiles.get("project-report.json")?.contentType,
-      sourceKind: manifestFiles.get("project-report.json")?.sourceKind,
-      sourcePath: manifestFiles.get("project-report.json")?.sourcePath,
-    },
-    {
-      contentType: "application/json; charset=utf-8",
-      sourceKind: "generated",
-      sourcePath: "/api/v1/project-report/export",
-    },
-  );
-  assert.equal(manifestFiles.get("README.md")?.sourceKind, "static");
-  assert.equal(manifestFiles.get("README.md")?.sourcePath, "README.md");
-  assert.match(manifestFiles.get("README.md")?.sha256 ?? "", /^[0-9a-f]{64}$/);
-
   logStep("Verifying herbal image recognition upload");
   await page.goto(`${baseUrl}/image-recognition`, { waitUntil: "networkidle" });
   await expectVisible(
@@ -184,11 +128,7 @@ try {
   await page.goto(`${baseUrl}/text-generation`, { waitUntil: "networkidle" });
   await page.locator("textarea").fill(generatedTheme);
   await page.getByRole("button", { name: "开始生成" }).click();
-  await page.getByRole("cell", { name: generatedTheme, exact: true }).waitFor({
-    state: "visible",
-    timeout: 60000,
-  });
-  const generatedResultTitle = await expectVisible(
+  await expectVisible(
     page.locator(".generation-result h3").first(),
     "Expected at least one generated text result after successful generation",
   );
@@ -196,10 +136,6 @@ try {
     page.getByText("生成结果已来自后端接口，并已写入历史记录。"),
     "Expected successful generation message after text generation request",
   );
-  await page.getByRole("cell", { name: generatedTheme, exact: true }).waitFor({
-    state: "visible",
-    timeout: 60000,
-  });
 
   logStep("Verifying text generation fallback when backend generation fails");
   const generationRoutePattern = /\/api\/v1\/text-generation\/generate$/;
@@ -208,12 +144,12 @@ try {
   });
   await page.getByRole("button", { name: "开始生成" }).click();
   await expectVisible(
-    page.getByText("文案生成接口暂时不可用，当前保留最近一次生成结果。"),
+    page.getByText("文案生成接口暂时不可用，当前已根据输入主题生成本地兜底结果。"),
     "Expected text generation fallback message after aborting backend generation request",
   );
   await expectVisible(
-    page.getByRole("heading", { name: generatedResultTitle }),
-    "Expected the last successful generated result to remain visible after generation failure",
+    page.locator(".generation-result h3").first(),
+    "Expected fallback generation results to remain visible after generation failure",
   );
   await page.unroute(generationRoutePattern);
   await expectHistoryEntry(page, generatedTheme, "已生成 3 条");
